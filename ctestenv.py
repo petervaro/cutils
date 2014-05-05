@@ -1,6 +1,6 @@
 ################################################################################
 ##                                                                            ##
-##   testenv.py                                                               ##
+##   ctestenv.py                                                               ##
 ##   ==========                                                               ##
 ##                                                                            ##
 ##   Generate a simple C test environment, with a basic but expandable        ##
