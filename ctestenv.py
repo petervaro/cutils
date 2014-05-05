@@ -1,7 +1,7 @@
 ################################################################################
 ##                                                                            ##
-##   ctestenv.py                                                               ##
-##   ==========                                                               ##
+##   ctestenv.py                                                              ##
+##   ===========                                                              ##
 ##                                                                            ##
 ##   Generate a simple C test environment, with a basic but expandable        ##
 ##   'makefile' and a minimal C file, ready to test ideas.                    ##
