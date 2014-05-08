@@ -1,7 +1,7 @@
 ################################################################################
 ##                                                                            ##
-##   ctestenv.py                                                              ##
-##   ===========                                                              ##
+##   cenv.py                                                                  ##
+##   =======                                                                  ##
 ##                                                                            ##
 ##   Generate a simple C test environment, with a basic but expandable        ##
 ##   'makefile' and a minimal C file, ready to test ideas.                    ##
@@ -10,7 +10,7 @@
 ##   Version: 1.0.0                                                           ##
 ##   Usage:                                                                   ##
 ##                                                                            ##
-##       $ python3 ctestenv.py <dirname> <filename>                           ##
+##       $ python3 cenv.py <dirname> <filename>                               ##
 ##       $ cd <dirname>                                                       ##
 ##       $ make                                                               ##
 ##       $ ./build/<filename>                                                 ##
