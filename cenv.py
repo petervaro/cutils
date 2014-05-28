@@ -48,6 +48,9 @@ from traceback import extract_stack
 #------------------------------------------------------------------------------#
 # Module level constants
 MAKE = """
+# Toggle switch
+IS_PRODUCTION=
+
 # Filename of binary
 app_NAME={}
 
@@ -56,12 +59,22 @@ app_BUILD_OUT_DIR=build
 app_BUILD_TMP_DIR=$(app_BUILD_OUT_DIR)/tmp
 
 # Sources
-app_C_SOURCES=$(app_NAME).c
+app_C_SOURCES=$(wildcard *.c)
 app_C_OBJECTS=$(addprefix $(app_BUILD_TMP_DIR)/, $(notdir $(app_C_SOURCES:.c=.o)))
 app_INCLUDES=/usr/local/include
+app_LIBRARY_DIRS=/usr/local/lib
+app_LIBRARIES=
+app_FRAMEWORKS=
 
 # Flags
-CFLAGS+=-Wall -v -g -std=c11 $(foreach dir, $(app_INCLUDES), -I$(dir))
+ifdef IS_PRODUCTION
+CFLAGS+=-O3
+else
+CFLAGS+=-Wall -v -g
+endif
+CFLAGS+=-std=c11 $(foreach dir, $(app_INCLUDES), -I$(dir))
+LDFLAGS=$(foreach libdir, $(app_LIBRARY_DIRS), -L$(libdir))
+LDFLAGS+=$(foreach library, $(app_LIBRARIES), -l$(library))
 
 # Rules
 .PHONY: all clean
@@ -78,7 +91,8 @@ makedirs:
 \tmkdir -p $(app_BUILD_TMP_DIR)
 
 clean:
-\trm -f $(app_NAME).o
+\trm -f $(app_BUILD_TMP_DIR)/*.o
+\trm -f $(app_BUILD_OUT_DIR)/$(app_NAME)
 """
 
 C = """

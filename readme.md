@@ -31,7 +31,7 @@ c11.tmLanguage
 cenv.py
 
     Sets up a minimal C environment.
-    Very practical to test ideas quicly, or to start a project from sketch.
+    Very practical to test ideas quicly, or to start a project from scratch.
 
 
 --------------------------------------------------------------------------------

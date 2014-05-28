@@ -22,7 +22,7 @@
 #ifdef
 #ifndef
 #if defined NDEBUG
-#elif
+#elif 10
 #else
 #endif
 
@@ -128,12 +128,12 @@ void *
 memcpy(void *dst,
        const void *src,
        size_t n);
-// Checks for overlapping and copy n characters from str2 to str1
+// Checks for overlapping and copy n characters from src to dst
 void *
-memmove(void *dest,
+memmove(void *dst,
         const void *src,
         size_t n);
-// Copies the character c to the first n characters of the str
+// Copies the chr to the first n characters of str
 void *
 memset(void *str,
        int chr,
@@ -305,6 +305,8 @@ char *format =
 "%c"            /* single character */
 "%s"            /* string */
 "%f"            /* double */
+"%Lf"           /* long double */
+"%a"            /* hexadecimal floating point */
 "%e or %E"      /* expontial */
 "%o"            /* octal */
 "%x or %X"      /* hexadecimal */
@@ -521,6 +523,18 @@ va_start(name, lastarg);
 va_arg(name, type);
 // Call before exiting function
 va_end(name);
+
+
+//        TODO: va_copy()
+
+
+/*----------------------------------------------------------------------------*/
+#include <stddef.h>
+
+// Integer constant expression of type size_t, the value of
+// which is the offset in bytes to the structure member
+// (member-designator), from the beginning of its structure (type)
+#define offsetof(type, member)
 
 
 /*----------------------------------------------------------------------------*/
