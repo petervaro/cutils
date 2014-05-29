@@ -67,6 +67,20 @@ cbug.h
 
 
 --------------------------------------------------------------------------------
+cfps.h
+
+    Single header frame per second counter.
+    It implements two inline functions:
+        1) printfps(timer_func):
+            it requires a timer function as it's argument which returns a double
+        2) getfps(timer_func, handler_func, data_ptr):
+            it is a more general purpose fps function, it requires a timer
+            function which returns a double, a handler function, which will be
+            called, and a pointer to any kind of data, which will be passed to
+            the handler function
+
+
+--------------------------------------------------------------------------------
 cexc.h
 
     Exception handling system.
