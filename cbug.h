@@ -2,13 +2,7 @@
 #ifndef _CBUG_H_
 #define _CBUG_H_
 
-#ifndef DEBUG
-
-#define debug()
-#define debugs(...)
-#define debugf(...)
-
-#else
+#ifndef CBUG_OFF
 
 #include <stdio.h>
 #include <string.h>
@@ -35,5 +29,9 @@ __cbug_debug(const char *file_name,
 #define debugf(fmt, ...) \
     do { debug(); fprintf(stderr, "\t\t" #fmt "\n\n", __VA_ARGS__); } while (0)
 
-#endif  /* DEBUG */
+#else
+  #define debug()
+  #define debugs(...)
+  #define debugf(...)
+#endif  /* CBUG_OFF */
 #endif  /* _CBUG_H_ */

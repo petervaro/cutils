@@ -26,6 +26,11 @@ MACRO FLAGS:
   #define stop_exception_handling()
   #define raise(msg, len)
   #define catch()
+  #define set_exception_handling_pointer(ptr)
+  #define set_exception_handling_custom_raise(func)
+  #define set_exception_handling_custom_catch(func)
+  #define craise(msg, len)
+  #define ccatch()
 #else
   #undef  CEXC_MSG_LEN
   #define CEXC_MSG_LEN 9
@@ -39,9 +44,15 @@ MACRO FLAGS:
 /*----------------------------------------------------------------------------*/
 typedef struct
 {
+    // Essential values
     char *buffer;
     size_t chars;
     FILE *output;
+
+    // Custom values
+    void *custom;
+    void (*raisecb)(void*);
+    void (*catchcb)(void*);
 
 } ExceptionHandler;
 
@@ -54,11 +65,14 @@ typedef struct
   ExceptionHandler *__CEXC_Exception_Handler__;
 #endif // _CEXC_EXCEPTION_HANDLER_STRUCT_
 
+/*----------------------------------------------------------------------------*/
+static inline void __cexc_handler_init_cb__(void *ptr) { return; }
 
 /*----------------------------------------------------------------------------*/
 static inline void
 start_exception_handling(FILE *output)
 {
+    // Set essential values
     __CEXC_Exception_Handler__ = malloc(sizeof(ExceptionHandler));
     if (!__CEXC_Exception_Handler__)
     {
@@ -75,6 +89,11 @@ start_exception_handling(FILE *output)
     __CEXC_Exception_Handler__->chars  = CEXC_MSG_LEN;
     strncpy(__CEXC_Exception_Handler__->buffer, CEXC_NO_ERR, CEXC_MSG_LEN);
     __CEXC_Exception_Handler__->output = output;
+
+    //Set custom values
+    __CEXC_Exception_Handler__->custom = (void *)NULL;
+    __CEXC_Exception_Handler__->raisecb = __cexc_handler_init_cb__;
+    __CEXC_Exception_Handler__->catchcb = __cexc_handler_init_cb__;
 }
 
 
@@ -84,6 +103,30 @@ stop_exception_handling(void)
 {
     free(__CEXC_Exception_Handler__->buffer);
     free(__CEXC_Exception_Handler__);
+}
+
+
+/*----------------------------------------------------------------------------*/
+static inline void
+set_exception_handling_pointer(void *pointer)
+{
+    __CEXC_Exception_Handler__->custom = pointer;
+}
+
+
+/*----------------------------------------------------------------------------*/
+static inline void
+set_exception_handling_custom_catch(void (*callback)(void*))
+{
+    __CEXC_Exception_Handler__->catchcb = callback;
+}
+
+
+/*----------------------------------------------------------------------------*/
+static inline void
+set_exception_handling_custom_raise(void (*callback)(void*))
+{
+    __CEXC_Exception_Handler__->raisecb = callback;
 }
 
 
@@ -135,6 +178,25 @@ raise(const char *message,
         __CEXC_Exception_Handler__->buffer[length] = '\0';
 #endif // CEXC_LOG
 }
+
+/*----------------------------------------------------------------------------*/
+static inline void
+ccatch(void)
+{
+    catch();
+    __CEXC_Exception_Handler__->catchcb(__CEXC_Exception_Handler__->custom);
+}
+
+
+/*----------------------------------------------------------------------------*/
+static inline void
+craise(const char *message,
+       size_t length)
+{
+    raise(message, length);
+    __CEXC_Exception_Handler__->raisecb(__CEXC_Exception_Handler__->custom);
+}
+
   #undef CEXC_MSG_LEN
   #undef CEXC_PREFIX
   #undef CEXC_NO_ERR
