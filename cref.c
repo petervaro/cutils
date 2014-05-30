@@ -582,7 +582,8 @@ malloc(size_t size);
 void *
 calloc(size_t nitems,
        size_t size);
-// Attempts to resize the previously allocated memory block at ptr
+// Attempts to resize the previously allocated memory block at ptr,
+// if succeseded returns the new memory address, else a NULL ptr
 void *
 realloc(void *ptr,
         size_t size);

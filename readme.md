@@ -25,17 +25,17 @@ c11.tmLanguage
         - conventional standard library constant + ellipsis support
         - special macro variables support
         - better format string support
-        -
+
 
 --------------------------------------------------------------------------------
-cenv.py
+cenv.py | C Environment
 
     Sets up a minimal C environment.
     Very practical to test ideas quicly, or to start a project from scratch.
 
 
 --------------------------------------------------------------------------------
-cref.c
+cref.c  | C Reference
 
     Reference of the Standard C Library.
     It has two purposes:
@@ -45,14 +45,14 @@ cref.c
 
 
 --------------------------------------------------------------------------------
-ccol.h
+ccol.h  | C Colors
 
     Single header color tools.
     Base type aliases, conversion and mixing functions, name constants and IO.
 
 
 --------------------------------------------------------------------------------
-cbug.h
+cbug.h  | C Debug
 
     Lightweight debugging / logging utilities.
     This header contains 3 macros which are printing to the standard error:
@@ -67,7 +67,7 @@ cbug.h
 
 
 --------------------------------------------------------------------------------
-cfps.h
+cfps.h  | C Frame Per Second
 
     Single header frame per second counter.
     It implements two inline functions:
@@ -81,20 +81,54 @@ cfps.h
 
 
 --------------------------------------------------------------------------------
-cexc.h
+cexc.h  | C Exceptions
 
-    Exception handling system.
-    *Coming soon...*
+    Single header only exception handling system.
+    Macro based on/off toggle and logging switch:
+        CEXC_OFF and CEXC_LOG
+    It implements four functions:
+        1) start_exception_handling(file_ptr)
+            Creates the exception handler object
+        2) stop_exception_handling()
+            Removes the exception handler object
+        3) raise(msg, len)
+            Uploads message to exception handler object's buffer
+        4) catch()
+            Write message from exception handler object's buffer
+            and sets the message to NO ERROR
+    INTERNAL exception will be raised, when buffer cannot be realloc'd.
+
 
 --------------------------------------------------------------------------------
-cres.py
+ccom.py | C Comment
+
+    Generates header-comments to files implement special comment marks.
+    *Coming soon...*
+
+
+--------------------------------------------------------------------------------
+ctlg.py | C Todo List Generator
+
+    Scans files for todo comments and generates a list of them.
+    *Coming soon...*
+
+
+--------------------------------------------------------------------------------
+cdar.h  | C Dynamic Array
+
+    Dynamic array implementation.
+    *Coming soon...*
+
+
+--------------------------------------------------------------------------------
+cres.py | C Resources
 
     Generate header files from external resources to compile them into binary.
     *Coming soon...*
 
 
 --------------------------------------------------------------------------------
-cdep.py
+cdep.py | C Dependencies
 
     Dependency generator (similar to make depend, but more sophisticated)
     *Coming soon...*
