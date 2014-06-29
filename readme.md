@@ -5,47 +5,7 @@ little easier while one is programming in C. I created the tools mostly for
 use in my personal projects, however I hope/believe many will find it just as
 useful as I do.
 
-- - -
-
-The following tools are included:
-
-| utility    | files         | about                                |
-|------------|---------------|--------------------------------------|
-| **`c11`**  | `.tmLanguage` | *Syntax Highlighter*                 |
-| **`cenv`** | `.py`         | *Environment Generator*              |
-| **`cref`** | `.c`          | *Quick Reference*                    |
-| **`ccol`** | `.h`          | *Colors Helper*                      |
-| **`cbug`** | `.h`          | *Tiny Debugger*                      |
-| **`cfps`** | `.h`          | *Frame Per Second Helper*            |
-| **`cexc`** | `.h`          | *Exception Handling System*          |
-| **`cdar`** | `.h`, `.c`    | *Dynamic Array Object and Methods*   |
-| **`clic`** | `.py`         | *License Comment Generator*          |
-| **`ccom`** | `.py`         | *Comment Scanner and List Generator* |
-| **`cres`** | `.py`         | *External Resources Packer*          |
-| **`cdep`** | `.py`         | *Dependency Graph Generator*         |
-
-- - -
-###**c11** : Syntax Highlighter
-
-![syntax highlighter](src/c11.png)
-
-The finest and most modern C Syntax Highlighter based on the latest:
-
-    C11 (ISO 9899:2011 April 12, 2011, Committee Draft n1570)
-
-Some of the major improvements:
-
-  - one-liner comment improved
-  - trigraph sequence added
-  - floats and double notations fixed
-  - hexadecimal float notation added
-  - operators added
-  - single and double quoted strings fixed and improved
-  - better type support + invalid type warnings support
-  - conventional standard library typedef aliases added
-  - conventional standard library constant + ellipsis support
-  - special macro variables support
-  - better format string support
+for more info visit: [www.cutils.org](http://www.cutils.org)
 
 - - -
 ###**cenv** : Environment Generator
@@ -112,9 +72,9 @@ A very lightweight debugging/logging single header-only utility, contains only
     000 File: 'main.c', line: 39, function: 'main'
         "I'm a debugging message!"
 
-It can be turned off by defining an empty CBUG_OFF macro before the include
-macro statement. If it is defined all the apperences of the functions will be
-removed from the source file.
+It can be turned off by defining an empty `CBUG_OFF` macro variable before the
+include macro statement. If it is defined all the apperences of the functions
+will be removed from the source file.
 
 Another great usecase of this header is to extend the **`cexc`** utility, when
 the handling mode of that is set to logging. This can be seen in the next
@@ -160,7 +120,7 @@ functions, which are:
   1. `printfps(timer_func)`:
 
     It requires a timer function as it's only argument which returns a double
-    value
+    value. It prints the frame per second value to the standard output stream.
 
   2. `getfps(timer_func, handler_func, data_ptr)`:
 
@@ -337,48 +297,6 @@ And the output is:
     COUNTER: 1
     EXCEPTION: NO ERROR
     COUNTER: 2
-
-
-- - -
-###**cdar** : Dynamic Array Object and Methods
-
-Implementation of a dynamic array object type and its methods.
-
-*Coming soon...*
-
-
-- - -
-###**clic** : License Comment Generator
-
-Generates document header-comments to files implement a special comment mark.
-
-*Coming soon...*
-
-
-- - -
-###**ccom** : Comment Scanner and List Generator
-
-Scans files for todo/note/bug/custom comments and generates a list of them.
-
-*Coming soon...*
-
-
-- - -
-###**cres** : External Resources Packer
-
-Generate header files from external resources to compile them into binary.
-
-*Coming soon...*
-
-
-- - -
-###**cdep** : Dependency Graph Generator
-
-Dependency generator (similar to `make depend`, but much more sophisticated)
-
-*Coming soon...*
-
-
 
 - - -
 Copyright (C) 2014 Peter Varo

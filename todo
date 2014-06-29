@@ -1,0 +1,46 @@
+
+- finish cdar
+    - rename types
+    - update cdar.py with macros
+    - search for TODOs
+    - add #ifdef NAMESPACE new -> cutils_new
+
+- finish cdar documentation
+    - internal/external link syntax
+    - support formatted TODO import
+    - add `members` support in TYPE
+    - add FOOT key
+    - collect 'reserved' names
+    - REGEX: fix func5 <- number should not be matched
+
+- create cstr.h
+    - dynamic null-terminated char array (char *)
+
+- add String to cdar
+    - DynamicArray_String: String
+    - DynamicArray_string: char *
+
+- add DynamicArray to cdar
+    - DynamicArray_DynamicArray: nested arrays
+
+- format(string)
+    - format("%s %%s", "hello") -> "hello %s"
+    - probably this should be implemented for String (pop)
+
+- cbug
+  - sdebug() -> expands to string literal or
+    debugexc(func, msg, len) -> calls raise() or ccraise()
+
+- SingleLinkedList
+- DoubleLinkedList
+- HashTable
+
+
+
+- - -
+
+Stages of implementation:
+
+    1. HACKED     -- no matter how, just make it work
+    2. PRETTIFIED -- clean up, make it idiomatic
+    3. OPTIMISED  -- profile it and optimise if necessary

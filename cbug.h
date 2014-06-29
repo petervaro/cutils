@@ -1,37 +1,71 @@
+// INFO //
+// INFO //
 
-#ifndef _CBUG_H_
-#define _CBUG_H_
+#ifndef _CBUG_H_10629572188582681_
+#define _CBUG_H_10629572188582681_
 
 #ifndef CBUG_OFF
 
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
+#include <stdio.h>   /* fprintf(), stderr */
+#include "carg.h"    /* vargs() */
 
+/* Make macro variables available */
+#undef __debug0
+#undef __debug1
+#undef __debug2
+#undef __debug
+#undef __s
+#undef __t
+
+/* Base function */
 static inline void
-__cbug_debug(const char *file_name,
-             unsigned int line_number,
-             const char *function_name)
+__debug_9802738545513323(const char *file_name,
+                         unsigned int line_number,
+                         const char *function_name)
 {
-    static unsigned int counter = 0;
-    fprintf(stderr, "%03u\tFile: '%s', line: %d, function: '%s'\n",
+    static size_t counter = 0;
+    fprintf(stderr, "%03zu\tFile: '%s', line: %d, function: '%s'\n",
             counter++, file_name, line_number, function_name);
 }
 
-// Generic debug information
-#define debug() (__cbug_debug(__FILE__, __LINE__, __func__))
+/* White spaces */
+#define __s " "
+#define __t __s __s __s __s
 
-// Generic debug information + simple string
-#define debugs(str) \
-    do { debug(); fprintf(stderr, "\t\t" #str "\n\n"); } while(0)
+/* Generic debug information */
+#define __debug0() (__debug_9802738545513323(__FILE__, __LINE__, __func__))
 
-// Generic debug information + formatted string
-#define debugf(fmt, ...) \
-    do { debug(); fprintf(stderr, "\t\t" #fmt "\n\n", __VA_ARGS__); } while (0)
+/* Generic debug information + simple string */
+#define __debug1(str) \
+    do { __debug0(); fprintf(stderr, __t #str "\n"); } while(0)
+
+/* Generic debug information + formatted string */
+#define __debug2(fmt, ...) \
+    do { __debug0(); fprintf(stderr, __t #fmt "\n", __VA_ARGS__); } while (0)
+
+/* Debug dispatcher */
+#define __debug(...) vargs(__VA_ARGS__)(64)(__VA_ARGS__, __debug0, __debug2,   \
+    __debug2,__debug2,__debug2,__debug2,__debug2,__debug2,__debug2,__debug2,   \
+    __debug2,__debug2,__debug2,__debug2,__debug2,__debug2,__debug2,__debug2,   \
+    __debug2,__debug2,__debug2,__debug2,__debug2,__debug2,__debug2,__debug2,   \
+    __debug2,__debug2,__debug2,__debug2,__debug2,__debug2,__debug2,__debug2,   \
+    __debug2,__debug2,__debug2,__debug2,__debug2,__debug2,__debug2,__debug2,   \
+    __debug2,__debug2,__debug2,__debug2,__debug2,__debug2,__debug2,__debug2,   \
+    __debug2,__debug2,__debug2,__debug2,__debug2,__debug2,__debug2,__debug2,   \
+    __debug2,__debug2,__debug2,__debug2,__debug2, __debug1)(__VA_ARGS__)
 
 #else
-  #define debug()
-  #define debugs(...)
-  #define debugf(...)
+  #undef  __debug
+  #define __debug(...)
 #endif  /* CBUG_OFF */
-#endif  /* _CBUG_H_ */
+
+/* Decide use prefix or not */
+#ifdef CUTILS_NAMESPACE
+  #undef  cutils_debug
+  #define cutils_debug(...) __debug(__VA_ARGS__)
+#else
+  #undef  debug
+  #define debug(...) __debug(__VA_ARGS__)
+#endif /* CUTILS_NAMESPACE*/
+
+#endif  /* _CBUG_H_10629572188582681_ */

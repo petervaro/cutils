@@ -47,6 +47,7 @@ typedef struct
     // Essential values
     char *buffer;
     size_t chars;
+    size_t error;
     FILE *output;
 
     // Custom values
@@ -89,6 +90,7 @@ start_exception_handling(FILE *output)
     __CEXC_Exception_Handler__->chars  = CEXC_MSG_LEN;
     strncpy(__CEXC_Exception_Handler__->buffer, CEXC_NO_ERR, CEXC_MSG_LEN);
     __CEXC_Exception_Handler__->output = output;
+    __CEXC_Exception_Handler__->error = 0;
 
     //Set custom values
     __CEXC_Exception_Handler__->custom = (void *)NULL;
@@ -131,6 +133,9 @@ set_exception_handling_custom_raise(void (*callback)(void*))
 
 
 /*----------------------------------------------------------------------------*/
+// TODO: OPTION 1: catch returns 1 if error, else 0, CON: if func removed by macro?
+//       OPTION 2: use ccatch for that? (the callback does what the
+//                 `if (catch())` would have done)
 #ifdef CEXC_LOG
   #define catch()
 #else
@@ -143,6 +148,7 @@ catch(void)
             __CEXC_Exception_Handler__->buffer);
     // Clear buffer
     strncpy(__CEXC_Exception_Handler__->buffer, CEXC_NO_ERR, CEXC_MSG_LEN);
+    __CEXC_Exception_Handler__->error = 0;
 }
 #endif // CEXC_LOG
 
@@ -155,12 +161,16 @@ raise(const char *message,
 #ifdef CEXC_LOG
     fprintf(__CEXC_Exception_Handler__->output, CEXC_PREFIX "%s\n", message);
 #else
+    /* Raise new error only, if no previous error raised */
+    if (__CEXC_Exception_Handler__->error) return;
+    /* Switch error flag */
+    __CEXC_Exception_Handler__->error = 1;
     // Check if buffer has enough size
     if (length > __CEXC_Exception_Handler__->chars)
     {
         // If buffer is too small resize it
         char *buffer = realloc(__CEXC_Exception_Handler__->buffer,
-                               length * sizeof(char));
+                               2 * length * sizeof(char));
         if (!buffer)
         {
             strncpy(__CEXC_Exception_Handler__->buffer,

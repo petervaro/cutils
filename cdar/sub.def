@@ -1,0 +1,39 @@
+    if (0 < count)
+    {
+#ifdef CEXC_USE
+        if (!destination)
+        {
+#define EXCEPTION_MSG "DynamicArray, " METHOD_NAME ": destination is NULL"
+            raise(EXCEPTION_MSG, sizeof(EXCEPTION_MSG));
+#undef  EXCEPTION_MSG
+            return 0;
+        }
+        if (!dynarr->used)
+        {
+#define EXCEPTION_MSG "DynamicArray, " METHOD_NAME ": array is empty"
+            raise(EXCEPTION_MSG, sizeof(EXCEPTION_MSG));
+#undef  EXCEPTION_MSG
+            return 0;
+        }
+        if (index >= dynarr->used)
+        {
+#define EXCEPTION_MSG "DynamicArray, " METHOD_NAME ": index out of range"
+            raise(EXCEPTION_MSG, sizeof(EXCEPTION_MSG));
+#undef  EXCEPTION_MSG
+            return 0;
+        }
+#else
+    if (!destination || !dynarr->used || (index >= dynarr->used)) return;
+#endif
+        // Limit count
+        if ((index + count) >= dynarr->used)
+            count = dynarr->used - index;
+        // Get/cast essential data
+        size_t item_size = dynarr->size;
+        // Copy data to destination
+        memcpy(destination,
+               (char *)dynarr->data + index*item_size,
+               count*item_size);
+        return count;
+    }
+    return 0;

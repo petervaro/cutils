@@ -17,14 +17,22 @@
 
 /*----------------------------------------------------------------------------*/
 // The macro language
+#ifdef __CREF_NEVER_DEFINE_THIS_OR_CUTE_LITTLE_KITTENS_WILL_DIE__
+#error "Variable '__CREF_NEVER_DEFINE_THIS_OR_CUTE_LITTLE_KITTENS_WILL_DIE__'"\
+       "should never be defined, because 'cref.c' is not a valid C file!"
+
 #define NDEBUG
-#undef
-#ifdef
-#ifndef
-#if defined NDEBUG
-#elif 10
-#else
-#endif
+#undef NDEBUG
+
+#ifndef NDEBUG
+  #if defined NDEBUG
+    int i = 0;
+  #elif 10
+    int i = 1;
+  #else
+    int i = -1;
+  #endif // defined NDEBUG
+#endif // NDEBUG
 
 
 /*----------------------------------------------------------------------------*/
@@ -32,6 +40,11 @@
 
 // Makes assert to be ignored if defined before header is included
 #define NDEBUG
+
+// Issues a compile-time diagnostic if the
+// value of a constant expression is false
+#define static_assert _Static_assert
+
 // If expression is false, writes info and terminate program
 void
 assert(int expr);
@@ -40,8 +53,15 @@ assert(int expr);
 /*----------------------------------------------------------------------------*/
 #include <errno.h>
 
+#define EDOM        // Mathematics argument out of domain of function
+#define EILSEQ      // Illegal byte sequence
+#define ERANGE      // Result too large
+
+// the type of errno value
+typedef int errno_t;
+
 // Global variable error number is readable and writeable
-extern int errno;
+extern errno_t errno;
 
 /*----------------------------------------------------------------------------*/
 #include <ctype.h>
@@ -118,7 +138,8 @@ void *
 memchr(const void *str,
        int chr,
        size_t n);
-// Compares the first n bytes of str1 and str2
+// Compares the first n bytes of str1 and str2, returns negative if str1 is
+// lesser than, 0 if equal to and positive if str1 is greater than str2
 int
 memcmp(const void *str1,
        const void *str2,
@@ -314,6 +335,8 @@ char *format =
 "%n"            /* number of characters written */
 "%g or %G"      /* same as f or e, E depending exponent */
 "\n";
+
+// TODO: %ju and %lf
 
 // Closes the stream. All buffers are flushed
 int
@@ -515,17 +538,19 @@ perror(const char *str);
 #include <stdarg.h>
 
 // Declaration of pointer to arguments
-va_list name;
+typedef void* va_list;
 
 // Initialization of argument pointer, lastarg is last named argument
-va_start(name, lastarg);
+void va_start(va_list name,
+              lastarg);
 // Access next unamed arg, update pointer
-va_arg(name, type);
+type va_arg(va_list name,
+            type);
 // Call before exiting function
-va_end(name);
-
-
-//        TODO: va_copy()
+void va_end(va_list name);
+// Copies the (previously initialized) variable argument list src to dst
+void va_copy(va_list dst,
+             va_list src);
 
 
 /*----------------------------------------------------------------------------*/
@@ -680,6 +705,8 @@ wctomb(char *str,
 
 /*----------------------------------------------------------------------------*/
 #include <time.h>
+
+#define CLOCKS_PER_SEC
 
 struct tm {
    int tm_sec;         /* seconds, range 0 to 59           */
@@ -1443,7 +1470,123 @@ int
 feupdateenv(const fenv_t* envp);
 
 /*----------------------------------------------------------------------------*/
+#include <fenv.h>
+
+// Pole error occurred in an earlier floating-point operation
+#define FE_DIVBYZERO  /* implementation defined power of 2 */
+// Inexact result: rounding was necessary to store the
+// result of an earlier floating-point operation
+#define FE_INEXACT    /* implementation defined power of 2 */
+// Domain error occurred in an earlier floating-point operation
+#define FE_INVALID    /* implementation defined power of 2 */
+// The result of an earlier floating-point operation
+// was too large to be representable
+#define FE_OVERFLOW   /* implementation defined power of 2 */
+// The result of an earlier floating-point operation
+// was subnormal with a loss of precision
+#define FE_UNDERFLOW  /* implementation defined power of 2 */
+// Bitwise OR of all supported floating-point exceptions
+#define FE_ALL_EXCEPT FE_DIVBYZERO | FE_INEXACT  | \
+                      FE_INVALID   | FE_OVERFLOW | \
+                      FE_UNDERFLOW
+
+// Rounding towards negative infinity
+#define FE_DOWNWARD   /* implementation defined */
+// Rounding towards nearest integer
+#define FE_TONEAREST  /* implementation defined */
+// Rounding towards zero
+#define FE_TOWARDZERO /* implementation defined */
+// Rounding towards positive infinity
+#define FE_UPWARD     /* implementation defined */
+
+// The macro constant FE_DFL_ENV expands to an expression of type const fenv_t*,
+// which points to a full copy of the default floating-point environment, that
+// is, the environment as loaded at program startup
+#define FE_DFL_ENV  /*implementation defined*/
+
+// The type representing the entire floating-point environment
+typedef struct {} fenv_t;
+// The type representing all floating-point status flags collectively
+typedef int fexcept_t;
+
+// Attempts to clear the floating-point exceptions that are
+// listed in the bitmask argument excepts, which is a bitwise
+// OR of the floating point exception macros
+int
+feclearexcept(int excepts);
+
+// Determines which of the specified subset of the floating point
+// exceptions are currently set. The argument excepts is a bitwise
+// OR of the floating point exception macros
+int
+fetestexcept(int excepts);
+
+// Attempts to raise all floating point exceptions listed in excepts
+// (a bitwise OR of the floating point exception macros). If one of
+// the exceptions is FE_OVERFLOW or FE_UNDERFLOW, this function may
+// additionally raise FE_INEXACT. The order in which the exceptions
+// are raised is unspecified, except that FE_OVERFLOW and FE_UNDERFLOW
+// are always raised before FE_INEXACT
+int
+feraiseexcept(int excepts);
+
+// Attempts to obtain the full contents of the floating-point exception
+// flags that are listed in the bitmask argument excepts, which is a bitwise
+// OR of the floating point exception macros
+int
+fegetexceptflag(fexcept_t* flagp,
+                int excepts);
+// Attempts to copy the full contents of the floating-point exception flags
+// that are listed in excepts from flagp into the floating-point environment.
+// Does not raise any exceptions, only modifies the flags
+int
+fesetexceptflag(const fexcept_t* flagp,
+                int excepts);
+
+// Attempts to establish the floating-point rounding direction
+// equal to the argument argument round, which is expected to
+// be one of the floating point rounding macros
+int fesetround(int round);
+
+// Returns the value of the floating point rounding macro
+// that corresponds to the current rounding direction
+int fegetround();
+
+// Attempts to store the status of the floating-point
+// environment in the object pointed to by envp
+int fegetenv(fenv_t* envp);
+
+// Attempts to establish the floating-point environment from the object pointed
+// to by envp. The value of that object must be previously obtained by a call to
+// feholdexcept or fegetenv or be a floating-point macro constant. If any of the
+// floating-point status flags are set in envp, they become set in the
+// environment (and are then testable with fetestexcept), but the corresponding
+// floating-point exceptions are not raised (execution continues uninterrupted)
+int fesetenv(const fenv_t* envp);
+
+// First, saves the current floating-point environment to the object pointed to
+// by envp (similar to fegetenv), then clears all floating-point status flags,
+// and then installs the non-stop mode: future floating-point exceptions will
+// not interrupt execution (will not trap), until the floating-point environment
+// is restored by feupdateenv or fesetenv.
+int feholdexcept(fenv_t* envp);
+
+// First, remembers the currently raised floating-point exceptions, then
+// restores the floating-point environment from the object pointed to by envp
+// (similar to fesetenv), then raises the floating-point exceptions that were
+// saved. This function may be used to end the non-stop mode established by an
+// earlier call to feholdexcept
+int feupdateenv(const fenv_t* envp);
+
+/*----------------------------------------------------------------------------*/
 #include <complex.h>
+
+// If this macro constant is defined by the compiler, the header
+// <complex.h> and all of the names listed here are not provided.
+#define __STDC_NO_COMPLEX__
+
+#define imaginary _Imaginary
+#define complex _Complex
 
 // Computes the complex absolute value of z
 float
@@ -1904,3 +2047,5 @@ localeconv();
 #define FLT_TRUE_MIN     1E-37
 #define DBL_TRUE_MIN     1E-37
 #define LDBL_TRUE_MIN    1E-37
+
+#endif // __CREF_NEVER_DEFINE_THIS_OR_CUTE_LITTLE_KITTENS_WILL_DIE__
