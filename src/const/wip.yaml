@@ -1,9 +1,0 @@
-- - h3
-  - string: '!!! WORK IN PROGRESS !!!'
-- - br
-- - p
-  - string: >
-            This module is highly experimental and far from being complete. It
-            is not even decided whether it is needed in `cutils` or not. USE
-            IT AT YOUR OWN RISK!
-- - br
