@@ -1,0 +1,822 @@
+## INFO ##
+## INFO ##
+
+#------------------------------------------------------------------------------#
+PAGE: CDAR Dynamic Array
+
+#------------------------------------------------------------------------------#
+HEAD:
+  FILE: const/head.yaml
+
+#------------------------------------------------------------------------------#
+INFO:
+  - - h1
+    - string: CDAR | Dynamic Array
+  - - br
+  - - p
+    - string: |
+              Dynamic arrays, as their `array` and `fuck`
+
+#------------------------------------------------------------------------------#
+USER:
+  - FILE: const/name.yaml
+    VARS:
+      VAR_head: cdar
+      VAR_func: append
+
+#------------------------------------------------------------------------------#
+TYPE:
+  - type: DynamicArray_char
+    original: char
+    info: >
+          A dynamic array type, to contain `char` type of items.
+          It must be declared as a pointer, pointing to `NULL`.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: DynamicArray_string
+    original: char *
+    info: >
+          A dynamic array type, to contain `char *` type of items.
+          It must be declared as a pointer, pointing to `NULL`.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: DynamicArray_String
+    original: String
+    info: >
+          A dynamic array type, to contain `String` type of items.
+          It must be declared as a pointer, pointing to `NULL`.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: DynamicArray_int
+    original: int
+    info: >
+          A dynamic array type, to contain `int` type of items.
+          It must be declared as a pointer, pointing to `NULL`.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: DynamicArray_short
+    original: short
+    info: >
+          A dynamic array type, to contain `short` type of items.
+          It must be declared as a pointer, pointing to `NULL`.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: DynamicArray_long
+    original: long
+    info: >
+          A dynamic array type, to contain `long` type of items.
+          It must be declared as a pointer, pointing to `NULL`.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: DynamicArray_long_long
+    original: long long
+    info: >
+          A dynamic array type, to contain `long long` type of items.
+          It must be declared as a pointer, pointing to `NULL`.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: DynamicArray_unsigned
+    original: unsigned
+    info: >
+          A dynamic array type, to contain `unsigned` type of items.
+          It must be declared as a pointer, pointing to `NULL`.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: DynamicArray_unsigned_long
+    original: unsigned long
+    info: >
+          A dynamic array type, to contain `unsigned long` type of items.
+          It must be declared as a pointer, pointing to `NULL`.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: DynamicArray_unsigned_long_long
+    original: unsigned long long
+    info: >
+          A dynamic array type, to contain `unsigned long long` type of items.
+          It must be declared as a pointer, pointing to `NULL`.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: DynamicArray_float
+    original: float
+    info: >
+          A dynamic array type, to contain `float` type of items.
+          It must be declared as a pointer, pointing to `NULL`.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: DynamicArray_double
+    original: double
+    info: >
+          A dynamic array type, to contain `double` type of items.
+          It must be declared as a pointer, pointing to `NULL`.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: DynamicArray_long_double
+    original: long double
+    info: >
+          A dynamic array type, to contain `long double` type of items.
+          It must be declared as a pointer, pointing to `NULL`.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: DynamicArray_void
+    original: void *
+    info: >
+          A dynamic array type, to contain `void *` type of items.
+          It must be declared as a pointer, pointing to `NULL`.
+
+#------------------------------------------------------------------------------#
+FUNC:
+  - func: new
+    vargs:
+      - - - DynamicArray_type **
+          - dynamic_array
+
+      - - - DynamicArray_type **
+          - dynamic_array
+
+        - - size_t
+          - item_count
+
+        - - type *
+          - items
+
+    return:
+        - - bool
+        - - true
+          - if array was created successfully
+        - - false
+          - if internal allocation failed
+
+    info: >
+          `new()` is a type-generic function-like macro, which takes a pointer
+          to pointer to a type-specific DynamicArray to create a new array. The
+          new array can be initialised with arbitrary number of data.
+
+    exceptions:
+      - - internal allocation failed
+        - >
+          The allocation of space in memory for the instance of the base struct
+          and/or for the raw array of the data failed
+
+    example:
+      - - Create a new empty dynamic array of `int`s
+        - |
+          DynamicArray_int *dynarr;
+          new(&dynarr, 0, NULL);
+
+      - - a shorthand version can also be used
+        - |
+          DynamicArray_int *dynarr;
+          new(&dynarr);
+
+      - - >
+          Create a new empty DynamicArray of `char`s with preallocated space for
+          40 `char`s
+        - |
+          DynamicArray_char *dynarr;
+          new(&dynarr, 40, NULL);
+
+      - - Create a new DynamicArray of `double`s filled with a single `double`
+        - |
+          double number = .1234;
+          DynamicArray_double *dynarr;
+          new(&dynarr, 1, &number);
+
+      - - Create a new DynamicArray of `float`s filled with 4 `float`s
+        - |
+          float numbers[] = {1.f, 2.f, 3.f, 4.f};
+          DynamicArray_float *dynarr;
+          new(&dynarr, 4, &numbers);
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: del
+    args:
+      - - DynamicArray_type *
+        - dynamic_array
+
+    info: >
+          `del()` is a type-generic function-like macro, which takes a pointer
+          to a type-specific DynamicArray and deletes it and all of its content.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: print
+    vargs:
+      - - - DynamicArray_type *
+          - dynamic_array
+
+      - - - DynamicArray_type *
+          - dynamic_array
+        - - void(*)(size_t, void *)
+          - call_back
+
+    info: >
+          `print()` is a type-generic function-like macro, which takes a pointer
+          to a type-specific DynamicArray and pretty prints its content.
+          Internally it is using the format string notation of the standard
+          library, and all the basic C and `cutils` types prints out with the
+          proper formatting. For `DynamicArray_void` prints out the items as
+          pointers (`"%p"`).
+
+    example:
+      - - Print out the content of array of `float`s
+        - |
+          // Create and fill array
+          DynamicArray_float *dynarr;
+          new(&dynarr, 5, ((float[]){3.14f, 1.59f, 2.65f, 3.58f, 9.79f}));
+          \\n
+          // Pretty print content of array
+          print(dynarr);
+          \\n
+          // Destroy array
+          del(dynarr);
+
+      - - OUTPUT
+        - |
+          \\OFF
+          DynamicArray_float
+          {
+              [0] 3.140000
+              [1] 1.590000
+              [2] 2.650000
+              [3] 3.580000
+              [4] 9.790000
+          }
+
+      - - >
+          The `print()` also provides an interface to pass a custom call back
+          function to format the user defined data types. The next example shows
+          how to pretty print a `DynamicArray_void` which contains pointers to
+          a type called `Struct`
+        - |
+          // Base Type
+          typedef struct { int i; float f; } Struct;
+          \\n
+          // Callback function
+          static void
+          Struct_print(size_t index,
+                       Struct *item)
+          {
+              printf("\t[%zu] Struct {.i=%d, .f=%.2f}\n", index, item->i, item->f);
+          }
+          \\n
+          int main(void)
+          {
+              // Create, fill and print array
+              DynamicArray_void *dynarr;
+              new(&dynarr, 3, ((Struct*[]){&(Struct){.i=12, .f=2.33},
+                                           &(Struct){.i=19, .f=6.97},
+                                           &(Struct){.i=44, .f=1.03}}));
+              // Print content of array
+              print(dynarr, Struct_print);
+              \\n
+              // Destroy array and its content
+              del(dynarr);
+          }
+
+      - - OUTPUT
+        - |
+          \\OFF
+          DynamicArray_void
+          {
+              [0] Struct {.i=12, .f=2.33}
+              [1] Struct {.i=19, .f=6.97}
+              [2] Struct {.i=44, .f=1.03}
+          }
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: data
+    args:
+      - - DynamicArray_type *
+        - dynamic_array
+      - - size_t *
+        - byte_size
+      - - size_t *
+        - item count
+
+    return:
+      - - type *
+        - A properly casted pointer to the raw array data on success
+      - - NULL
+        - if one of the arguments are not valid
+
+    info: >
+          `data()` is a type-generic function-like macro, which takes a pointer
+          to a type-specific DynamicArray, and two pointers to `size_t` data,
+          and returns a properly casted pointer to the raw array, and also tells
+          the byte size and the number of items in the array.
+
+    exceptions:
+      - - array is not initialised
+        - >
+          Function cannot operate on `NULL` pointer. Note: this exception only
+          occurs when the passed pointer is pointing to `NULL`, otherwise if the
+          pointer is pointing to some memory garbage it will be considered as a
+          perfectly legal argument. (However in that case probably a
+          `SEGMENTATION FAULT` error will happen)
+
+      - - 2nd argument is NULL
+        - Function cannot write to a `NULL` pointer
+
+      - - 3rd argument is NULL
+        - Function cannot write to a `NULL` pointer
+
+    example:
+      - - Get data of array
+        - |
+          // Declare variables
+          size_t size, count;
+          DynamicArray_float *dynarr;
+          \\n
+          // Create array
+          new(&dynarr, 4, ((float[]){1.2f, 3.4f, 5.6f, 7.8f}));
+          // Get raw data and infos
+          float *array = data(dynarr, &size, &count);
+          \\n
+          // Iterate through raw data
+          printf("size of array: %zu byte\n", size);
+          for (size_t i=0; i<count; i++)
+              printf("[%zu] %.1f\n", i, array[i]);
+          del(dynarr);
+
+      - - OUTPUT
+        - |
+          \\OFF
+          size of array: 16 byte
+          [0] 1.2
+          [1] 3.4
+          [2] 5.6
+          [3] 7.8
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: raw
+    args:
+      - - DynamicArray_type *
+        - dynamic_array
+
+    return:
+      - - type *
+        - A properly casted pointer to the raw array data on success
+      - - NULL
+        - if one of the arguments are not valid
+
+    info: >
+          `raw()` is a type-generic function-like macro, which takes a pointer
+          to a type-specific DynamicArray, and returns a properly casted pointer
+          to the raw array.
+
+    exceptions:
+      - - array is not initialised
+        - >
+          Function cannot operate on `NULL` pointer. Note: this exception only
+          occurs when the passed pointer is pointing to `NULL`, otherwise if the
+          pointer is pointing to some memory garbage it will be considered as a
+          perfectly legal argument. (However in that case probably a
+          `SEGMENTATION FAULT` error will happen)
+
+    example:
+      - - Get raw data
+        - |
+          // Declare variables
+          char *str = "hello world";
+          DynamicArray_string *dynarr;
+          \\n
+          // Create array
+          new(&dynarr, 1, &str);
+          // Get and print raw data
+          printf("%s!\n", raw(dynarr)[0]);
+          del(dynarr);
+
+      - - OUTPUT
+        - \\OFFhello world!
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: len
+    args:
+      - - DynamicArray_type *
+        - dynamic_array
+
+    return:
+      - - size_t
+        - Number of items in the array
+
+    info: >
+          `len()` is a type-generic function-like macro, which takes a pointer
+          to a type-specific DynamicArray, and returns the number of items
+          stored in the array (the length of it).
+
+    exceptions:
+      - - array is not initialised
+        - >
+          Function cannot operate on `NULL` pointer. Note: this exception only
+          occurs when the passed pointer is pointing to `NULL`, otherwise if the
+          pointer is pointing to some memory garbage it will be considered as a
+          perfectly legal argument. (However in that case probably a
+          `SEGMENTATION FAULT` error will happen)
+
+    example:
+      - - Get and print length of an array
+        - |
+          DynamicArray_char *dynarr;
+          new(&dynarr, 3, ((char[]){'a', 'b', 'c'}));
+          printf("Number of items: %zu\n", len(dynarr));
+          del(dynarr);
+
+      - - OUTPUT
+        - '\\OFFNumber of items: 3'
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: size
+    args:
+      - - DynamicArray_type *
+        - dynamic_array
+
+    return:
+      - - size_t
+        - Byte size of the array
+
+    info: |
+          `size()` is a type-generic function-like macro, which takes a pointer
+          to a type-specific DynamicArray, and returns the byte size of all the
+          items stored in the array. (Not the allocated memory size of the
+          array). It is basically identical to something like this:
+          \\n
+          `size_t bytes = sizeof(item_type_in_array) * len(dynamic_array);`
+
+    exceptions:
+      - - array is not initialised
+        - >
+          Function cannot operate on `NULL` pointer. Note: this exception only
+          occurs when the passed pointer is pointing to `NULL`, otherwise if the
+          pointer is pointing to some memory garbage it will be considered as a
+          perfectly legal argument. (However in that case probably a
+          `SEGMENTATION FAULT` error will happen)
+
+    example:
+      - - Get and print byte size of an array
+        - |
+          DynamicArray_unsigned_long_long *dynarr;
+          new(&dynarr, 4, ((unsigned long long[]){9ull, 8ull, 7ull, 6ull}));
+          printf("Size of array: %zu byte(s)\n", size(dynarr));
+          del(dynarr);
+
+      - - OUTPUT
+        - '\\OFFSize of array: 32 byte(s)'
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: clear
+    args:
+      - - DynamicArray_type *
+        - dynamic_array
+
+    info: |
+          `clear()` is a type-generic function-like macro, which takes a pointer
+          to a type-specific DynamicArray, which makes an array empty. Because
+          this function does not destroy the previously stored data, only makes
+          the "slots" available to store new data again; and because it does not
+          shrink the size of the array either, it is considered to be a good
+          practice to clear an existing dynamic array if it is not in use
+          anymore and use that array to store new data, so the array does not
+          have to allocate the memory again, therefore it is more efficient in
+          speed, but probably takes more space in the memory.
+
+    exceptions:
+      - - array is not initialised
+        - >
+          Function cannot operate on `NULL` pointer. Note: this exception only
+          occurs when the passed pointer is pointing to `NULL`, otherwise if the
+          pointer is pointing to some memory garbage it will be considered as a
+          perfectly legal argument. (However in that case probably a
+          `SEGMENTATIO FAULT` error will happen)
+
+    example:
+      - - Create an array of `float`s, fill the array and then remove all items
+        - |
+          // Create and fill array
+          DynamicArray_float *dynarr;
+          new(&dynarr, 3, ((float[]){5.f, 6.f, 7.f}));
+          \\n
+          // Check length
+          printf("Number of items in array: %zu\n", len(dynarr));
+          // Clear array
+          clear(dynarr);
+          // Check length again
+          printf("Number of items in array: %zu\n", len(dynarr));
+          \\n
+          // Destroy array
+          del(dynarr);
+
+      - - OUTPUT
+        - |
+          \\OFF
+          Number of items in array: 3
+          Number of items in array: 0
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: resize
+    args:
+      - - DynamicArray_type *
+        - dynamic_array
+      - - size_t
+        - item_count
+
+    return:
+      - - bool
+      - - true
+        - if array already has the given size, or if reallocation was successful
+      - - false
+        - if array was not initialised or the internal allocation failed'
+
+    info: >
+          `resize()` is a type-generic function-like macro, which takes a
+          pointer to a type-specific DynamicArray, and the preferred size of the
+          array (the number of items it should take) and forces the array to
+          pre-allocate enough space for the given amount of elements.
+
+    exceptions:
+      - - array is not initialised
+        - function cannot operate on `NULL` pointer
+
+      - - internal reallocation failed
+        - reallocating the data in memory failed
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: swap
+    vargs:
+      - - - DynamicArray_type *
+          - dynamic_array
+        - - size_t
+          - index1
+        - - size_t
+          - index2
+
+      - - - DynamicArray_type *
+          - dynamic_array
+        - - size_t
+          - index1
+        - - size_t
+          - index2
+        - - size_t
+          - item_count
+
+    return:
+      - - bool
+        - Indicates if the swapping was successful or not.
+      - - true
+        - >
+          if there was nothing to swap (indices are the same, the array is
+          empty, etc.) or the swap was successful
+      - - false
+        - if array is a pointer to `NULL`
+      - - false
+        - if one of the indices is out of range
+      - - false
+        - if internal allocation failed
+
+    info: >
+          `swap()` is a type-generic function-like macro, which takes a pointer
+          to a type-specific DynamicArray, an index to the first element of the
+          first block, another index to the first element of the second block,
+          and the number of elements in the blocks and swaps the two blocks
+          inside the array. `swap()` also has a variant, where the last argument
+          can be dropped and it will be passed as the defualt `1`.
+
+    exceptions:
+      - - array is not initialised
+        - >
+          Function cannot operate on `NULL` pointer. Note: this exception only
+          occurs when the passed pointer is pointing to `NULL`, otherwise if the
+          pointer is pointing to some memory garbage it will be considered as a
+          perfectly legal argument. (However in that case probably a
+          `SEGMENTATION FAULT` error will happen)
+
+      - - array is empty
+        - >
+          It is more like a warning or note: the passed array is empty, which
+          may or may not what one wanted. The return value will also be `true`
+          so one can ignore this exception.
+
+      - - 2nd argument is out of range
+        - The 1st index passed is greater than the number of items in the array.
+
+      - - 3rd argument is out of range
+        - The 2nd index passed is greater than the number of items in the array.
+
+      - - blocks are overlapping
+        - >
+          It is more like a warning or note: the passed count argument is
+          greater than the number of items between the two indices. The
+          execution of the function will continue and the function will use the
+          maximum available number of items to swap, so one can ignore this
+          exception.
+
+      - - 4th argument is out of range
+        - >
+          The count argument is greater than the number of items between the
+          greater index and the end of the array. The execution of the function
+          will continue and the function will use the maximum available number
+          of items to swap, so one can ignore this exception.
+
+      - - internal allocation failed
+        - >
+          The allocation of space in memory for temporary purposes failed.
+
+    example:
+      - - Swap a single `unsigned integer` in array
+        - |
+          // Create, fill and print array
+          DynamicArray_unsigned *dynarr;
+          new(&dynarr, 2, ((unsigned[]){9u, 6u}));
+          printf("Before swap:\n");
+          print(dynarr);
+          \\n
+          // Swap elements and print array again
+          if (!swap(dynarr, 0, 1))
+              printf("Oups! Something went wrong during swapping..");
+          printf("\nAfter swap:\n");
+          print(dynarr);
+          \\n
+          // Destroy array and its content
+          del(dynarr);
+
+      - - OUTPUT
+        - |
+          \\OFF
+          Before swap:
+          DynamicArray_unsigned
+          {
+              [0] 9
+              [1] 6
+          }
+          \\n
+          After swap:
+          DynamicArray_unsigned
+          {
+              [0] 6
+              [1] 9
+          }
+
+      - - Swap blocks of `long`s in array
+        - |
+          // Create, fill and print array
+          DynamicArray_long *dynarr;
+          new(&dynarr, 6, ((long[]){13l, 21l, 5l, 8l, 2l, 3l}));
+          printf("Before swap:\n");
+          print(dynarr);
+          \\n
+          // Swap elements and print array again
+          if (!swap(dynarr, 1, 4, 2))
+              printf("Oh, snap.. Not again!");
+          printf("\nAfter swap:\n");
+          print(dynarr);
+          \\n
+          // Destroy array and its content
+          del(dynarr);
+
+      - - OUTPUT
+        - |
+          \\OFF
+          Before swap:
+          DynamicArray_long
+          {
+              [0] 13
+              [1] 21
+              [2] 5
+              [3] 8
+              [4] 2
+              [5] 3
+          }
+          \\n
+          After swap:
+          DynamicArray_long
+          {
+              [0] 2
+              [1] 3
+              [2] 5
+              [3] 8
+              [4] 13
+              [5] 21
+          }
+
+  # HP: 5:20:00
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # - func: <name of function>
+  #
+  #   # Optional -- if variants exists to this function
+  #   vargs:
+  #     # Variant: 1 argument
+  #     - - - <type of argument>
+  #         - <name of argument>
+  #     # Variant: 2 arguments
+  #     - - - <type of argument>
+  #         - <name of argument>
+  #       - - <type of argument>
+  #         - <name of argument>
+  #
+  #   # 2 arguments
+  #   args:
+  #     - - <type of argument>
+  #       - <name of argument>
+  #     - - <type of argument>
+  #       - <name of argument>
+  #
+  #   return:
+  #     - - <type of return value>
+  #       - <note on type of return value>
+  #     - - <posibble return value>
+  #       - <note on possible return value>
+  #
+  #   info: <summary on function>
+  #
+  #   exceptions:
+  #     - - <text of exception>
+  #       - <info on exception>
+  #     - - <text of exception>
+  #       - <info on exception>
+  #
+  #   example:
+  #     - - <note on example>
+  #       - <code of example>
+  #     - - <note on example>
+  #       - <code of example>
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # - func: <name of function>
+  #
+  #   # Optional -- if variants exists to this function
+  #   vargs:
+  #     # Variant: 1 argument
+  #     - - - <type of argument>
+  #         - <name of argument>
+  #     # Variant: 2 arguments
+  #     - - - <type of argument>
+  #         - <name of argument>
+  #       - - <type of argument>
+  #         - <name of argument>
+  #
+  #   # 2 arguments
+  #   args:
+  #     - - <type of argument>
+  #       - <name of argument>
+  #     - - <type of argument>
+  #       - <name of argument>
+  #
+  #   return:
+  #     - - <type of return value>
+  #       - <note on type of return value>
+  #     - - <posibble return value>
+  #       - <note on possible return value>
+  #
+  #   info: <summary on function>
+  #
+  #   exceptions:
+  #     - - <text of exception>
+  #       - <info on exception>
+  #     - - <text of exception>
+  #       - <info on exception>
+  #
+  #   example:
+  #     - - <note on example>
+  #       - <code of example>
+  #     - - <note on example>
+  #       - <code of example>
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # - func: <name of function>
+
+  #   # Optional -- if variants exists to this function
+  #   vargs:
+  #     # Variant: 1 argument
+  #     - - - <type of argument>
+  #         - <name of argument>
+  #     # Variant: 2 arguments
+  #     - - - <type of argument>
+  #         - <name of argument>
+  #       - - <type of argument>
+  #         - <name of argument>
+
+  #   # 2 arguments
+  #   args:
+  #     - - <type of argument>
+  #       - <name of argument>
+  #     - - <type of argument>
+  #       - <name of argument>
+
+  #   return:
+  #     - - <type of return value>
+  #       - <note on type of return value>
+  #     - - <posibble return value>
+  #       - <note on possible return value>
+
+  #   info: <summary on function>
+
+  #   exceptions:
+  #     - - <text of exception>
+  #       - <info on exception>
+  #     - - <text of exception>
+  #       - <info on exception>
+
+  #   example:
+  #     - - <note on example>
+  #       - <code of example>
+  #     - - <note on example>
+  #       - <code of example>

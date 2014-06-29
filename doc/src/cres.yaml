@@ -1,0 +1,23 @@
+## INFO ##
+## INFO ##
+
+#------------------------------------------------------------------------------#
+PAGE: CRES External Resources Packer
+
+#------------------------------------------------------------------------------#
+HEAD:
+  FILE: const/head.yaml
+
+#------------------------------------------------------------------------------#
+INFO:
+  FILE: const/wip.yaml
+
+#------------------------------------------------------------------------------#
+USER:
+  - - About
+    - name: Summary
+      info: >
+            Generate header files from external resources to compile them into
+            binary.
+            \\n\\n
+            *Coming soon...*

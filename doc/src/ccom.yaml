@@ -1,0 +1,23 @@
+## INFO ##
+## INFO ##
+
+#------------------------------------------------------------------------------#
+PAGE: CCOM Comment Scanner and List Generator
+
+#------------------------------------------------------------------------------#
+HEAD:
+  FILE: const/head.yaml
+
+#------------------------------------------------------------------------------#
+INFO:
+  FILE: const/wip.yaml
+
+#------------------------------------------------------------------------------#
+USER:
+  - - About
+    - name: Summary
+      info: >
+            Scans files for todo/note/bug/custom comments and generates a list
+            of them.
+            \\n\\n
+            *Coming soon...*
