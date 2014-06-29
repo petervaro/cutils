@@ -1,0 +1,334 @@
+<html><!-- www.cutils.org | Peter Varo | 2014 --><head><title>CDOC Documenting Tool</title><meta charset="utf-8"/><link href="css/cdoc.css" rel="stylesheet" type="text/css"/></head><body><div id="column1"><div id="generic"><img src="img/cutils.svg"/><br/><br/><h2><span>MODERN AND LIGHTWEIGHT C UTILITIES</span></h2><p><span>&mdash;</span></p><p><span>DESIGNED BY</span></p><p><span>PETER VARO &copy;2014</span></p><p><span>&mdash;</span></p><br/></div><div id="sidebar"><div><p class="label">Modules:</p></div><br/><a class="toc" href="index.html">CUTILS</a><a class="toc" href="c11.html">C11 Syntax Highlighter</a><a class="toc" href="carg.html">CARG Variadic Argument Macro</a><a class="toc" href="cbug.html">CBUG Debugging &amp; Logging</a><a class="toc" href="ccom.html">CCOM Comment Scanner and List Generator</a><a class="toc" href="cdar.html">CDAR Dynamic Array</a><a class="toc" href="cdep.html">CDEP Dependeny Graph</a><a class="toc" href="cdls.html">CDLS Double Linked List</a><a class="toc toc_current" href="#">CDOC Documenting Tool</a><a class="toc" href="clic.html">CLIC License Comment Generator</a><a class="toc" href="cpro.html">CPRO Profiling</a><a class="toc" href="cres.html">CRES External Resources Packer</a><a class="toc" href="csls.html">CSLS Single Linked List</a><a class="toc" href="cutt.html">CUTT Unit Testing Tools</a><br/><div><p class="label">Usage:</p><br/><a class="toc" href="#user_Command_Line">Command Line</a></div><br/><div><p class="label">Generic Keys:</p><br/><a class="toc" href="#user_PAGE__Table_of_Content">PAGE: Table of Content</a><a class="toc" href="#user_NAME__Custom_file_name">NAME: Custom file name</a><a class="toc" href="#user_INFO__brief__summary__about">INFO: brief, summary, about</a><a class="toc" href="#user_MENU__extra_control">MENU: extra control</a><a class="toc" href="#user_HEAD__branding__constants">HEAD: branding, constants</a><a class="toc" href="#user_FILE__include">FILE: include</a></div><br/><div><p class="label">Schemas:</p><br/><a class="toc" href="#user_USER__user_defined">USER: user defined</a><a class="toc" href="#user_TYPE__type_definitions">TYPE: type definitions</a><a class="toc" href="#user_FUNC__function_definitions">FUNC: function definitions</a></div><br/><div><p class="label">Special Syntax:</p><br/><a class="toc" href="#user___n">\\n</a><a class="toc" href="#user___OFF">\\OFF</a></div><br/><div><p class="label">Functions:</p><br/><a class="toc" href="#function_cdoc_document">cdoc.document()</a></div></div></div><div id="column2"><div id="content"><h1><span>CDOC | Documenting Tool</span></h1><br/><p><span>This tiny little utility called </span><code>cdoc</code><span> is very handy when one has
+to write documentations manually, which is sometimes the preferred
+way over generating it.
+</span></p><br/><p><span>It is very flexible as it is working on two basic Python data
+structures: dictionaries and lists. Therefore basically anything
+that can be parsed and tokenised into these structures can be used
+to feed to </span><code>cdoc</code><span> and create the documentation. So for example it
+can be XML, JSON or YAML too or any other custom markup languages,
+however when the script is not used as a module, by default it is
+looking for and will try to parse YAML files.
+</span></p><br/><p><span>Either way, the only thing that matters, is that it has a certain
+schema which is discribed in this document.
+</span></p><br/><p><span>The basic and default layout of the page looks like this:</span></p><br/><pre><code><span>+------+----------------+
+| HEAD |     INFO       |
++------+----------------+
+|      |                |
+| MENU |                |
+| USER |    USER &amp;      |
+| TYPE |  TYPE &amp; FUNC   |
+| FUNC |                |
+|      |                |
++------+----------------+
+</span><br/><span>
+HEAD : (html)   : logo, slogen, other constant stuff
+INFO : (html)   : introduction, explanations, summary, etc.
+MENU : (html)   : external links, dynamic stuffs
+USER : (schema) : user defined features, eg.: compiler flags
+TYPE : (schema) : type definitions, aliases, etc.
+FUNC : (schema) : function prototypes and macros
+</span></code></pre><br/><br/><div><h2 class="title">Usage</h2><div class="entity" id="user_Command_Line"><p class="name">Command Line</p><br/><p class="info"><span></span><code>cdoc</code><span> is a command line utility, which takes a single argument: the
+folder which includes all the files
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>note:</span></p><br/><pre class="info"><code class="snippet">$ python3 cdoc.py proj/doc/src proj/doc</code></pre><br/></div><div><h2 class="title">Generic Keys</h2><div class="entity" id="user_PAGE__Table_of_Content"><p class="name">PAGE: Table of Content</p><br/><p class="info"><span>The </span><code>PAGE</code><span> key in the root dictionary will be the name that appears in the side-bar's table of content section.
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>This can has only a single string:</span></p><br/><pre class="info"><code class="snippet">PAGE: Section in SideBar</code></pre><br/><div class="entity" id="user_NAME__Custom_file_name"><p class="name">NAME: Custom file name</p><br/><p class="info"><span>Since the TOC is generated by the sorted order of the files in the source directory, it is sometimes preferred to rename the output file to get a special purpose name, like </span><code>index.html</code><span>. Therefore a specail </span><code>NAME</code><span> key can be added to the root dictionary, which containes a single string, the preferred filename without extension. If </span><code>NAME</code><span> is not provided the source's file name will be used.
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>In this example, although the original file name is </span><code>_firstpage.yaml</code><span> the output will be named as </span><code>index.html</code><span>
+:</span></p><br/><pre class="info"><code class="snippet">NAME: index</code></pre><br/><div class="entity" id="user_INFO__brief__summary__about"><p class="name">INFO: brief, summary, about</p><br/><p class="info"><span>Generic HTML data, same as </span><code>HEAD</code><span></span></p><br/></div><div class="entity" id="user_MENU__extra_control"><p class="name">MENU: extra control</p><br/><p class="info"><span>Generic HTML data, same as </span><code>HEAD</code><span></span></p><br/></div><div class="entity" id="user_HEAD__branding__constants"><p class="name">HEAD: branding, constants</p><br/><p class="info"><span>There are two ways to use the HTML templates, which are the </span><code>HEAD</code><span>,
+the </span><code>INFO</code><span> and the </span><code>USER</code><span> keys in the root dictionary. One way, is
+to "import" an external HTML file, which is preferred when the
+markup is complex. The other way is to write the HTML with lists and
+dictionaries, which is recommended when the markup is simple and
+short, so the documentation won't have another external file
+dependency.
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>The following example implements how to import an external HTML file using YAML
+:</span></p><br/><pre class="info"><code class="snippet">INFO:
+  HTML: relative/path/to/my_file.html</code></pre><br/><p class="info note"><span>The other possibility is to use a special data structure to
+"emulate" and build HTML structure. All the tags are lists, and
+their first item is the tag-name. All the other items can be other
+child tags (other lists) or dictionaries, which are containing the
+attributes of the tag.
+</span><br/><span></span><br/><span>
+There is only one special attribute in the dictionary of a tag, it
+is called </span><code>string</code><span> which is basically the raw text between the
+opening and the closing tags.
+</span><br/><span></span><br/><span>
+The following example shows a basic markup implemented in YAML
+:</span></p><br/><pre class="info"><code class="snippet">INFO:
+  - - h1
+    - string: Sample Header Text
+  - - br
+  - - p
+    - id: text
+      class: foo bar
+      string: This is a sample text
+  - - pre
+    - class: programming_language
+    - - code
+      - string: |
+                And this is a nested tag, the code tag is inside the
+                \\n
+                pre tag. Also this is a multiline text in YAML.</code></pre><br/><p class="info note"><span>which will produce this HTML output:</span></p><br/><pre class="info"><code class="snippet">&lt;h1&gt;Sample Header Text&lt;/h1&gt;
+&lt;br /&gt;
+&lt;p id="text" class="foo bar"&gt;This is a sample text&lt;/p&gt;
+&lt;pre class="programming_language"&gt;
+  &lt;code&gt;And this is a nested tag, the code tag is inside the pre tag.
+Also this is a multiline text in YAML.&lt;/code&gt;
+&lt;/pre&gt;</code></pre><br/><div class="entity" id="user_FILE__include"><p class="name">FILE: include</p><br/><p class="info"><span></span><code>FILE</code><span> is a special keyword, which can be used anywhere in the
+markup file. It may contain only a single string which is a relative
+path to a file written in the given markup language. </span><code>FILE</code><span> will
+replace the dictionary containing this keyword with the parsed and
+tokenised objects from the file it was pointing at.
+</span><br/><span></span><br/><span>
+The dictionary </span><code>FILE</code><span> is in can also contain another dictionary
+under the </span><code>VARS</code><span> key. In </span><code>VARS</code><span> all keys have to be strings and
+these are the variable names, and their value pairs are the values
+they are representing. When the file described in </span><code>FILE</code><span> is read all
+variable names described in </span><code>VARS</code><span> will be replaced with their
+values.
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>This is a constant header file, placed in </span><code>const</code><span> folder and called </span><code>header.yaml</code><span>
+:</span></p><br/><pre class="info"><code class="snippet">- - h1
+  - string: LIBRARY
+- - p
+  - string: Best library ever!</code></pre><br/><p class="info note"><span>This is one of the files using this header file:</span></p><br/><pre class="info"><code class="snippet">HEAD:
+  FILE: const/header.yaml</code></pre><br/><p class="info note"><span>Another example is, when </span><code>section.yaml</code><span> in </span><code>const</code><span> folder looks something like this
+:</span></p><br/><pre class="info"><code class="snippet">- Section
+- name: Some Special Feature
+  info: This is a very special feature</code></pre><br/><p class="info note"><span>And it is used in the user-defined section with other page specific data already in the document
+:</span></p><br/><pre class="info"><code class="snippet">USER:
+  - FILE: const/section.yaml
+  - - Another Section
+    - name: A Very Specific Feature
+      info: You definitely need this</code></pre><br/><p class="info note"><span>A template called </span><code>var_section.yaml</code><span> in the </span><code>const</code><span> folder containing variables, which all start with the shortend </span><code>VAR_</code><span>, although one can use any special characters, such as </span><code>$</code><span> or any other tokens to make the variable name unique in the file
+:</span></p><br/><pre class="info"><code class="snippet">- VAR_head
+- name: VAR_name
+  info: VAR_info</code></pre><br/><p class="info note"><span>Importing the file and providing values to the variables
+:</span></p><br/><pre class="info"><code class="snippet">USER:
+  - FILE: const/var_section.yaml
+    VARS:
+      VAR_head: Section Header
+      VAR_name: Feature name
+      VAR_info: Information about this feature
+  - - Static Section
+    - name: This is already here
+      info: and won't be affected</code></pre><br/></div><div><h2 class="title">Schemas</h2><div class="entity" id="user_USER__user_defined"><p class="name">USER: user defined</p><br/><p class="info"><span>In some situations using the type and function schemas are not
+enough or maybe too strict, therefore one can use the so called
+user-defined schema. A special key called </span><code>USER</code><span> has to be defined,
+and then any number of "sections" can be added. Also a section can
+take any number of features.
+</span><br/><span></span><br/><span>
+This can be very useful, when one wants to document compiler flags,
+command line options, special use-cases, etc. (This exact page is
+using the user defined schema)
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>The user defined definitions schema template:</span></p><br/><pre class="info"><code class="snippet"># "USER" key is in the root dictionary
+USER:
+  - - &lt;section name&gt;
+    
+    - name: &lt;feature name&gt;
+      
+      info: &lt;feature brief&gt;
+      
+      # OPTIONAL:
+      example:
+        - - &lt;example note&gt;
+          - &lt;example code&gt;
+        
+        # ... any number of examples
+    
+    # ... any number of features
+  
+  # ... any number of sections</code></pre><br/><p class="info note"><span>An example implemented in YAML:</span></p><br/><pre class="info"><code class="snippet">USER:
+  - - Format Strings
+    
+    - name: integer
+      info: &gt;
+            string representation of `int` type,
+            format strings: `%d` or `%i`
+      example:
+        - - Used with `printf()`
+          - |
+            int i = 12, j = 9;
+            printf("%d and %i\n", i, j);
+    
+    - name: string
+      info: &gt;
+            string representation of `char *` type,
+            format string: `%s`
+      example:
+        - - Used with `fprintf()`
+          - |
+            const char *msg = "Something went wrong...";
+            fprintf(stderr, "ERROR: %s\n", msg);</code></pre><br/><div class="entity" id="user_TYPE__type_definitions"><p class="name">TYPE: type definitions</p><br/><p class="info"><span>The type schema is ideal to document typedefs, unions, enums or
+structs types.
+</span><code>original</code><span>: Optional -- if this is typedef alias or related to a basic type
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>The type definitions schema template:</span></p><br/><pre class="info"><code class="snippet"># "TYPE" key is in the root dictionary
+TYPE:
+  - type: &lt;type name&gt;
+    
+    # OPTIONAL:
+    original: &lt;type related to&gt;
+    
+    # OPTIONAL:
+    members:
+      - - &lt;member type&gt;
+        - &lt;member name&gt;
+      
+      # ... any number of members
+    
+    info: &lt;brief&gt;
+  
+  # ... any number of types</code></pre><br/><p class="info note"><span>An example implemented in YAML:</span></p><br/><pre class="info"><code class="snippet">TYPE:
+  - type: errno_t
+    original: int
+    info: |
+          Although `errno_t` is not part of the standard it is used
+          in several project to indicate error signals. Under the
+          hood it is a `typedef`'d `int`.
+  - type: uint8_t
+    original: unsigned char
+    info: |
+          Smallest unsigned integer type. Part of `stdint.h` (since
+          `C99`), it is a `typedef`'d `unsigend char`.</code></pre><br/><div class="entity" id="user_FUNC__function_definitions"><p class="name">FUNC: function definitions</p><br/><p class="info"><span>The function schema is designed to fit both function and
+function-like macro documentations. It even has a </span><code>vargs</code><span> key &mdash;
+which is optional &mdash; and can handle, if a macro calls different
+functions based on the number of arguments, or it is a </span><code>_Generic</code><span>
+macro, which will call different functions based on the type of the
+arguments. If </span><code>vargs</code><span> is provided, </span><code>args</code><span> will be skipped. If no
+</span><code>args</code><span> provided the function will take no arguments.
+</span><br/><span></span><br/><span>
+The </span><code>return</code><span> key's first list's first value is the return type, this
+is not optional, all other values are. This key can be used to
+list possible return values of a function, and add comments on each
+of the possible return values.
+</span><br/><span></span><br/><span>
+The </span><code>exceptions</code><span> key is useful to document if the function is using
+an excpetion handler system, such as </span><code>cexc</code><span> in </span><code>cutils</code><span> or simply
+printing warnings on the screen. Each message has a comment block
+too, to explain the possible errors it means.
+</span><br/><span></span><br/><span>
+But in some situations, the "Exceptions" name is not the best
+choice, therefore the </span><code>exceptions</code><span> key can be renamed, with the
+</span><code>NAME</code><span> keyword, as showed in the last example.
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>..:</span></p><br/><pre class="info"><code class="snippet">FUNC:
+  - func: &lt;function name&gt;
+    
+    # OPTIONAL:
+    vargs:
+      - - - &lt;argument type&gt;
+          - &lt;argument name&gt;
+        
+        # ... any number of arguments
+      
+      # ... any number of variants
+    
+    # OPTIONAL:
+    args:
+      - - &lt;type of argument&gt;
+        - &lt;name of argument&gt;
+      
+      # ... any number of arguments
+    
+    return:
+      - - &lt;type of return value&gt;
+        # OPTIONAL:
+        - &lt;note on type of return value&gt;
+      # OPTIONAL:
+      - - &lt;posibble return value&gt;
+        - &lt;note on possible return value&gt;
+      
+      # ... any number of possibilities
+    
+    info: &lt;brief&gt;
+    
+    # OPTIONAL:
+    exceptions:
+      - - &lt;exception text&gt;
+        - &lt;exception info&gt;
+      
+      # ... any number of exceptions
+    
+    # OPTIONAL:
+    example:
+      - - &lt;example note&gt;
+        - &lt;example code&gt;
+      
+      # ... any number of examples
+  
+  # ... any number of functions</code></pre><br/><p class="info note"><span>An example implemented in YAML:</span></p><br/><pre class="info"><code class="snippet">FUNC:
+  - func: memcpy
+    args:
+      - - void *
+        - destination
+      - - const void *
+        - source
+      - - size_t
+        - number
+    return:
+      - - void *
+    info: Copies `number` of characters from `source` to `destination`
+    example:
+      - - &gt;
+          Copy second and third values from `src` array of `float`s
+          to `dst` array of `float`s with `memcpy()`
+        - |
+          // Declare/Define variables
+          float src[] = {1.f, 2.f, 3.f};
+          #define SIZE 2
+          float dst[SIZE];
+          
+          // Copy values
+          memcpy(dst, src + 1, SIZE * sizeof(float));
+          
+          // Print values of src
+          for (size_t i=0; i&lt;SIZE; i++)
+              printf("dst[%zu] %.2f\n", i, dst[i]);</code></pre><br/><p class="info note"><span>Renaming </span><code>exceptions</code><span> key to something more meaningful:</span></p><br/><pre class="info"><code class="snippet">FUNC:
+  - func: myfunc
+    info: it will do things, and print warnings
+    exceptions:
+      NAME: warnings
+    warnings:
+      - - I warned you!
+        - This is a serious warning
+      - - Do I have to warn you again?
+        - It is time to take the warnings seriously</code></pre><br/></div><div><h2 class="title">Special Syntax</h2><div class="entity" id="user___n"><p class="name">\\n</p><br/><p class="info"><span>The </span><code>\\n</code><span> is a so-called "white-space-free" new-line character.
+Although everyone loves YAML for its readability &mdash; thanks to its
+white-space based indentation syntax &mdash; but sometimes this could be a
+a real disadvantage too. There are situation when one wants to
+indicate explicitly the presence of a new-line. For example, if
+the text-editor of one has the "remove trailing white spaces"
+feature turned on, it would be literally impossible to place a
+new-line into the multi-line text. That's why </span><code>cdoc</code><span> provides the
+</span><code>\\n</code><span>.
+</span><br/><span></span><br/><span>
+In a code-block it will be treated as a new-line in the string. In
+a normal paragraph a </span><code>&lt;br /&gt;</code><span> will be added.
+</span><br/><span></span><br/><span>
+It also has an escaped version, which is: </span><code>\\N</code><span>
+</span></p><br/></div><div class="entity" id="user___OFF"><p class="name">\\OFF</p><br/><p class="info"><span>By default </span><code>cdoc</code><span> is using a mini C parser to tokenise the code
+blocks, so they can be syntax highlighted with various CSS classes.
+As </span><code>cdoc</code><span> is designed specially for documenting C code, this is a
+nice feature, but sometimes one wants to use the code blocks to
+demonstrate the ouput of a program, or to write code in different
+languages. Therefore if </span><code>\\OFF</code><span> is used as the first token in a
+string literal which otherwise supposed to a be a C code block, the
+syntax highlighting (and the whole parsing) will be turned off and
+skipped.
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>Used in a single line code:</span></p><br/><pre class="info"><code class="snippet">code: \\OFFmap(lambda x: x**2, range(10))</code></pre><br/><p class="info note"><span>Used in multi-line code:</span></p><br/><pre class="info"><code class="snippet">code: |
+      \\OFF
+      def function(x, y):
+          print("x:", x, "y:", y)</code></pre><br/></div><div><h2 class="title">Functions</h2><div class="entity" id="function_cdoc_document"><p><span class="name">cdoc.document</span><span class="space_name_arg_paren"> </span><span class="arg_paren">(</span><span class="space_arg_comma_type"> </span><span class="arg_type">str</span><span class="space_arg_type_name"> </span><span class="arg_name">infolder</span><span class="space_arg_name_paren"> </span><span class="arg_comma">,</span><span class="space_arg_comma_type"> </span><span class="arg_type">str</span><span class="space_arg_type_name"> </span><span class="arg_name">outfolder</span><span class="space_arg_name_paren"> </span><span class="arg_comma">,</span><span class="space_arg_comma_type"> </span><span class="arg_type">callable</span><span class="space_arg_type_name"> </span><span class="arg_name">loader</span><span class="space_arg_name_paren"> </span><span class="arg_comma">,</span><span class="space_arg_comma_type"> </span><span class="arg_type">str</span><span class="space_arg_type_name"> </span><span class="arg_name">extension</span><span class="space_arg_name_paren"> </span><span class="arg_comma">,</span><span class="space_arg_comma_type"> </span><span class="arg_type">bool</span><span class="space_arg_type_name"> </span><span class="arg_name">generate_toc=None</span><span class="space_arg_name_paren"> </span><span class="arg_paren">)</span></p><br/><p class="info"><span>If a different markup language is preferred over YAML, one can use
+the </span><code>cdoc.document()</code><span> function, when using </span><code>cdoc</code><span> as a module
+instead of a command line tool. This function will produce the HTML
+outputs if it gets the proper input data.
+</span><br/><span></span><br/><span>
+The </span><code>generate_toc</code><span> has a default value </span><code>None</code><span>. If value passed to
+this parameter the default behavior is to generate table of content
+only if there are more than one documents available for converting.
+</span></p><br/><p class="info return"><span class="label">Return: </span><code class="return_case"><span>None</span></code></p><br/><p class="info label">Examples:</p><p class="info note"><span>Generate HTML documentation files into </span><code>doc</code><span> folder from the JSON files in </span><code>doc/src</code><span> folder
+:</span></p><br/><pre class="info"><code class="snippet">from json import load
+from cdoc import document
+
+# Create HTML pages and generate table of content if
+# there is more than one document will be created
+document(infolder='doc/src',
+         outfolder='doc',
+         extension='.json',
+         loader=load)</code></pre><br/></div></div></div></div></body></html>
