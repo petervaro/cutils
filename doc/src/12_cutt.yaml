@@ -1,0 +1,23 @@
+## INFO ##
+## INFO ##
+
+#------------------------------------------------------------------------------#
+PAGE: CUTT Unit Testing Tools
+NAME: cutt
+
+#------------------------------------------------------------------------------#
+HEAD:
+  FILE: const/head.yaml
+
+#------------------------------------------------------------------------------#
+INFO:
+  FILE: const/wip.yaml
+
+#------------------------------------------------------------------------------#
+USER:
+  - - About
+    - name: Summary
+      info: >
+            A single header-only unit testing system as minimal as possible.
+            \\n\\n
+            *Coming soon...*

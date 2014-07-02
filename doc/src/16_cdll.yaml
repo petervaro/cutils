@@ -2,7 +2,8 @@
 ## INFO ##
 
 #------------------------------------------------------------------------------#
-PAGE: CLIC License Comment Generator
+PAGE: CDLL Double Linked List
+NAME: cdll
 
 #------------------------------------------------------------------------------#
 HEAD:
@@ -17,7 +18,8 @@ USER:
   - - About
     - name: Summary
       info: >
-            Generates document header-comments to files implement a special
-            comment mark.
+            Implementation of a double linked list object type and its methods.
             \\n\\n
             *Coming soon...*
+
+# TODO: Implement cdll: Double Linked List

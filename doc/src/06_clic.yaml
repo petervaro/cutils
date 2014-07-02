@@ -1,0 +1,31 @@
+## INFO ##
+## INFO ##
+
+#------------------------------------------------------------------------------#
+PAGE: CLIC License Comment Generator
+NAME: clic
+
+#------------------------------------------------------------------------------#
+HEAD:
+  FILE: const/head.yaml
+
+#------------------------------------------------------------------------------#
+INFO:
+  FILE: const/wip.yaml
+
+#------------------------------------------------------------------------------#
+USER:
+  - - About
+    - name: Summary
+      info: >
+            Generates document header-comments to files implement a special
+            comment mark.
+            \\n\\n
+            *Coming soon...*
+    - name: TODO
+      info: C multiline comment based INFO
+      examples:
+        - - Use the symbol after `INFO`
+          - |
+            /* INFO **
+            ** INFO */

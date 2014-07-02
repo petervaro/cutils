@@ -1,46 +1,258 @@
+#------------------------------------------------------------------------------#
+NOTE:
+  - POSTS: 1
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: doc/src/00_cutils.yaml
+    line: 4
+    note: |
+          https://www.youtube.com/playlist?list=PLhoQnW-6zPr8UhlY31AbHE6E5bAcNcT4d
 
-- finish cdar
-    - rename types
-    - update cdar.py with macros
-    - search for TODOs
-    - add #ifdef NAMESPACE new -> cutils_new
+#------------------------------------------------------------------------------#
+TODO:
+  - POSTS: 28
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cbug.h
+    line: 7
+    note: |
+          sdebug() -> expands to string literal or
+          debugexc(func, msg, len) -> calls raise() or ccraise() 
 
-- finish cdar documentation
-    - internal/external link syntax
-    - support formatted TODO import
-    - add `members` support in TYPE
-    - add FOOT key
-    - collect 'reserved' names
-    - REGEX: fix func5 <- number should not be matched
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdoc.py
+    line: 43
+    note: |
+          REGEX fix func5 <- number should not be matched
 
-- create cstr.h
-    - dynamic null-terminated char array (char *)
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdoc.py
+    line: 460
+    note: |
+          support formatted TODO import
 
-- add String to cdar
-    - DynamicArray_String: String
-    - DynamicArray_string: char *
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdoc.py
+    line: 520
+    note: |
+          add `members` support in TYPE
 
-- add DynamicArray to cdar
-    - DynamicArray_DynamicArray: nested arrays
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdoc.py
+    line: 600
+    note: |
+          add FOOT key
 
-- format(string)
-    - format("%s %%s", "hello") -> "hello %s"
-    - probably this should be implemented for String (pop)
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdoc.py
+    line: 674
+    note: |
+          collect 'reserved' names
 
-- cbug
-  - sdebug() -> expands to string literal or
-    debugexc(func, msg, len) -> calls raise() or ccraise()
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cexc.h
+    line: 124
+    note: |
+          OPTION 1: catch returns 1 if error, else 0, CON: if func removed by macro?
+          OPTION 2: use ccatch for that? (the callback does what the
+                    `if (catch())` would have done)
 
-- SingleLinkedList
-- DoubleLinkedList
-- HashTable
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cfps.h
+    line: 9
+    note: |
+          At the moment in a single scope only the first appearence of
+          these functions will work. NOTE: If you want to use both printfps
+          and getfps at the same time, use the getfps function only, and pass
+          a getter function which can also implement the printing functionality
 
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cref.c
+    line: 339
+    note: |
+          %ju and %lf
 
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdar/darv.c
+    line: 38
+    note: |
+          rename types 
 
-- - -
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdar/darv.c
+    line: 39
+    note: |
+          update cdar.py with macros 
 
-Stages of implementation:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdar/darv.c
+    line: 40
+    note: |
+          add #ifdef NAMESPACE new -> cutils_new 
 
-    1. HACKED     -- no matter how, just make it work
-    2. PRETTIFIED -- clean up, make it idiomatic
-    3. OPTIMISED  -- profile it and optimise if necessary
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdar/darv.c
+    line: 42
+    note: |
+          add String to cdar
+          DynamicArray_String: String
+          DynamicArray_string: char * 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdar/darv.c
+    line: 46
+    note: |
+          add DynamicArray to cdar
+          DynamicArray_DynamicArray: nested arrays 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdar/darv.c
+    line: 49
+    note: |
+          implement: reverses count number of sub data starts at index
+          void
+          darv_reversesub(DynamicArray *dynarr,
+                          size_t index,
+                          size_t count) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdar/darv.c
+    line: 55
+    note: |
+          consider if an iterator method is necessary or not
+          IterObject
+          iter(DynamicArray *dynarr,
+               size_t index);
+          void *
+          next(IterObject *iterator); 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdar/darv.c
+    line: 62
+    note: |
+          Implement `copy`
+          #define copy(dar_ptr_src, dar_ptr_dst)
+              do {
+                  if (dar_ptr_dst) del(dar_ptr_src);
+                  new(dar_ptr_dst, len(dar_ptr_src), raw(dar_ptr_src));
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdar/darv.c
+    line: 69
+    note: |
+          Implement `swapto`
+          #define swapto(dar_ptr_src, dar_ptr_dst, index_src, index_dst, count) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdar/darv.c
+    line: 72
+    note: |
+          Implement `appendto`
+          #define appendto(dar_ptr_dst, dar_ptr_src)
+              do {
+                  if (!dar_ptr_src) break;
+                  append(dar_ptr_dst, len(dar_ptr_src), raw(dar_ptr_src));
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdar/darv.c
+    line: 80
+    note: |
+          Implement `insertto`
+          #define insertto(dar_ptr_dst, index, dar_ptr_src)
+              do {
+                  if (!dar_ptr_src) break;
+                  insert(dar_ptr_dst, index, len(dar_ptr_src), raw(dar_ptr_src));
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdar/darv.c
+    line: 87
+    note: |
+          Implement `setto`
+          #define setto(dar_ptr_dst, index, dar_ptr_dst)
+              do {
+                  if (!dar_ptr_dst) break;
+                  set(dar_ptr_dst, index, len(dar_ptr_dst), raw(dar_ptr_dst));
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdar/darv.c
+    line: 94
+    note: |
+          Implement `popto`
+          #define popto(dar_ptr_dst, index, count, dar_ptr_src)
+              do {
+                  void *temp = malloc((size(dar_ptr_dst) / len(dar_ptr_dst)) * count);
+                  if (!temp) break;
+                  pop(dar_ptr_src, index, count, temp);
+                  append(dar_ptr_dst, count, temp);
+                  free(temp);
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdar/darv.h
+    line: 8
+    note: |
+          universal functions for all cutils data structures:
+          new()
+          del()
+          data() -> alldata
+          raw() -> data
+          len()
+          size()
+          clear()
+          scale() -> resize
+          swap()
+          reverse()
+          add() -> append
+          push() -> insert
+          rem() -> remove
+          pop()
+          trunc() -> truncate
+          set() -> replace
+          get()
+          sub()
+          swapsub()
+          reversesub()
+          find()
+          findall()
+          sort()
+          print() -> printf
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdar/darv.h
+    line: 34
+    note: |
+          copy() => new(&darf2, len(darf1), raw(darf1));
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: cdar/darv.h
+    line: 36
+    note: |
+          #define at(dar_ptr, index, data_ptr) get(dar_ptr, index, 1, data_ptr)
+          #define pop(dar_ptr, data_ptr) pull(dar_ptr, len(dar_ptr) - 1, 1, data_ptr)
+          #define append(dar_ptr, data_ptr) push(data_ptr, len(dar_ptr) - 1, 1, data_ptr) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: doc/src/14_cstr.yaml
+    line: 29
+    note: |
+          Implement cstr: dynamic null-terminated char array (char *)
+          format(string)
+          format("%s %%s", "hello") -> "hello %s"
+          probably this should be implemented for String (pop)
+          concat(string1, string2) -- is this necessary?
+          rethink all string methods!
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: doc/src/15_csll.yaml
+    line: 25
+    note: |
+          implement csll: Single Linked List
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - file: doc/src/17_cmap.yaml
+    line: 28
+    note: |
+          Implement cmap: Hash Map
+

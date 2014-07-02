@@ -1,0 +1,34 @@
+## INFO ##
+## INFO ##
+
+#------------------------------------------------------------------------------#
+PAGE: CSTR Strings
+NAME: cstr
+
+#------------------------------------------------------------------------------#
+HEAD:
+  FILE: const/head.yaml
+
+#------------------------------------------------------------------------------#
+INFO:
+  FILE: const/wip.yaml
+
+#------------------------------------------------------------------------------#
+USER:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/cdar.yaml
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - - About
+    - name: Summary
+      info: >
+            Safe string "object" implementation as an extended `DynamicArray` of
+            `char`s and some extra functionality added.
+            \\n\\n
+            *Coming soon...*
+
+# TODO: Implement cstr: dynamic null-terminated char array (char *)
+#       format(string)
+#       format("%s %%s", "hello") -> "hello %s"
+#       probably this should be implemented for String (pop)
+#       concat(string1, string2) -- is this necessary?
+#       rethink all string methods!

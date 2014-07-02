@@ -3,6 +3,7 @@
 
 #------------------------------------------------------------------------------#
 PAGE: CDOC Documenting Tool
+NAME: cdoc
 
 #------------------------------------------------------------------------------#
 HEAD:
@@ -59,10 +60,10 @@ INFO:
                 TYPE : (schema) : type definitions, aliases, etc.
                 FUNC : (schema) : function prototypes and macros
 
-  - - br
-
 #------------------------------------------------------------------------------#
 USER:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/python.yaml
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - usage
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
@@ -70,7 +71,7 @@ USER:
       info: |
             `cdoc` is a command line utility, which takes a single argument: the
             folder which includes all the files
-      example:
+      examples:
         - - note
           - \\OFF$ python3 cdoc.py proj/doc/src proj/doc
 
@@ -81,7 +82,7 @@ USER:
       info: >
             The `PAGE` key in the root dictionary will be the name that appears
             in the side-bar's table of content section.
-      example:
+      examples:
         - - This can has only a single string
           - |
             \\OFF
@@ -96,7 +97,7 @@ USER:
             a specail `NAME` key can be added to the root dictionary, which
             containes a single string, the preferred filename without extension.
             If `NAME` is not provided the source's file name will be used.
-      example:
+      examples:
         - - >
             In this example, although the original file name is
             `_firstpage.yaml` the output will be named as `index.html`
@@ -123,7 +124,7 @@ USER:
             short, so the documentation won't have another external file
             dependency.
 
-      example:
+      examples:
         - - >
             The following example implements how to import an external HTML file
             using YAML
@@ -188,7 +189,7 @@ USER:
             they are representing. When the file described in `FILE` is read all
             variable names described in `VARS` will be replaced with their
             values.
-      example:
+      examples:
         - - >
             This is a constant header file, placed in `const` folder and called
             `header.yaml`
@@ -263,8 +264,12 @@ USER:
             This can be very useful, when one wants to document compiler flags,
             command line options, special use-cases, etc. (This exact page is
             using the user defined schema)
+            \\n\\n
+            But in some situations, the "Examples" name is not the best choice
+            to use, therefore the `examples` key can be renamed, with the `CALL`
+            keyword, as showed in the last example.
 
-      example:
+      examples:
         - - The user defined definitions schema template
           - |
             \\OFF
@@ -277,7 +282,7 @@ USER:
                   info: <feature brief>
                   \\n
                   # OPTIONAL:
-                  example:
+                  examples:
                     - - <example note>
                       - <example code>
                     \\n
@@ -297,7 +302,7 @@ USER:
                   info: >
                         string representation of `int` type,
                         format strings: `%d` or `%i`
-                  example:
+                  examples:
                     - - Used with `printf()`
                       - |
                         int i = 12, j = 9;
@@ -307,11 +312,24 @@ USER:
                   info: >
                         string representation of `char *` type,
                         format string: `%s`
-                  example:
+                  examples:
                     - - Used with `fprintf()`
                       - |
                         const char *msg = "Something went wrong...";
                         fprintf(stderr, "ERROR: %s\n", msg);
+
+        - - Renaming "Examples" to "Notes"
+          - |
+            \\OFF
+            USER:
+              - - Stuff
+                - name: black magic
+                  info: This is something very unusual
+                  examples:
+                    CALL: notes
+                  notes:
+                    - - This is pure magic, use it well
+                      - Abracadabra();
 
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
     - name: 'TYPE: type definitions'
@@ -319,7 +337,7 @@ USER:
             The type schema is ideal to document typedefs, unions, enums or
             structs types.
             `original`: Optional -- if this is typedef alias or related to a basic type
-      example:
+      examples:
         - - The type definitions schema template
           - |
             \\OFF
@@ -378,10 +396,11 @@ USER:
             printing warnings on the screen. Each message has a comment block
             too, to explain the possible errors it means.
             \\n\\n
-            But in some situations, the "Exceptions" name is not the best
-            choice, therefore the `exceptions` key can be renamed, with the
-            `NAME` keyword, as showed in the last example.
-      example:
+            But in some situations, the "Exceptions" and the "Examples" names
+            are not the best choice to use, therefore the `exceptions` key
+            and the `examples` key can be renamed, with the `CALL` keyword, as
+            showed in the last example.
+      examples:
         - - ..
           - |
             \\OFF
@@ -392,6 +411,8 @@ USER:
                 vargs:
                   - - - <argument type>
                       - <argument name>
+                      # OPTIONAL
+                      - <argument rest>
                     \\n
                     # ... any number of arguments
                   \\n
@@ -404,9 +425,9 @@ USER:
                   \\n
                   # ... any number of arguments
                 \\n
+                # OPTIONAL: if none provided -> void
                 return:
                   - - <type of return value>
-                    # OPTIONAL:
                     - <note on type of return value>
                   # OPTIONAL:
                   - - <posibble return value>
@@ -424,7 +445,7 @@ USER:
                   # ... any number of exceptions
                 \\n
                 # OPTIONAL:
-                example:
+                examples:
                   - - <example note>
                     - <example code>
                   \\n
@@ -447,7 +468,7 @@ USER:
                 return:
                   - - void *
                 info: Copies `number` of characters from `source` to `destination`
-                example:
+                examples:
                   - - >
                       Copy second and third values from `src` array of `float`s
                       to `dst` array of `float`s with `memcpy()`
@@ -464,6 +485,21 @@ USER:
                       for (size_t i=0; i<SIZE; i++)
                           printf("dst[%zu] %.2f\n", i, dst[i]);
 
+        - - An example of function pointer argument and an array argument
+          - |
+            \\OFF
+            FUNC:
+              - func: set_callback
+                args:
+                  - - void*(*
+                    - function
+                    - )(char*, size_t)
+                  - - size_t
+                    - array
+                    - []
+                info: Set callback function and do something with the array
+
+
         - - Renaming `exceptions` key to something more meaningful
           - |
             \\OFF
@@ -471,7 +507,7 @@ USER:
               - func: myfunc
                 info: it will do things, and print warnings
                 exceptions:
-                  NAME: warnings
+                  CALL: warnings
                 warnings:
                   - - I warned you!
                     - This is a serious warning
@@ -480,6 +516,41 @@ USER:
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - special syntax
+    #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+    - name: markdown
+      info: |
+            `cdoc` supports a small subset of the markdown language in any
+            non-code block string. Here is the supported syntax:
+            \\n\\n
+            ``code`` : `monospace expression`\\n
+            `*italic*` : *italic text*\\n
+            `**bold**` : **bold text**\\n
+            `***bold+italic***` : ***bold and italic***\\n
+            `[link](address)` : [link](#user_markdown)\\n
+            `![alt text](img/cutils.svg 'cutils logo')` :\\n\\n
+            ![alt text](img/cutils.svg 'cutils logo')
+            \\n\\n
+            ***Note:*** *With the link-syntax one can easily create inline anchor
+            references. There are only 3 special types available, `USER`, `FUNC`
+            and `TYPE`, the references to these sections are generated
+            auromatically, with replacing every non-word character to `_`
+            (underscore) and added a `user_`, `func_` or `type_` respectively to
+            the name of the secion*
+      examples:
+        - - >
+            In the next example a function called `hello world` is created and
+            the description of a macro variable called `FLAG` is pointing back
+            to the description of this function
+          - |
+            \\OFF
+            FUNC:
+              - func: hello world
+                info: hello world function
+            USER:
+              - - Features
+                - name: FLAG
+                  info: Change behavior of [hello world()](#func_hello_world)
+
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
     - name: \\n
       info: |
@@ -510,14 +581,20 @@ USER:
             string literal which otherwise supposed to a be a C code block, the
             syntax highlighting (and the whole parsing) will be turned off and
             skipped.
-      example:
+      examples:
         - - Used in a single line code
-          - '\\OFFcode: \\OFFmap(lambda x: x**2, range(10))'
+          - |
+            \\OFF
+            examples:
+              - - Python functional approach
+                - \\OFFmap(lambda x: x**2, range(10))
 
         - - Used in multi-line code
           - |
             \\OFF
-            code: |
+            examples:
+              - - Python function definition
+                - |
                   \\OFF
                   def function(x, y):
                       print("x:", x, "y:", y)
@@ -549,7 +626,7 @@ FUNC:
             this parameter the default behavior is to generate table of content
             only if there are more than one documents available for converting.
 
-      example:
+      examples:
         - - >
             Generate HTML documentation files into `doc` folder from the
             JSON files in `doc/src` folder

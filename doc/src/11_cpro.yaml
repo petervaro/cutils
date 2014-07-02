@@ -3,6 +3,7 @@
 
 #------------------------------------------------------------------------------#
 PAGE: CPRO Profiling
+NAME: cpro
 
 #------------------------------------------------------------------------------#
 HEAD:
@@ -22,6 +23,7 @@ INFO:
 
 #------------------------------------------------------------------------------#
 USER:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - FILE: const/name.yaml
     VARS:
       VAR_head: cpro
@@ -36,8 +38,9 @@ FUNC:
         - cycles
       - - double
         - time
-      - - (*)()
+      - - type(*
         - function
+        - )()
       - - ''
         - ...
 
@@ -47,7 +50,7 @@ FUNC:
           the average time to `time`. If the `function` takes arguments, it can
           also be provided after the `function` argument.
 
-    example:
+    examples:
       - - ...
         - |
           #include <stdio.h>        /* printf() */

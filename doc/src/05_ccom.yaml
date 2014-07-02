@@ -2,7 +2,8 @@
 ## INFO ##
 
 #------------------------------------------------------------------------------#
-PAGE: CRES External Resources Packer
+PAGE: CCOM Comment Scanner and List Generator
+NAME: ccom
 
 #------------------------------------------------------------------------------#
 HEAD:
@@ -14,10 +15,13 @@ INFO:
 
 #------------------------------------------------------------------------------#
 USER:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/python.yaml
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - About
     - name: Summary
       info: >
-            Generate header files from external resources to compile them into
-            binary.
+            Scans files for todo/note/bug/custom comments and generates a list
+            of them.
             \\n\\n
             *Coming soon...*

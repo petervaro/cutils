@@ -2,7 +2,8 @@
 ## INFO ##
 
 #------------------------------------------------------------------------------#
-PAGE: CDEP Dependeny Graph
+PAGE: CCOL Color Helper
+NAME: ccol
 
 #------------------------------------------------------------------------------#
 HEAD:
@@ -17,7 +18,7 @@ USER:
   - - About
     - name: Summary
       info: >
-            Dependency generator (similar to `make depend`, but much more
-            sophisticated)
+            A single header-only set of color related tools: base type aliases,
+            conversion and mixing functions, name constants and IO.
             \\n\\n
             *Coming soon...*

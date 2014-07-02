@@ -2,7 +2,8 @@
 ## INFO ##
 
 #------------------------------------------------------------------------------#
-PAGE: CUTT Unit Testing Tools
+PAGE: CDEP Dependeny Graph
+NAME: cdep
 
 #------------------------------------------------------------------------------#
 HEAD:
@@ -14,9 +15,13 @@ INFO:
 
 #------------------------------------------------------------------------------#
 USER:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/python.yaml
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - About
     - name: Summary
       info: >
-            A single header-only unit testing system as minimal as possible.
+            Dependency generator (similar to `make depend`, but much more
+            sophisticated)
             \\n\\n
             *Coming soon...*

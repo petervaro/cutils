@@ -2,7 +2,8 @@
 ## INFO ##
 
 #------------------------------------------------------------------------------#
-PAGE: CDLS Double Linked List
+PAGE: CSLL Single Linked List
+NAME: csll
 
 #------------------------------------------------------------------------------#
 HEAD:
@@ -17,6 +18,8 @@ USER:
   - - About
     - name: Summary
       info: >
-            Implementation of a double linked list object type and its methods.
+            Implementation of a single linked list object type and its methods.
             \\n\\n
             *Coming soon...*
+
+# TODO: implement csll: Single Linked List

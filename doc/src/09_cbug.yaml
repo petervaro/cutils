@@ -3,6 +3,7 @@
 
 #------------------------------------------------------------------------------#
 PAGE: 'CBUG Debugging & Logging'
+NAME: cbug
 
 #------------------------------------------------------------------------------#
 HEAD:
@@ -26,6 +27,21 @@ USER:
     VARS:
       VAR_head: cbug
       VAR_func: debug
+  - - Flags
+    - name: CBUG_OFF
+      info: |
+            The `debug` macro can be turned off by defining an empty `CBUG_OFF`
+            macro variable before the include macro statement or by compiling
+            the the code with a `-DCBUG_OFF` flag. If this variable is defined
+            all the apperences of the `debug` macro will be removed from the
+            source file.
+      examples:
+        - - Defining variable before inclusion
+          - |
+            #define CBUG_OFF
+            #include <cutils/cbug.h>
+            #undef CBUG_OFF
+
 #------------------------------------------------------------------------------#
 FUNC:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
@@ -34,6 +50,8 @@ FUNC:
       - - - void
           - ''
       - - - char *
+          - message
+      - - - String
           - message
       - - - char *
           - format_string
@@ -96,3 +114,39 @@ FUNC:
               "I'm debugging..."
           008 File: 'main.c', line: 11, function: 'main'
               "Value of i is: 2"
+
+      - - >
+          Another great usecase of `debug` is to extend the functionality of the
+          [`cexc`](cexc.html) utility. While the handling mode is set to
+          logging, so the exceptions are printed out to `stderr` for example,
+          `debug` can print the exact file location. This can be seen in the
+          next example
+        - |
+          #include <stdio.h>        /* stderr */
+          #define CEXC_LOG
+          #include <cutils/cexc.h>  /* (start|stop)_exception_handling(), raise() */
+          #include <cutils/cbug.h>  /* debug() */
+          \\n
+          void func(void *ptr)
+          {
+              if (ptr != NULL)
+                  return;
+              debug();
+              #define MSG "Pointer is NULL"
+              raise(MSG, sizeof MSG);
+          }
+          \\n
+          int main(void)
+          {
+              start_exception_handling(stderr);
+              \\n
+              func(NULL);
+              \\n
+              stop_exception_handling();
+              return 0;
+          }
+      - - OUTPUT
+        - |
+          \\OFF
+          000 File: 'main.c', line: 10, function: 'func'
+          EXCEPTION: Pointer is NULL

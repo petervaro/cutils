@@ -1,0 +1,101 @@
+## INFO ##
+## INFO ##
+
+#------------------------------------------------------------------------------#
+PAGE: CFPS Frame Per Second
+NAME: cfps
+
+#------------------------------------------------------------------------------#
+HEAD:
+  FILE: const/head.yaml
+
+#------------------------------------------------------------------------------#
+INFO:
+  - - h1
+    - string: 'CFPS | Frame Per Second'
+  - - br
+  - - p
+    - string: |
+              A single header-only frame per second counter. It implements two
+              inline functions.
+
+#------------------------------------------------------------------------------#
+USER:
+  - FILE: const/name.yaml
+    VARS:
+      VAR_head: cfps
+      VAR_func: printfps
+  - - About
+    - name: Summary
+      info: >
+            A single header-only unit testing system as minimal as possible.
+            \\n\\n
+            *Coming soon...*
+
+#------------------------------------------------------------------------------#
+FUNC:
+  - func: printfps
+    args:
+      - - double(*
+        - timer_func
+        - )(void)
+    info: |
+          It requires a timer function `timer_func` as it's only argument
+          which returns a double value. It prints the frame per second value
+          to the standard output stream
+    examples:
+      - - ...
+        - ...
+
+  - func: getfps
+    args:
+      - - double(*
+        - timer_func
+        - )(void)
+      - - void(*
+        - handler_func
+        - )(int,void*)
+      - - void *
+        - data
+    info: |
+          It is a more general purpose fps function. It also requires a timer
+          function which returns a double value, but it also requires a handler
+          function, which will be called on every second; and a pointer to any
+          kind of data, which will be passed to the handler function, to deal
+          with it.
+    examples:
+      - - >
+          The next example shows how to use `getfps` with GLFW to set the title
+          of the window to show the actual frame per second value
+        - |
+          #include <stdio.h>        /* snprintf() */
+          #include <GLFW/glfw3.h>   /* glfw...(), GLFW... */
+          #include <cutils/cfps.h>  /* getfps() */
+          \\n
+          static void fps_title_setter(int fps, void *data)
+          {
+              void **array = (void **)data;
+              char *buffer = (char *)(array[1]);
+              snprintf(buffer, *((int *)(array[2])), "[FPS: %d]", fps);
+              glfwSetWindowTitle((GLFWwindow *)(array[0]), buffer);
+          }
+          \\n
+          /* ... GLFW setup */
+          \\n
+          void run(GLFWwindow *window)
+          {
+              char fps_title_txt[10];
+              int  fps_title_len = 10;
+              void *data[] = {window, fps_title_txt, &fps_title_len};
+              \\n
+              glfwSwapInterval(0)
+              while (!glfwWindowShouldClose(window))
+              {
+                  /* ... Draw something */
+                  \\n
+                  glfwSwapBuffers(window)
+                  glfwPollEvents();
+                  \\n
+                  getfps(glfwGetTime, fps_title_setter, &data);
+              }
+          }

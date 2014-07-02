@@ -2,24 +2,12 @@
 // INFO //
 // INFO //
 
-#ifndef _C_EXCEPTIONS_H_
-#define _C_EXCEPTIONS_H_
+#ifndef _C_EXCEPTIONS_H_5362957038900146_
+#define _C_EXCEPTIONS_H_5362957038900146_
 
 #include <stdio.h>   // size_t, fprintf(), stderr
 #include <stdlib.h>  // malloc(), realloc(), free()
 #include <string.h>  // strncpy()
-
-/*
-MACRO FLAGS:
-
-    CEXC_OFF:
-        If defined all the exception handler functions will be removed.
-
-    CEXC_LOG:
-        If defined all the catch() functions will be removed and the exception
-        will be written by the raise() functions directly to the file pointer
-        specified at the call of the start_exception_handling()
-*/
 
 #ifdef CEXC_OFF
   #define start_exception_handling(out)
@@ -150,7 +138,7 @@ catch(void)
     strncpy(__CEXC_Exception_Handler__->buffer, CEXC_NO_ERR, CEXC_MSG_LEN);
     __CEXC_Exception_Handler__->error = 0;
 }
-#endif // CEXC_LOG
+#endif /* CEXC_LOG */
 
 
 /*----------------------------------------------------------------------------*/
@@ -190,13 +178,16 @@ raise(const char *message,
 }
 
 /*----------------------------------------------------------------------------*/
+#ifdef CEXC_LOG
+  #define ccatch()
+#else
 static inline void
 ccatch(void)
 {
     catch();
     __CEXC_Exception_Handler__->catchcb(__CEXC_Exception_Handler__->custom);
 }
-
+#endif /* CEXC_LOG */
 
 /*----------------------------------------------------------------------------*/
 static inline void
@@ -212,4 +203,4 @@ craise(const char *message,
   #undef CEXC_NO_ERR
   #undef CEXC_ALLOC_ERR
 #endif // CEXC_OFF
-#endif // _C_EXCEPTIONS_H_
+#endif /* _C_EXCEPTIONS_H_5362957038900146_ */

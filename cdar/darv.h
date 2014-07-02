@@ -1,34 +1,9 @@
 
-#ifndef _DYNAMIC_ARRAY_VOID_POINTER_H_
-#define _DYNAMIC_ARRAY_VOID_POINTER_H_
+#ifndef _DYNAMIC_ARRAY_VOID_POINTER_H_0841908130052218_
+#define _DYNAMIC_ARRAY_VOID_POINTER_H_0841908130052218_
 
-#include <stdio.h>    // size_t, printf()
-#include <stdbool.h>  // bool
-
-/*
- * Usage:
- * ======
- *
- * Define an empty integer DynamicArray:
- *      DynamicArray *dar = dar_init(0, sizeof(int), NULL);
- *
- * Define integer DynamicArray:
- *      DynamicArray *dar = dar_init(4, sizeof(int), (int[]){0, 1, 2, 3});
- *
- * Append integer DynamicArray dar with values:
- *      dar_append(dar, 2, (int[]){4, 5})
- *
- * Get the actual array data from an integer DynamicArray:
- *      int *data = (int *)dar_data(dar);
- *
- * Get the actual data and other informations from
- * an integer DynamicArray with a single call:
- *      size_t size, length;
- *      int *data = (int *)dar_alldata(dar, &size, &length);
- *
- * Get a pointer to the fourth item in an integer DynamicArray:
- *      int *item = (int *)dar_get(dar, 3);
- */
+#include <stdio.h>    /* size_t, printf() */
+#include <stdbool.h>  /* bool */
 
 // TODO: universal functions for all cutils data structures:
 //       new()
@@ -55,15 +30,12 @@
 //       findall()
 //       sort()
 //       print() -> printf
-//
-// copy:
-//     new(&darf2, len(darf1), raw(darf1));
 
-/*
-#define at(dar_ptr, index, data_ptr) get(dar_ptr, index, 1, data_ptr)
-#define pop(dar_ptr, data_ptr) pull(dar_ptr, len(dar_ptr) - 1, 1, data_ptr)
-#define append(dar_ptr, data_ptr) push(data_ptr, len(dar_ptr) - 1, 1, data_ptr)
-*/
+// TODO: copy() => new(&darf2, len(darf1), raw(darf1));
+
+/* TODO: #define at(dar_ptr, index, data_ptr) get(dar_ptr, index, 1, data_ptr)
+         #define pop(dar_ptr, data_ptr) pull(dar_ptr, len(dar_ptr) - 1, 1, data_ptr)
+         #define append(dar_ptr, data_ptr) push(data_ptr, len(dar_ptr) - 1, 1, data_ptr) */
 
 
 /*----------------------------------------------------------------------------*/
@@ -309,4 +281,5 @@ dartg_new(DynamicArray **dar,
             callback(i, *(void **)(__dar_tmp_data__ + i));                     \
         printf("}\n");                                                         \
     } while (0)
-#endif
+
+#endif /* _DYNAMIC_ARRAY_VOID_POINTER_H_0841908130052218_ */

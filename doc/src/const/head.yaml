@@ -1,7 +1,6 @@
 - - img
   - src: img/cutils.svg
 - - br
-- - br
 - - h2
   - string: MODERN AND LIGHTWEIGHT C UTILITIES
 - - p

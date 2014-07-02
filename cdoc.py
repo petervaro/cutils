@@ -25,19 +25,25 @@ from sys import argv as sys_argv
 from yaml import load as yaml_load
 from bs4 import BeautifulSoup
 
+
 #------------------------------------------------------------------------------#
 # Module level constants
 SOUP = BeautifulSoup('<html><!-- www.cutils.org | Peter Varo | 2014 -->'
-                     '<head><title></title><meta charset="UTF-8">'
-                     '<link href="css/cdoc.css" rel="stylesheet" type='
-                     '"text/css"></head><body></body></html>', 'lxml')
+                     '<head><link rel="shortcut icon" href="http://www.'
+                     'cutils.org/favicon.ico" type="image/x-icon"><link rel'
+                     '="icon" href="http://www.cutils.org/favicon.ico" type'
+                     '="image/x-icon"><title></title><meta charset="UTF-8">'
+                     '<link href="css/cdoc.css" rel="stylesheet" type="text/'
+                     'css"></head><body></body></html>', 'lxml')
 
-# Token type in order
-TOKENS = ('comments', 'strings', 'macros', 'numbers', 'operators',
+# C tokens in order
+C_TOKENS = ('comments', 'strings', 'macros', 'numbers', 'operators',
           'constants', 'types', 'keywords', 'functions')
 
+# TODO: REGEX fix func5 <- number should not be matched
+
 # Mini C Syntax
-SYNTAX = re_compile(r"""
+C_SYNTAX = re_compile(r"""
 (?P<comments>
     //.*?$|/\*.*?\*/)|
 
@@ -78,15 +84,30 @@ SYNTAX = re_compile(r"""
     [a-zA-Z_]\w*(?=\())
 """, flags=re_VERBOSE | re_DOTALL | re_MULTILINE)
 
-# Mini MarkDown
-MARKDOWN = re_compile(r"""
+# Markdown tokens in order
+MD_TOKENS = OrderedDict([
+    ('code', lambda m, p: not new(p, 'code', string=m.group('code_txt'))),
+    ('img' , lambda m, p: not new(p, 'img', alt=m.group('img_txt'),
+                                            src=m.group('img_src'),
+                                            title=m.group('img_title'))),
+    ('a'   , lambda m, p: new(p, 'a', href=m.group('a_ref'), class_='inline_link')),
+    ('bi'  , lambda m, p: new(new(p, 'b'), 'i')),
+    ('b'   , lambda m, p: new(p, 'b')),
+    ('i'   , lambda m, p: new(p, 'i')),
+    ('br'  , lambda m, p: not new(p, 'br'))
+])
+
+# Mini Markdown syntax
+MD_SYNTAX = re_compile(r"""
+    (?P<img>!\[(?P<img_txt>.+?)\]\((?P<img_src>.+?)\s+(?P<quote>"|')(?P<img_title>.+?)(?P=quote)\))|
+    (?P<a>\[(?P<a_txt>.+?)\]\((?P<a_ref>.+?)\))|
+    (?P<code>`(?P<code_txt>[^\s\t\n].*?)(?<=[^\s\t\n])`(?!`))|
+    (?P<bi>\*\*\*(?P<bi_txt>[^\s\t\n].*?)(?<=[^\s\t\n])\*\*\*)|
+    (?P<b>\*\*(?P<b_txt>[^\s\t\n].*?)(?<=[^\s\t\n])\*\*)|
+    (?P<i>\*(?P<i_txt>[^\s\t\n].*?)(?<=[^\s\t\n])\*)|
     (?P<br>\\\\n)
-    (?P<code>`.+?`)
-    (?P<bi>\*\*\*.+?\*\*\*)
-    (?P<b>\*\*.+?\*\*)
-    (?P<i>\*.+?\*)
-    (?P<a>\[(.+?)\]\((.+?)\))
 """, flags=re_VERBOSE | re_DOTALL | re_MULTILINE)
+# (?P<escape>\\(?P<escape_txt>.))
 
 # CSS
 STYLE = """
@@ -127,12 +148,15 @@ nowrap;overflow:hidden;text-overflow:ellipsis}.code_functions,.code_keywords,
 .code_types{color:#a8a8a8}.code_numbers,.code_macros{color:#d8af00}
 .code_constants::selection,.code_numbers::selection,.code_macros::selection{
 color:#000}.title{border-top:1.5pt solid #d8d8d8;padding-top:15pt;padding-bottom:
-15pt}.entity{border-top:1ptsolid #e8e8e8;padding-top:15pt}.return_values{
+15pt}.entity{border-top:1pt solid #e8e8e8;padding-top:15pt}.return_values{
 margin-left:45pt;line-height:1.5}.return_case{margin-right:5pt}.exception_message
 {margin-left:45pt;line-height:1.5}.exception_note{margin-left:60pt;line-height:
 1.5}.arg_comma,.arg_name,.arg_paren,.name{font-size:15pt}.arg_type{font-size:
 13pt}.info{margin-left:30pt;line-height:1.5}.arg_comma,.arg_paren,.label,.name{
 font-weight:700}.arg_comma,.arg_paren,.arg_type,.label,.note{font-style:italic}
+i{font-style:italic}b{font-weight:700}a.inline_link{background:#ededed;margin:0;
+padding:0 3pt;border-bottom:1.5pt solid #dddddd}a.inline_link:hover{background:
+#e0e0e0;border-bottom:1.5pt solid #d0d0d0}
 """
 
 #------------------------------------------------------------------------------#
@@ -218,20 +242,25 @@ def _ref(string):
 
 
 #------------------------------------------------------------------------------#
-# Parse string for special multiline character and code markdown syntax
 def _str(parent, string):
     index = 0
-    for match in re_finditer(r'(\\\\n)|(`.+?`)', string):
-        start, stop = match.span()
-        # If found multiline character
-        if match.group(1):
-            new(parent, 'span', string=string[index:start])
-            new(parent, 'br')
-        # If found code-block
-        else:
-            new(parent, 'span', string=string[index:start])
-            new(parent, 'code', string=string[start + 1: stop - 1])
+    # Get each match in string
+    for match in re_finditer(MD_SYNTAX, string):
+        # Test in order which expression had match
+        for token, function in MD_TOKENS.items():
+            if match.group(token):
+                start, stop = match.span(token)
+                # Add the "rest" between the previous
+                # and this match to the parent tag
+                new(parent, 'span', string=string[index:start])
+                # Build new entity based on expression
+                tag = function(match, parent)
+                # Parse the string of the expression recursively
+                if tag:
+                    _str(tag, match.group(token + '_txt'))
+                break
         index = stop
+    # Add rest to parent
     new(parent, 'span', string=string[index:])
 
 
@@ -247,11 +276,11 @@ def _code(parent, string):
     # If code is syntax highlighted
     else:
         # Parse code
-        for match in re_finditer(SYNTAX, string):
+        for match in re_finditer(C_SYNTAX, string):
             start, stop = match.span()
             new(parent, 'span', string=string[index:start])
             # Process matches in order
-            for token in TOKENS:
+            for token in C_TOKENS:
                 # If a token found it to parent and stop
                 if match.group(token):
                     new(parent, 'span', class_='code_' + token,
@@ -273,7 +302,7 @@ def _func_args(parent, func_name, args, new_line):
     new(parent, 'span', class_='space_name_arg_paren', string=' ')
     new(parent, 'span', class_='arg_paren', string='(')
     # Add arguments
-    for comma, (arg_type, arg_name) in enumerate(args):
+    for comma, (arg_type, arg_name, *arg_rest) in enumerate(args):
         # If more than one argument
         if comma:
             new(parent, 'span', class_='arg_comma', string=',')
@@ -285,6 +314,9 @@ def _func_args(parent, func_name, args, new_line):
         if arg_name:
             new(parent, 'span', class_='arg_name', string=arg_name)
             new(parent, 'span', class_='space_arg_name_paren', string=' ')
+        if arg_rest:
+            new(parent, 'span', class_='arg_type', string=arg_rest[0])
+            new(parent, 'span', class_='space_arg_type_name', string=' ')
     # Close parenthesis
     new(parent, 'span', class_='arg_paren', string=')')
 
@@ -334,13 +366,14 @@ def _func_exceptions(parent, source):
         exceptions = source['exceptions']
         # If renaming exceptions
         if isinstance(exceptions, dict):
-            NAME = exceptions['NAME']
+            NAME = exceptions['CALL']
             exceptions = source.get(NAME, exceptions)
         # Get values
         for label, (message, description) in enumerate(exceptions):
             if not label:
+                LABEL = string_capwords(NAME)
                 new(parent, 'p', class_='info label',
-                                 string=string_capwords(NAME) + ':')
+                                 string=LABEL + ':' if LABEL else LABEL)
             new(parent, 'code', class_='exception_message', string=message)
             _str(new(parent, 'p', class_='exception_note'), description)
             new(parent, 'br')
@@ -351,10 +384,18 @@ def _func_exceptions(parent, source):
 #------------------------------------------------------------------------------#
 # Format 'examples' in definition of a function
 def _func_examples(parent, source):
+    NAME = 'examples'
     try:
-        for label, (note, example) in enumerate(source['example']):
+        examples = source['examples']
+        # If renaming examples
+        if isinstance(examples, dict):
+            NAME = examples['CALL']
+            examples = source.get(NAME, examples)
+        for label, (note, example) in enumerate(examples):
             if not label:
-                new(parent, 'p', class_='info label', string='Examples:')
+                LABEL = string_capwords(NAME)
+                new(parent, 'p', class_='info label',
+                                 string=LABEL + ':' if LABEL else LABEL)
             n = new(parent, 'p', class_='info note')
             _str(n, note + ':')
             new(parent, 'br')
@@ -362,7 +403,7 @@ def _func_examples(parent, source):
             c = new(pre, 'code', class_='snippet')
             _code(c, example)
             new(parent, 'br')
-    except KeyError:
+    except (KeyError, ValueError):
         return
 
 
@@ -416,6 +457,7 @@ def _indx_format(sidebar, selfname, sources):
 #------------------------------------------------------------------------------#
 # User-defined schema formatter
 def _user_format(sidebar, content, source):
+    # TODO: support formatted TODO import
     UD = 'user defined'
     # Get feature name
     try:
@@ -449,7 +491,7 @@ def _func_format(sidebar, content, source):
         name = source['func']
     except KeyError:
         raise MissingDictValue('name of function', '...', FN, 'func') from None
-    ref = 'function_{}'.format(_ref(name))
+    ref = 'func_{}'.format(_ref(name))
     new(sidebar, 'a', href='#' + ref, class_='toc', string='{}()'.format(name))
     func = new(content, 'div', id=ref, class_='entity')
     parameters = new(func, 'p')
@@ -475,8 +517,10 @@ def _func_format(sidebar, content, source):
 #------------------------------------------------------------------------------#
 # Type schema formatter
 def _type_format(sidebar, content, source):
-    # Get type name
+    # TODO:
+    # add `members` support in TYPE
     try:
+        # Get type name
         name = source['type']
     except KeyError:
         raise MissingDictValue('name of type', 'type', 'type') from None
@@ -552,6 +596,9 @@ def _build(sources, filepath, gentoc):
             new(sidebar, 'br')
             _indx_format(sidebar, pagename, sources)
             new(sidebar, 'br')
+
+        # TODO: add FOOT key
+
         # OPTIONAL: user defined
         try:
             userdefs = source['USER']
@@ -624,6 +671,7 @@ def _build(sources, filepath, gentoc):
 
 #------------------------------------------------------------------------------#
 def document(infolder, outfolder, extension, loader, generate_toc=None):
+    # TODO: collect 'reserved' names
     pages = OrderedDict()
     anonym = iter_count()
     # Load all pages

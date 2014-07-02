@@ -1,0 +1,50 @@
+## INFO ##
+## INFO ##
+
+#------------------------------------------------------------------------------#
+PAGE: CENV Environment Generator
+NAME: cenv
+
+#------------------------------------------------------------------------------#
+HEAD:
+  FILE: const/head.yaml
+
+#------------------------------------------------------------------------------#
+INFO:
+  - - h1
+    - string: 'CENV | Environment Generator'
+  - - br
+  - - p
+    - string: |
+              Sets up a minimal C environment. It is very practical to test
+              ideas and short code snippets quickly or to start a new project
+              from scratch without writing all the boilerplate. The generated
+              `makefile` is very extensible and maintainable.
+
+#------------------------------------------------------------------------------#
+USER:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/python.yaml
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - - usage
+    - name: Command Line Tool
+      info: |
+            `cenv` is command line tool, and takes two arguments. The first is
+            the path to the directory where the project will be generated. The
+            second one is the file name of the main C file.
+      examples:
+        - - >
+            Create `application.c` and `makefile` in the `project` folder. Then
+            compile file and run it, to check if everything went fine
+          - |
+            \\OFF
+            $ python3 cenv.py project application
+            $ cd project
+            $ make
+            $ ./build/application
+
+        - - OUTPUT
+          - |
+            \\OFF
+            *** TEST ENVIRONMENT ***
+            ...

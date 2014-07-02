@@ -35,57 +35,74 @@
   #include "cexc.h"
 #endif
 
+/* TODO: rename types */
+/* TODO: update cdar.py with macros */
+/* TODO: add #ifdef NAMESPACE new -> cutils_new */
 
-// TODO: implement: reverses count number of sub data starts at index
-// void
-// darv_reversesub(DynamicArray *dynarr,
-//                 size_t index,
-//                 size_t count)
+/* TODO: add String to cdar
+         DynamicArray_String: String
+         DynamicArray_string: char * */
 
-// TODO: consider if an iterator method is necessary or not
-// IterObject
-// iter(DynamicArray *dynarr,
-//      size_t index);
-// void *
-// next(IterObject *iterator);
+/* TODO: add DynamicArray to cdar
+         DynamicArray_DynamicArray: nested arrays */
 
-// #define copy(dar_ptr_src, dar_ptr_dst)
-//     do {
-//         if (dar_ptr_dst) del(dar_ptr_src);
-//         new(dar_ptr_dst, len(dar_ptr_src), raw(dar_ptr_src));
-//     } while (0)
+/* TODO: implement: reverses count number of sub data starts at index
+         void
+         darv_reversesub(DynamicArray *dynarr,
+                         size_t index,
+                         size_t count) */
 
-// #define swapto(dar_ptr_src, dar_ptr_dst, index_src, index_dst, count)
+/* TODO: consider if an iterator method is necessary or not
+         IterObject
+         iter(DynamicArray *dynarr,
+              size_t index);
+         void *
+         next(IterObject *iterator); */
 
-// #define appendto(dar_ptr_dst, dar_ptr_src)
-//     do {
-//         if (!dar_ptr_src) break;
-//         append(dar_ptr_dst, len(dar_ptr_src), raw(dar_ptr_src));
-//     } while (0)
+/* TODO: Implement `copy`
+         #define copy(dar_ptr_src, dar_ptr_dst)
+             do {
+                 if (dar_ptr_dst) del(dar_ptr_src);
+                 new(dar_ptr_dst, len(dar_ptr_src), raw(dar_ptr_src));
+             } while (0) */
 
-// #define insertto(dar_ptr_dst, index, dar_ptr_src)
-//     do {
-//         if (!dar_ptr_src) break;
-//         insert(dar_ptr_dst, index, len(dar_ptr_src), raw(dar_ptr_src));
-//     } while (0)
+/* TODO: Implement `swapto`
+         #define swapto(dar_ptr_src, dar_ptr_dst, index_src, index_dst, count) */
 
-// #define setto(dar_ptr_dst, index, dar_ptr_dst)
-//     do {
-//         if (!dar_ptr_dst) break;
-//         set(dar_ptr_dst, index, len(dar_ptr_dst), raw(dar_ptr_dst));
-//     } while (0)
-
-// #define popto(dar_ptr_dst, index, count, dar_ptr_src)
-//     do {
-//         void *temp = malloc((size(dar_ptr_dst) / len(dar_ptr_dst)) * count);
-//         if (!temp) break;
-//         pop(dar_ptr_src, index, count, temp);
-//         append(dar_ptr_dst, count, temp);
-//         free(temp);
-//     } while (0)
+/* TODO: Implement `appendto`
+         #define appendto(dar_ptr_dst, dar_ptr_src)
+             do {
+                 if (!dar_ptr_src) break;
+                 append(dar_ptr_dst, len(dar_ptr_src), raw(dar_ptr_src));
+             } while (0) */
 
 
-/*----------------------------------------------------------------------------*/
+/* TODO: Implement `insertto`
+         #define insertto(dar_ptr_dst, index, dar_ptr_src)
+             do {
+                 if (!dar_ptr_src) break;
+                 insert(dar_ptr_dst, index, len(dar_ptr_src), raw(dar_ptr_src));
+             } while (0) */
+
+/* TODO: Implement `setto`
+         #define setto(dar_ptr_dst, index, dar_ptr_dst)
+             do {
+                 if (!dar_ptr_dst) break;
+                 set(dar_ptr_dst, index, len(dar_ptr_dst), raw(dar_ptr_dst));
+             } while (0) */
+
+/* TODO: Implement `popto`
+         #define popto(dar_ptr_dst, index, count, dar_ptr_src)
+             do {
+                 void *temp = malloc((size(dar_ptr_dst) / len(dar_ptr_dst)) * count);
+                 if (!temp) break;
+                 pop(dar_ptr_src, index, count, temp);
+                 append(dar_ptr_dst, count, temp);
+                 free(temp);
+             } while (0) */
+
+
+/*----------------------------------------------------------------------------
 /* Exception messages */
 #undef  CEXC_MSG_TYPE
 #define CEXC_MSG_TYPE "DynamicArray"

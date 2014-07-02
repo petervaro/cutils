@@ -4,6 +4,9 @@
 #ifndef _CBUG_H_10629572188582681_
 #define _CBUG_H_10629572188582681_
 
+/* TODO: sdebug() -> expands to string literal or
+         debugexc(func, msg, len) -> calls raise() or ccraise() */
+
 #ifndef CBUG_OFF
 
 #include <stdio.h>   /* fprintf(), stderr */

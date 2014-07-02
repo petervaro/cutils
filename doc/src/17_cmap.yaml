@@ -2,7 +2,8 @@
 ## INFO ##
 
 #------------------------------------------------------------------------------#
-PAGE: CCOM Comment Scanner and List Generator
+PAGE: CMAP HashMap
+NAME: cmap
 
 #------------------------------------------------------------------------------#
 HEAD:
@@ -14,10 +15,14 @@ INFO:
 
 #------------------------------------------------------------------------------#
 USER:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/cdar.yaml
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - About
     - name: Summary
       info: >
-            Scans files for todo/note/bug/custom comments and generates a list
-            of them.
+            Associative list / Hash Table / Hash Map / Dictionary implementation.
             \\n\\n
             *Coming soon...*
+
+# TODO: Implement cmap: Hash Map

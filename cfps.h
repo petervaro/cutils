@@ -1,10 +1,10 @@
 // INFO //
 // INFO //
 
-#ifndef _C_FRAME_PER_SECOND_H_
-#define _C_FRAME_PER_SECOND_H_
+#ifndef _C_FRAME_PER_SECOND_H_2834550704086395_
+#define _C_FRAME_PER_SECOND_H_2834550704086395_
 
-#include <stdio.h>          // fprintf()
+#include <stdio.h>  /* fprintf() */
 
 // TODO: At the moment in a single scope only the first appearence of
 //       these functions will work. NOTE: If you want to use both printfps
@@ -13,9 +13,9 @@
 
 /*----------------------------------------------------------------------------*/
 static inline void
-getfps(double (*gettime)(void),
-       void (*getter)(int, void*),
-       void *data)
+__getfps(double (*gettime)(void),
+         void (*getter)(int, void*),
+         void *data)
 {
     static double old_time = 0.0;
     static double time_sum = 0.0;
@@ -45,10 +45,21 @@ __printfps_getter_func(int fps, void *data)
 
 
 /*----------------------------------------------------------------------------*/
-static inline void
-printfps(double (*gettime)(void))
-{
-    getfps(gettime, __printfps_getter_func, NULL);
-}
+#undef  __printfps
+#define __printfps(gettime) __getfps(gettime, __printfps_getter_func, NULL)
 
-#endif
+
+/* Decide use prefix or not */
+#ifdef CUTILS_NAMESPACE
+  #undef  cutils_getfps
+  #define cutils_getfps(...) __getfps(__VA_ARGS__)
+  #undef  cutils_printfps
+  #define cutils_printfps(...) __printfps(__VA_ARGS__)
+#else
+  #undef  getfps
+  #define getfps(...) __getfps(__VA_ARGS__)
+  #undef  printfps
+  #define printfps(...) __printfps(__VA_ARGS__)
+#endif /* CUTILS_NAMESPACE*/
+
+#endif /* _C_FRAME_PER_SECOND_H_2834550704086395_ */

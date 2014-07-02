@@ -2,7 +2,8 @@
 ## INFO ##
 
 #------------------------------------------------------------------------------#
-PAGE: CSLS Single Linked List
+PAGE: CRES External Resources Packer
+NAME: cres
 
 #------------------------------------------------------------------------------#
 HEAD:
@@ -14,9 +15,13 @@ INFO:
 
 #------------------------------------------------------------------------------#
 USER:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/python.yaml
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - About
     - name: Summary
       info: >
-            Implementation of a single linked list object type and its methods.
+            Generate header files from external resources to compile them into
+            binary.
             \\n\\n
             *Coming soon...*

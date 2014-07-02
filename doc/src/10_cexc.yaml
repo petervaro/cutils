@@ -1,0 +1,225 @@
+## INFO ##
+## INFO ##
+
+#------------------------------------------------------------------------------#
+PAGE: CEXC Exception Handling
+NAME: cexc
+
+#------------------------------------------------------------------------------#
+HEAD:
+  FILE: const/head.yaml
+
+#------------------------------------------------------------------------------#
+INFO:
+  - - h1
+    - string: 'CEXC | Exception Handling'
+  - - br
+  - - p
+    - string: |
+              A single header-only exception handling system. It is very useful
+              to track all malfunctions in the codebase which are not
+              terminating the program, but makes it harder to debug the code and
+              find out what went wrong.
+
+#------------------------------------------------------------------------------#
+USER:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/python.yaml
+  - - Flags
+    - name: CEXC_OFF
+      info: |
+            The whole exception handling system can be removed from the source
+            by defining the `CEXC_OFF` macro variable before the `cexc.h`
+            included or by passing `-DCEXCOFF` to the compiler.
+      examples:
+        - - Defining variable before inclusion
+          - |
+            #define CEXC_OFF
+            #include <cutils/cexc.h>
+            #undef CEXC_OFF
+    - name: CEXC_LOG
+      info: |
+            The bahaviour of the exception handling system can be set to
+            "logging-mode", which means, the [`catch`](#func_catch) and
+            [`ccatch`](#func_ccatch) functions will be removed, and the
+            [`raise`](#func_raise) and [`craise`](#func_craise) functions will
+            write the exception messages directly to the file pointer defined
+            at the exception handler object's initialisation.
+      examples:
+        - - Defining variable before inclusion
+          - |
+            #define CEXC_LOG
+            #include <cutils/cexc.h>
+            #undef CEXC_LOG
+
+#------------------------------------------------------------------------------#
+FUNC:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: start_exception_handling
+    args:
+      - - FILE *
+        - stream
+    info: |
+          Creates a global exception handler object, which can be accessed by
+          the following functions from any file, as long as `cexc.h` is
+          included. It only requires a `FILE` pointer, where all the exceptions
+          will be written to. This function has to be called only once
+          (preferably at the beginning of the program) or after a previous
+          exception handler object was deleted successfully by the
+          [`stop_exception_handling`](#func_stop_exception_handling) function.
+          *(In that case, all the data stored in the exception handler object
+          will be deleted, so for example the custom handlers has to be passed
+          again.)*
+          \\n\\n
+          When the exception object's buffer cannot be realloc'd *(it happens
+          when the current buffer size is smaller than the new exception message
+          it supposed to store, and the memory reallocation fails)* the
+          `INTERNAL` exception message will be stored in the buffer, indicating
+          the error.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: stop_exception_handling
+    info: |
+          Destroys the previously created exception handler object.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: raise
+    args:
+      - - const char *
+        - message
+      - - size_t
+        - length
+    info: |
+          Uploads a `char *` string exception message to the exception handler
+          object's buffer. If another [`raise`](#func_raise) or
+          [`craise`](#func_craise) function called the object's buffer won't
+          change until a [`catch`](#func_catch) or a [`ccatch`](#func_ccatch)
+          functions called.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: catch
+    info: |
+          Writes the exception message from the exception handler object's
+          buffer to the file pointer defined at the exception handler object's
+          initialisation. After it successfully writes the message, it sets the
+          buffer to contain the default `NO ERROR` message.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: set_exception_handling_pointer
+    args:
+      - - void *
+        - data
+    info: |
+          Stores a user defined custom pointer in the exception handling object.
+          By default the pointer set to `NULL`. This pointer will be passed
+          during the call of both of the custom handler functions:
+          [`craise`](#func_craise) or [`ccatch`](#func_ccatch).
+    examples:
+      - - >
+          The next example demonstrates the usage of the custom handler
+          functions. It extends the standard handler functions with a simple
+          counter functionality
+        - |
+          #include <stdio.h>        /* fprintf(), stderr */
+          #include <cutils/cexc.h>  /* (start|stop)_exception_handling(),
+                                       set_exception_handling_(poiner|_custom_(raise|catch))(),
+                                       craise(), ccatch() */
+          \\n
+          /* Callback function which will be called by craise */
+          static void
+          custom_raise(void *counter)
+          {
+              (*(int *)counter)++;
+          }
+          \\n
+          /* Callback function which will be called by ccatch */
+          static void
+          custom_catch(void *counter)
+          {
+              fprintf(stderr, "COUNTER: %d\n", *(int *)counter);
+          }
+          \\n
+          int main(void)
+          {
+              start_exception_handling(stderr);
+              \\n
+              int error_counter = 0;
+              set_exception_handling_pointer(&error_counter);
+              set_exception_handling_custom_raise(custom_raise);
+              set_exception_handling_custom_catch(custom_catch);
+              \\n
+              ccatch();
+              #define MSG "Custom catcher and raiser functions!"
+              craise(MSG, sizeof MSG);
+              #undef MSG
+              ccatch();
+              ccatch();
+              \\n
+              stop_exception_handling();
+              return 0;
+          }
+
+      - - OUTPUT
+        - |
+          \\OFF
+          EXCEPTION: NO ERROR
+          COUNTER: 0
+          EXCEPTION: Custom catcher and raiser functions!
+          COUNTER: 1
+          EXCEPTION: NO ERROR
+          COUNTER: 2
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: set_exception_handling_custom_raise
+    args:
+      - - void(*
+        - callback
+        - )(void*)
+    info: |
+          Stores a user defined function's pointer in the exception handler
+          object. This function will be called by the [`craise`](#func_craise)
+          function, and the user pointer will be passed as an argument to it. By
+          default an "empty" function is stored.
+          \\n\\n
+          To see this function in action read the example of the example of
+          [`set_exception_handling_pointer`](#func_set_exception_handling_pointer).
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: set_exception_handling_custom_catch
+    args:
+      - - void(*
+        - callback
+        - )(void*)
+    info: |
+          Stores a user defined function's pointer in the exception handler
+          object. This function will be called by the [`ccatch`](#func_ccatch)
+          function, and the user pointer will be passed as an argument to it. By
+          default an "empty" function is stored.
+          \\n\\n
+          To see this function in action read the example of the example of
+          [`set_exception_handling_pointer`](#func_set_exception_handling_pointer).
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: craise
+    args:
+      - - const char *
+        - message
+      - - size_t
+        - length
+    info: |
+          Acts exactly as the [`raise`](#func_raise) function, plus it calls the
+          user defined *custom raise function* and passing the user defined
+          pointer as argument to that.
+          \\n\\n
+          To see this function in action read the example of the example of
+          [`set_exception_handling_pointer`](#func_set_exception_handling_pointer).
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: ccatch
+    info: |
+          Acts exactly as the [`catch`](#func_catch) function, plus it calls the
+          user defined *custom catch function* and passing the user defined
+          pointer as argument to that.
+          \\n\\n
+          To see this function in action read the example of the example of
+          [`set_exception_handling_pointer`](#func_set_exception_handling_pointer).

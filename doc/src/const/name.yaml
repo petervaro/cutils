@@ -7,7 +7,7 @@
         names in one's own project for other purposes. To solve this problem
         `cutils` provides a macro variable, a flag, to turn on or off the
         prefixes of the variable names. By default it is turned off.
-  example:
+  examples:
     - - >
         Each public function or function-like macro, or type name will have the
         same `cutils_` prefix, as follows

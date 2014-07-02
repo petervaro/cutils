@@ -3,6 +3,7 @@
 
 #------------------------------------------------------------------------------#
 PAGE: 'CARG Variadic Argument Macro'
+NAME: carg
 
 #------------------------------------------------------------------------------#
 HEAD:
@@ -39,7 +40,7 @@ USER:
             Using `vargs` may looks a bit tricky, as its functionality is very
             complex, and calling it once does not enough. One has to call it
             four times as the first example shows it, to make it work.
-      example:
+      examples:
         - - |
             Syntax/Usage of `vargs`.
             \\n\\n
@@ -118,7 +119,7 @@ USER:
             function, that is not doing anything, but needs a single argument.
             With this hack, the compiler will warn the user about passing too
             few arguments to this function-like macro
-      example:
+      examples:
         - - >
             Fill the missing functions with a "greater" one and use the `zero`
             to catch the "no arguments passed" calling

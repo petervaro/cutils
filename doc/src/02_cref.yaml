@@ -1,0 +1,32 @@
+## INFO ##
+## INFO ##
+
+#------------------------------------------------------------------------------#
+PAGE: CREF Quick Reference
+NAME: cref
+
+#------------------------------------------------------------------------------#
+HEAD:
+  FILE: const/head.yaml
+
+#------------------------------------------------------------------------------#
+INFO:
+  FILE: const/wip.yaml
+
+#------------------------------------------------------------------------------#
+USER:
+  - - About
+    - name: Summary
+      info: >
+            An up-to-date reference to standard C library. It has two purposes:
+            \\n\\n
+            1. To be a quick reference guide, with short explanations\\n
+            2. To use it in a text editor to extend the auto complition's
+            functionality\\n\\n
+            *THIS FILE IS* ***NOT A VALID C FILE****, DON'T COMPILE NOR INCLUDE
+            IT!\\n
+            (The only reason it has `.c` extension, is to make it easier for
+            text editors to set the proper syntax highlighter automatically to
+            this file.)*
+            \\n\\n
+            *Coming soon...*

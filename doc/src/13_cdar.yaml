@@ -3,6 +3,7 @@
 
 #------------------------------------------------------------------------------#
 PAGE: CDAR Dynamic Array
+NAME: cdar
 
 #------------------------------------------------------------------------------#
 HEAD:
@@ -15,7 +16,7 @@ INFO:
   - - br
   - - p
     - string: |
-              Dynamic arrays, as their `array` and `fuck`
+              ...
 
 #------------------------------------------------------------------------------#
 USER:
@@ -157,7 +158,7 @@ FUNC:
           The allocation of space in memory for the instance of the base struct
           and/or for the raw array of the data failed
 
-    example:
+    examples:
       - - Create a new empty dynamic array of `int`s
         - |
           DynamicArray_int *dynarr;
@@ -216,7 +217,7 @@ FUNC:
           proper formatting. For `DynamicArray_void` prints out the items as
           pointers (`"%p"`).
 
-    example:
+    examples:
       - - Print out the content of array of `float`s
         - |
           // Create and fill array
@@ -319,7 +320,7 @@ FUNC:
       - - 3rd argument is NULL
         - Function cannot write to a `NULL` pointer
 
-    example:
+    examples:
       - - Get data of array
         - |
           // Declare variables
@@ -372,7 +373,7 @@ FUNC:
           perfectly legal argument. (However in that case probably a
           `SEGMENTATION FAULT` error will happen)
 
-    example:
+    examples:
       - - Get raw data
         - |
           // Declare variables
@@ -412,7 +413,7 @@ FUNC:
           perfectly legal argument. (However in that case probably a
           `SEGMENTATION FAULT` error will happen)
 
-    example:
+    examples:
       - - Get and print length of an array
         - |
           DynamicArray_char *dynarr;
@@ -450,7 +451,7 @@ FUNC:
           perfectly legal argument. (However in that case probably a
           `SEGMENTATION FAULT` error will happen)
 
-    example:
+    examples:
       - - Get and print byte size of an array
         - |
           DynamicArray_unsigned_long_long *dynarr;
@@ -487,7 +488,7 @@ FUNC:
           perfectly legal argument. (However in that case probably a
           `SEGMENTATIO FAULT` error will happen)
 
-    example:
+    examples:
       - - Create an array of `float`s, fill the array and then remove all items
         - |
           // Create and fill array
@@ -619,7 +620,7 @@ FUNC:
         - >
           The allocation of space in memory for temporary purposes failed.
 
-    example:
+    examples:
       - - Swap a single `unsigned integer` in array
         - |
           // Create, fill and print array
