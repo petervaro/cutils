@@ -1,0 +1,123 @@
+<html><!-- www.cutils.org | Peter Varo | 2014 --><head><link href="http://www.cutils.org/favicon.ico" rel="shortcut icon" type="image/x-icon"/><link href="http://www.cutils.org/favicon.ico" rel="icon" type="image/x-icon"/><title>CEXC Exception Handling</title><meta charset="utf-8"/><link href="css/cdoc.css" rel="stylesheet" type="text/css"/></head><body><div id="column1"><div id="generic"><img src="img/cutils.svg"/><br/><h2><span>MODERN AND LIGHTWEIGHT C UTILITIES</span></h2><p><span>&mdash;</span></p><p><span>DESIGNED BY</span></p><p><span>PETER VARO &copy;2014</span></p><p><span>&mdash;</span></p><br/></div><div id="sidebar"><div><p class="label">Modules:</p></div><br/><a class="toc" href="index.html">CUTILS</a><a class="toc" href="c11.html">C11 Syntax Highlighter</a><a class="toc" href="cref.html">CREF Quick Reference</a><a class="toc" href="cenv.html">CENV Environment Generator</a><a class="toc" href="cdep.html">CDEP Dependeny Graph</a><a class="toc" href="ccom.html">CCOM Comment Scanner and List Generator</a><a class="toc" href="clic.html">CLIC License Comment Generator</a><a class="toc" href="cres.html">CRES External Resources Packer</a><a class="toc" href="carg.html">CARG Variadic Argument Macro</a><a class="toc" href="cbug.html">CBUG Debugging &amp; Logging</a><a class="toc toc_current" href="#">CEXC Exception Handling</a><a class="toc" href="cpro.html">CPRO Profiling</a><a class="toc" href="cutt.html">CUTT Unit Testing Tools</a><a class="toc" href="cdar.html">CDAR Dynamic Array</a><a class="toc" href="cstr.html">CSTR Strings</a><a class="toc" href="csll.html">CSLL Single Linked List</a><a class="toc" href="cdll.html">CDLL Double Linked List</a><a class="toc" href="cmap.html">CMAP HashMap</a><a class="toc" href="cfps.html">CFPS Frame Per Second</a><a class="toc" href="ccol.html">CCOL Color Helper</a><a class="toc" href="cdoc.html">CDOC Documenting Tool</a><br/><div><p class="label">Dependencies:</p><br/><a class="toc" href="#user_Python_3">Python 3</a></div><br/><div><p class="label">Flags:</p><br/><a class="toc" href="#user_CEXC_OFF">CEXC_OFF</a><a class="toc" href="#user_CEXC_LOG">CEXC_LOG</a></div><br/><div><p class="label">Functions:</p><br/><a class="toc" href="#func_start_exception_handling">start_exception_handling()</a><a class="toc" href="#func_stop_exception_handling">stop_exception_handling()</a><a class="toc" href="#func_raise">raise()</a><a class="toc" href="#func_catch">catch()</a><a class="toc" href="#func_set_exception_handling_pointer">set_exception_handling_pointer()</a><a class="toc" href="#func_set_exception_handling_custom_raise">set_exception_handling_custom_raise()</a><a class="toc" href="#func_set_exception_handling_custom_catch">set_exception_handling_custom_catch()</a><a class="toc" href="#func_craise">craise()</a><a class="toc" href="#func_ccatch">ccatch()</a></div></div></div><div id="column2"><div id="content"><h1><span>CEXC | Exception Handling</span></h1><br/><p><span>A single header-only exception handling system. It is very useful
+to track all malfunctions in the codebase which are not
+terminating the program, but makes it harder to debug the code and
+find out what went wrong.
+</span></p><br/><div><h2 class="title">Dependencies</h2><div class="entity" id="user_Python_3"><p class="name">Python 3</p><br/><p class="info"><span>This module is written in </span><code>Python 3</code><span>, therefore it needs the interpreter
+to be installed on your system to run it. I suggest you to use a
+package-manager to keep your installations ordered, clean and upto-date.
+</span></p><br/></div><p class="info label"></p><p class="info note"><span></span><b><span>Macintosh:</span></b><span> one can use </span><a class="inline_link" href="http://brew.sh/"><span>homebrew</span></a><span>:</span></p><br/><pre class="info"><code class="snippet">brew install python3</code></pre><br/><p class="info note"><span></span><b><span>Windows:</span></b><span> one can use </span><a class="inline_link" href="https://chocolatey.org/"><span>chocolatey</span></a><span>:</span></p><br/><pre class="info"><code class="snippet">cinst python3</code></pre><br/><p class="info note"><span></span><b><span>Linux:</span></b><span> on Ubuntu and LinuxMint it is already installed:</span></p><br/><pre class="info"><code class="snippet">sudo apt-get install python3</code></pre><br/></div><div><h2 class="title">Flags</h2><div class="entity" id="user_CEXC_OFF"><p class="name">CEXC_OFF</p><br/><p class="info"><span>The whole exception handling system can be removed from the source
+by defining the </span><code>CEXC_OFF</code><span> macro variable before the </span><code>cexc.h</code><span>
+included or by passing </span><code>-DCEXCOFF</code><span> to the compiler.
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>Defining variable before inclusion:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_macros">#define</span><span> CEXC_OFF
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cexc</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+</span><span class="code_macros">#undef</span><span> CEXC_OFF
+</span></code></pre><br/><div class="entity" id="user_CEXC_LOG"><p class="name">CEXC_LOG</p><br/><p class="info"><span>The bahaviour of the exception handling system can be set to
+"logging-mode", which means, the </span><a class="inline_link" href="#func_catch"><span></span><code>catch</code><span></span></a><span> and
+</span><a class="inline_link" href="#func_ccatch"><span></span><code>ccatch</code><span></span></a><span> functions will be removed, and the
+</span><a class="inline_link" href="#func_raise"><span></span><code>raise</code><span></span></a><span> and </span><a class="inline_link" href="#func_craise"><span></span><code>craise</code><span></span></a><span> functions will
+write the exception messages directly to the file pointer defined
+at the exception handler object's initialisation.
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>Defining variable before inclusion:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_macros">#define</span><span> CEXC_LOG
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cexc</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+</span><span class="code_macros">#undef</span><span> CEXC_LOG
+</span></code></pre><br/></div><div><h2 class="title">Functions</h2><div class="entity" id="func_start_exception_handling"><p><span class="name">start_exception_handling</span><span class="space_name_arg_paren"> </span><span class="arg_paren">(</span><span class="space_arg_comma_type"> </span><span class="arg_type">FILE *</span><span class="space_arg_type_name"> </span><span class="arg_name">stream</span><span class="space_arg_name_paren"> </span><span class="arg_paren">)</span></p><br/><p class="info"><span>Creates a global exception handler object, which can be accessed by
+the following functions from any file, as long as </span><code>cexc.h</code><span> is
+included. It only requires a </span><code>FILE</code><span> pointer, where all the exceptions
+will be written to. This function has to be called only once
+(preferably at the beginning of the program) or after a previous
+exception handler object was deleted successfully by the
+</span><a class="inline_link" href="#func_stop_exception_handling"><span></span><code>stop_exception_handling</code><span></span></a><span> function.
+</span><i><span>(In that case, all the data stored in the exception handler object
+will be deleted, so for example the custom handlers has to be passed
+again.)</span></i><span>
+</span><br/><span></span><br/><span>
+When the exception object's buffer cannot be realloc'd </span><i><span>(it happens
+when the current buffer size is smaller than the new exception message
+it supposed to store, and the memory reallocation fails)</span></i><span> the
+</span><code>INTERNAL</code><span> exception message will be stored in the buffer, indicating
+the error.
+</span></p><br/><p class="info return"><span class="label">Return: </span><code class="return_case"><span>void</span></code></p><br/></div><div class="entity" id="func_stop_exception_handling"><p><span class="name">stop_exception_handling</span><span class="space_name_arg_paren"> </span><span class="arg_paren">(</span><span class="space_arg_comma_type"> </span><span class="arg_type">void</span><span class="space_arg_type_name"> </span><span class="arg_paren">)</span></p><br/><p class="info"><span>Destroys the previously created exception handler object.
+</span></p><br/><p class="info return"><span class="label">Return: </span><code class="return_case"><span>void</span></code></p><br/></div><div class="entity" id="func_raise"><p><span class="name">raise</span><span class="space_name_arg_paren"> </span><span class="arg_paren">(</span><span class="space_arg_comma_type"> </span><span class="arg_type">const char *</span><span class="space_arg_type_name"> </span><span class="arg_name">message</span><span class="space_arg_name_paren"> </span><span class="arg_comma">,</span><span class="space_arg_comma_type"> </span><span class="arg_type">size_t</span><span class="space_arg_type_name"> </span><span class="arg_name">length</span><span class="space_arg_name_paren"> </span><span class="arg_paren">)</span></p><br/><p class="info"><span>Uploads a </span><code>char *</code><span> string exception message to the exception handler
+object's buffer. If another </span><a class="inline_link" href="#func_raise"><span></span><code>raise</code><span></span></a><span> or
+</span><a class="inline_link" href="#func_craise"><span></span><code>craise</code><span></span></a><span> function called the object's buffer won't
+change until a </span><a class="inline_link" href="#func_catch"><span></span><code>catch</code><span></span></a><span> or a </span><a class="inline_link" href="#func_ccatch"><span></span><code>ccatch</code><span></span></a><span>
+functions called.
+</span></p><br/><p class="info return"><span class="label">Return: </span><code class="return_case"><span>void</span></code></p><br/></div><div class="entity" id="func_catch"><p><span class="name">catch</span><span class="space_name_arg_paren"> </span><span class="arg_paren">(</span><span class="space_arg_comma_type"> </span><span class="arg_type">void</span><span class="space_arg_type_name"> </span><span class="arg_paren">)</span></p><br/><p class="info"><span>Writes the exception message from the exception handler object's
+buffer to the file pointer defined at the exception handler object's
+initialisation. After it successfully writes the message, it sets the
+buffer to contain the default </span><code>NO ERROR</code><span> message.
+</span></p><br/><p class="info return"><span class="label">Return: </span><code class="return_case"><span>void</span></code></p><br/></div><div class="entity" id="func_set_exception_handling_pointer"><p><span class="name">set_exception_handling_pointer</span><span class="space_name_arg_paren"> </span><span class="arg_paren">(</span><span class="space_arg_comma_type"> </span><span class="arg_type">void *</span><span class="space_arg_type_name"> </span><span class="arg_name">data</span><span class="space_arg_name_paren"> </span><span class="arg_paren">)</span></p><br/><p class="info"><span>Stores a user defined custom pointer in the exception handling object.
+By default the pointer set to </span><code>NULL</code><span>. This pointer will be passed
+during the call of both of the custom handler functions:
+</span><a class="inline_link" href="#func_craise"><span></span><code>craise</code><span></span></a><span> or </span><a class="inline_link" href="#func_ccatch"><span></span><code>ccatch</code><span></span></a><span>.
+</span></p><br/><p class="info return"><span class="label">Return: </span><code class="return_case"><span>void</span></code></p><br/><p class="info label">Examples:</p><p class="info note"><span>The next example demonstrates the usage of the custom handler functions. It extends the standard handler functions with a simple counter functionality
+:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>stdio</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>        </span><span class="code_comments">/* fprintf(), stderr */</span><span>
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cexc</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>  </span><span class="code_comments">/* (start|stop)_exception_handling(),
+                             set_exception_handling_(poiner|_custom_(raise|catch))(),
+                             craise(), ccatch() */</span><span>
+
+</span><span class="code_comments">/* Callback function which will be called by craise */</span><span>
+</span><span class="code_keywords">static</span><span> </span><span class="code_types">void</span><span>
+</span><span class="code_functions">custom_raise</span><span>(</span><span class="code_types">void</span><span> </span><span class="code_operators">*</span><span>counter)
+{
+    (</span><span class="code_operators">*</span><span>(</span><span class="code_types">int</span><span> </span><span class="code_operators">*</span><span>)counter)</span><span class="code_operators">+</span><span></span><span class="code_operators">+</span><span>;
+}
+
+</span><span class="code_comments">/* Callback function which will be called by ccatch */</span><span>
+</span><span class="code_keywords">static</span><span> </span><span class="code_types">void</span><span>
+</span><span class="code_functions">custom_catch</span><span>(</span><span class="code_types">void</span><span> </span><span class="code_operators">*</span><span>counter)
+{
+    </span><span class="code_functions">fprintf</span><span>(</span><span class="code_constants">stderr</span><span>, </span><span class="code_strings">"COUNTER: %d\n"</span><span>, </span><span class="code_operators">*</span><span>(</span><span class="code_types">int</span><span> </span><span class="code_operators">*</span><span>)counter);
+}
+
+</span><span class="code_types">int</span><span> </span><span class="code_functions">main</span><span>(</span><span class="code_types">void</span><span>)
+{
+    </span><span class="code_functions">start_exception_handling</span><span>(</span><span class="code_constants">stderr</span><span>);
+    
+    </span><span class="code_types">int</span><span> error_counter </span><span class="code_operators">=</span><span> </span><span class="code_numbers">0</span><span>;
+    </span><span class="code_functions">set_exception_handling_pointer</span><span>(</span><span class="code_operators">&amp;</span><span>error_counter);
+    </span><span class="code_functions">set_exception_handling_custom_raise</span><span>(custom_raise);
+    </span><span class="code_functions">set_exception_handling_custom_catch</span><span>(custom_catch);
+    
+    </span><span class="code_functions">ccatch</span><span>();
+</span><span class="code_macros">    #define</span><span> MSG </span><span class="code_strings">"Custom catcher and raiser functions!"</span><span>
+    </span><span class="code_functions">craise</span><span>(MSG, </span><span class="code_keywords">sizeof</span><span> MSG);
+</span><span class="code_macros">    #undef</span><span> MSG
+    </span><span class="code_functions">ccatch</span><span>();
+    </span><span class="code_functions">ccatch</span><span>();
+    
+    </span><span class="code_functions">stop_exception_handling</span><span>();
+    </span><span class="code_keywords">return</span><span> </span><span class="code_numbers">0</span><span>;
+}
+</span></code></pre><br/><p class="info note"><span>OUTPUT:</span></p><br/><pre class="info"><code class="snippet">EXCEPTION: NO ERROR
+COUNTER: 0
+EXCEPTION: Custom catcher and raiser functions!
+COUNTER: 1
+EXCEPTION: NO ERROR
+COUNTER: 2</code></pre><br/></div><div class="entity" id="func_set_exception_handling_custom_raise"><p><span class="name">set_exception_handling_custom_raise</span><span class="space_name_arg_paren"> </span><span class="arg_paren">(</span><span class="space_arg_comma_type"> </span><span class="arg_type">void(*</span><span class="space_arg_type_name"> </span><span class="arg_name">callback</span><span class="space_arg_name_paren"> </span><span class="arg_type">)(void*)</span><span class="space_arg_type_name"> </span><span class="arg_paren">)</span></p><br/><p class="info"><span>Stores a user defined function's pointer in the exception handler
+object. This function will be called by the </span><a class="inline_link" href="#func_craise"><span></span><code>craise</code><span></span></a><span>
+function, and the user pointer will be passed as an argument to it. By
+default an "empty" function is stored.
+</span><br/><span></span><br/><span>
+To see this function in action read the example of the example of
+</span><a class="inline_link" href="#func_set_exception_handling_pointer"><span></span><code>set_exception_handling_pointer</code><span></span></a><span>.
+</span></p><br/><p class="info return"><span class="label">Return: </span><code class="return_case"><span>void</span></code></p><br/></div><div class="entity" id="func_set_exception_handling_custom_catch"><p><span class="name">set_exception_handling_custom_catch</span><span class="space_name_arg_paren"> </span><span class="arg_paren">(</span><span class="space_arg_comma_type"> </span><span class="arg_type">void(*</span><span class="space_arg_type_name"> </span><span class="arg_name">callback</span><span class="space_arg_name_paren"> </span><span class="arg_type">)(void*)</span><span class="space_arg_type_name"> </span><span class="arg_paren">)</span></p><br/><p class="info"><span>Stores a user defined function's pointer in the exception handler
+object. This function will be called by the </span><a class="inline_link" href="#func_ccatch"><span></span><code>ccatch</code><span></span></a><span>
+function, and the user pointer will be passed as an argument to it. By
+default an "empty" function is stored.
+</span><br/><span></span><br/><span>
+To see this function in action read the example of the example of
+</span><a class="inline_link" href="#func_set_exception_handling_pointer"><span></span><code>set_exception_handling_pointer</code><span></span></a><span>.
+</span></p><br/><p class="info return"><span class="label">Return: </span><code class="return_case"><span>void</span></code></p><br/></div><div class="entity" id="func_craise"><p><span class="name">craise</span><span class="space_name_arg_paren"> </span><span class="arg_paren">(</span><span class="space_arg_comma_type"> </span><span class="arg_type">const char *</span><span class="space_arg_type_name"> </span><span class="arg_name">message</span><span class="space_arg_name_paren"> </span><span class="arg_comma">,</span><span class="space_arg_comma_type"> </span><span class="arg_type">size_t</span><span class="space_arg_type_name"> </span><span class="arg_name">length</span><span class="space_arg_name_paren"> </span><span class="arg_paren">)</span></p><br/><p class="info"><span>Acts exactly as the </span><a class="inline_link" href="#func_raise"><span></span><code>raise</code><span></span></a><span> function, plus it calls the
+user defined </span><i><span>custom raise function</span></i><span> and passing the user defined
+pointer as argument to that.
+</span><br/><span></span><br/><span>
+To see this function in action read the example of the example of
+</span><a class="inline_link" href="#func_set_exception_handling_pointer"><span></span><code>set_exception_handling_pointer</code><span></span></a><span>.
+</span></p><br/><p class="info return"><span class="label">Return: </span><code class="return_case"><span>void</span></code></p><br/></div><div class="entity" id="func_ccatch"><p><span class="name">ccatch</span><span class="space_name_arg_paren"> </span><span class="arg_paren">(</span><span class="space_arg_comma_type"> </span><span class="arg_type">void</span><span class="space_arg_type_name"> </span><span class="arg_paren">)</span></p><br/><p class="info"><span>Acts exactly as the </span><a class="inline_link" href="#func_catch"><span></span><code>catch</code><span></span></a><span> function, plus it calls the
+user defined </span><i><span>custom catch function</span></i><span> and passing the user defined
+pointer as argument to that.
+</span><br/><span></span><br/><span>
+To see this function in action read the example of the example of
+</span><a class="inline_link" href="#func_set_exception_handling_pointer"><span></span><code>set_exception_handling_pointer</code><span></span></a><span>.
+</span></p><br/><p class="info return"><span class="label">Return: </span><code class="return_case"><span>void</span></code></p><br/></div></div></div></div></body></html>
