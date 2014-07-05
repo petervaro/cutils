@@ -6,7 +6,7 @@
 ##                     Modern and Lightweight C Utilities                     ##
 ##                       Version: 0.8.72.004 (20140703)                       ##
 ##                                                                            ##
-##                         File: doc/src/03_cenv.yaml                         ##
+##                         File: doc/src/06_cver.yaml                         ##
 ##                                                                            ##
 ##           Designed and written by Peter Varo. Copyright (c) 2014           ##
 ##             License agreement is provided in the LICENSE file              ##
@@ -15,8 +15,8 @@
 ######################################################################## INFO ##
 
 #------------------------------------------------------------------------------#
-PAGE: CENV Environment Generator
-NAME: cenv
+PAGE: CVER Versioning
+NAME: cver
 
 #------------------------------------------------------------------------------#
 HEAD:
@@ -25,39 +25,50 @@ HEAD:
 #------------------------------------------------------------------------------#
 INFO:
   - - h1
-    - string: 'CENV | Environment Generator'
+    - string: 'CVER | Versioning'
   - - br
   - - p
     - string: |
-              Sets up a minimal C environment. It is very practical to test
-              ideas and short code snippets quickly or to start a new project
-              from scratch without writing all the boilerplate. The generated
-              `makefile` is very extensible and maintainable.
+              A very simple and minimal script for automated version counting.
+              It can create and initialise a `VERSION` file and can increase
+              its value each time it runs.
 
 #------------------------------------------------------------------------------#
 USER:
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - FILE: const/python.yaml
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - usage
     - name: Command Line Tool
-      info: |
-            `cenv` is command line tool, and takes two arguments. The first is
-            the path to the directory where the project will be generated. The
-            second one is the file name of the main C file.
+      info: "`cver` doesn't take any arguments."
       examples:
-        - - >
-            Create `application.c` and `makefile` in the `project` folder. Then
-            compile file and run it, to check if everything went fine
-          - |
-            \\OFF
-            $ python3 cenv.py project application
-            $ cd project
-            $ make
-            $ ./build/application
+        - - A `VERSION` file will be created inside the current directory
+          - \\OFF$ python3 cver.py
 
-        - - OUTPUT
-          - |
-            \\OFF
-            *** TEST ENVIRONMENT ***
-            ...
+#------------------------------------------------------------------------------#
+FUNC:
+  - func: cver.version
+    args:
+      - - int
+        - sub_max
+      - - int
+        - rev_max
+      - - int
+        - build_max
+      - - int
+        - main=0
+      - - int
+        - sub=1
+      - - int
+        - rev=0
+      - - int
+        - build=0
+    info: |
+          `cver` can also be used a module. It provides a single function
+          `cver.version` which can be used to create, initialise the `VERSION`
+          file and increase its value.
+          \\n\\n
+          ***Note:*** *The `sub_max`, `rev_max` and `build_max` arguments are
+          also responsible for the leading zeros in front of the version
+          numbers. So for example, if one wants to limit the `build` values of
+          the version number to `999` — so any time it became `1000`, the
+          `build` value will be `0` and the `rev` value will be increased by `1`
+          — the notation will always be `ddd` because the length of the input
+          (`999`) is `3`.*

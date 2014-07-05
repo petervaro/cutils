@@ -1,6 +1,18 @@
-
-// INFO //
-// INFO //
+/* INFO ************************************************************************
+**                                                                            **
+**                                   cutils                                   **
+**                                   ======                                   **
+**                                                                            **
+**                     Modern and Lightweight C Utilities                     **
+**                       Version: 0.8.72.004 (20140703)                       **
+**                                                                            **
+**                             File: cdar/darv.c                              **
+**                                                                            **
+**           Designed and written by Peter Varo. Copyright (c) 2014           **
+**             License agreement is provided in the LICENSE file              **
+**                 For more info visit: http://www.cutils.org                 **
+**                                                                            **
+************************************************************************ INFO */
 
 /* DOC:
  *      -DCDAR_OPT -- most optimised; no exceptions; not bound checked;

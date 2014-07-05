@@ -1,42 +1,18 @@
-################################################################################
+## INFO ########################################################################
 ##                                                                            ##
-##   cenv.py                                                                  ##
-##   =======                                                                  ##
+##                                   cutils                                   ##
+##                                   ======                                   ##
 ##                                                                            ##
-##   Generate a simple C test environment, with a basic but expandable        ##
-##   'makefile' and a minimal C file, ready to test ideas.                    ##
+##                     Modern and Lightweight C Utilities                     ##
+##                       Version: 0.8.72.004 (20140703)                       ##
 ##                                                                            ##
-##   Requirements: Python 3.2+                                                ##
-##   Version: 1.0.0                                                           ##
-##   Usage:                                                                   ##
+##                               File: cenv.py                                ##
 ##                                                                            ##
-##       $ python3 cenv.py <dirname> <filename>                               ##
-##       $ cd <dirname>                                                       ##
-##       $ make                                                               ##
-##       $ ./build/<filename>                                                 ##
+##           Designed and written by Peter Varo. Copyright (c) 2014           ##
+##             License agreement is provided in the LICENSE file              ##
+##                 For more info visit: http://www.cutils.org                 ##
 ##                                                                            ##
-##   Copyright (C) 2014 Peter Varo                                            ##
-##                                                                            ##
-##   Permission is hereby granted, free of charge, to any person obtaining    ##
-##   a copy of this software and associated documentation files (the          ##
-##   "Software"), to deal in the Software without restriction, including      ##
-##   without limitation the rights to use, copy, modify, merge, publish,      ##
-##   distribute, sublicense, and/or sell copies of the Software, and to       ##
-##   permit persons to whom the Software is furnished to do so, subject to    ##
-##   the following conditions:                                                ##
-##                                                                            ##
-##   The above copyright notice and this permission notice shall be           ##
-##   included in all copies or substantial portions of the Software.          ##
-##                                                                            ##
-##   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,          ##
-##   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF       ##
-##   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   ##
-##   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY     ##
-##   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,     ##
-##   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE        ##
-##   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                   ##
-##                                                                            ##
-################################################################################
+######################################################################## INFO ##
 
 # Import python modules
 from sys import argv
@@ -47,7 +23,11 @@ from traceback import extract_stack
 
 #------------------------------------------------------------------------------#
 # Module level constants
+# TODO: Add cdep, ccom, cver and clic support to makefile
 MAKE = """
+## INFO ##
+## INFO ##
+
 # Toggle switch
 IS_PRODUCTION=
 

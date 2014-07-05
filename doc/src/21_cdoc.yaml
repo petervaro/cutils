@@ -1,5 +1,18 @@
-## INFO ##
-## INFO ##
+## INFO ########################################################################
+##                                                                            ##
+##                                   cutils                                   ##
+##                                   ======                                   ##
+##                                                                            ##
+##                     Modern and Lightweight C Utilities                     ##
+##                       Version: 0.8.72.004 (20140703)                       ##
+##                                                                            ##
+##                         File: doc/src/21_cdoc.yaml                         ##
+##                                                                            ##
+##           Designed and written by Peter Varo. Copyright (c) 2014           ##
+##             License agreement is provided in the LICENSE file              ##
+##                 For more info visit: http://www.cutils.org                 ##
+##                                                                            ##
+######################################################################## INFO ##
 
 #------------------------------------------------------------------------------#
 PAGE: CDOC Documenting Tool
@@ -67,10 +80,11 @@ USER:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - usage
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-    - name: Command Line
+    - name: Command Line Tool
       info: |
-            `cdoc` is a command line utility, which takes a single argument: the
-            folder which includes all the files
+            `cdoc` is a command line utility, which takes two arguments: the
+            folder which includes all the markup files, and the destination
+            folder where the output will be generated to.
       examples:
         - - note
           - \\OFF$ python3 cdoc.py proj/doc/src proj/doc

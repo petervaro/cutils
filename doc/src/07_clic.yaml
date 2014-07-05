@@ -1,0 +1,251 @@
+## INFO ########################################################################
+##                                                                            ##
+##                                   cutils                                   ##
+##                                   ======                                   ##
+##                                                                            ##
+##                     Modern and Lightweight C Utilities                     ##
+##                       Version: 0.8.72.004 (20140703)                       ##
+##                                                                            ##
+##                         File: doc/src/07_clic.yaml                         ##
+##                                                                            ##
+##           Designed and written by Peter Varo. Copyright (c) 2014           ##
+##             License agreement is provided in the LICENSE file              ##
+##                 For more info visit: http://www.cutils.org                 ##
+##                                                                            ##
+######################################################################## INFO ##
+
+#------------------------------------------------------------------------------#
+PAGE: CLIC License Comment Generator
+NAME: clic
+
+#------------------------------------------------------------------------------#
+HEAD:
+  FILE: const/head.yaml
+
+#------------------------------------------------------------------------------#
+INFO:
+  - - h1
+    - string: 'CLIC | License Comment Generator'
+  - - br
+  - - p
+    - string: |
+              `clic` generates header-comments based on a file called
+              [`INFO`](#user_INFO_file) to all files implement a special
+              comment at their beginnings. This file can contain a
+              [`#format`](#user_LEFT_CENTER_RIGHT) macro and special
+              [`variables`](#user_VERSION).
+              \\n\\n
+              The comment syntax, which all files need to implement is the
+              following (for actual examples check the [`INFO`](#user_INFO_file)
+              file's 2nd, 3rd and 4th examples):
+  - - br
+  - - pre
+    - - code
+      - string: |
+                <token>     INFO      <char> ...  <char>      INFO     <token>
+                   ^    ^     ^    ^     ^    ^     ^    ^     ^    ^     ^
+                   |    |     |    |     |    |     |    |     |    |     |
+                   | optional | optional | anything | optional | optional |
+                   |  spaces  |  spaces  |          |  spaces  |  spaces  |
+                   |          |          |          |          |          |
+                opening      all     decorator  decorator     all      closing
+                symbol    uppercase  character  character  uppercase   symbol
+
+#------------------------------------------------------------------------------#
+USER:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/python.yaml
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - - usage
+    - name: Command Line Tool
+      info: >
+            `clic` is a command line tool that takes a path to a folder as a
+            single argument, however it can also be used as a
+            [function](#func_clic_header) imported from a Python module to
+            customise the file extensions it will scan through searching for the
+            special comment or to extend the language capabilities (adding more
+            comment symbols).
+      examples:
+        - - Using it as a command line utility on the current folder
+          - \\OFF$ python3 clic.py .
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - - files
+    - name: INFO file
+      info: |
+            This file doesn't have any extension and its name has to be `INFO`
+            with all uppercase letters. This file contains the text which will
+            be placed to any file in the provided folder (and in all sub
+            folders) if the files define the a special comment which can be
+            found in the following examples.
+            \\n\\n
+            It can also implement the [`#format`](#user_LEFT_CENTER_RIGHT) macro
+            to specify the alignment and width of the generated comment.
+            \\n\\n
+            It can also implement special [variables](#user_VERSION) which will
+            be substitutated during the comment text generation. The syntax of
+            the variables is to put them inside curly braces, for example:
+            [`{VERSION}`](#user_VERSION) will import the content of the
+            `VERSION` file and replace the placeholder with it.
+
+      examples:
+        - - Example of an `INFO` file
+          - |
+            \\OFF
+            #format CENTER 64
+            \\n
+            My Wonderful Library
+            ~~~~~~~~~~~~~~~~~~~~
+            \\n
+            File: {FILE} Size: {SIZE}
+            Update: {DATE}
+            \\n
+            Implemented by the one and only John Doe.
+            (C) 2014 John Doe. All rights reserved.
+
+        - - >
+            For each Python file which has the following comment at its
+            beginning
+          - |
+            \\OFF
+            ## INFO #
+             # INFO ##
+        - - Will be replaced by this
+          - |
+            \\OFF
+            ## INFO ########################################################
+            ##                                                            ##
+            ##                    My Wonderful Library                    ##
+            ##                    ~~~~~~~~~~~~~~~~~~~~                    ##
+            ##                                                            ##
+            ##                File: file.py Size: 6.22 KB                 ##
+            ##                     Update: 2014.07.05                     ##
+            ##                                                            ##
+            ##         Implemented by the one and only John Doe.          ##
+            ##          (C) 2014 John Doe. All rights reserved.           ##
+            ##                                                            ##
+            ######################################################## INFO ##
+
+        - - >
+            For each C or H file which has the following comment at its
+            beginning
+          - |
+            /* INFO *
+             * INFO */
+        - - Will be replaced by this
+          - |
+            /* INFO ********************************************************
+            **                                                            **
+            **                    My Wonderful Library                    **
+            **                    ~~~~~~~~~~~~~~~~~~~~                    **
+            **                                                            **
+            **                 File: file.c Size: 2.47 KB                 **
+            **                     Update: 2014.07.05                     **
+            **                                                            **
+            **         Implemented by the one and only John Doe.          **
+            **          (C) 2014 John Doe. All rights reserved.           **
+            **                                                            **
+            ******************************************************** INFO */
+
+        - - >
+            For each C or H file which has the following C99-style comment at
+            its beginning
+          - |
+            // INFO //
+            // INFO //
+        - - Will be replaced by this
+          - |
+            // INFO ////////////////////////////////////////////////////////
+            //                                                            //
+            //                    My Wonderful Library                    //
+            //                    ~~~~~~~~~~~~~~~~~~~~                    //
+            //                                                            //
+            //                 File: file.h Size: 1.31 KB                 //
+            //                     Update: 2014.07.05                     //
+            //                                                            //
+            //         Implemented by the one and only John Doe.          //
+            //          (C) 2014 John Doe. All rights reserved.           //
+            //                                                            //
+            //////////////////////////////////////////////////////// INFO //
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - - format macro
+    - name: LEFT|CENTER|RIGHT
+      info: |
+            If one wants to specify the alignment of the generated
+            header-comment, one has to provide the `#format` macro as the first
+            token in `INFO` file with the desired aligntment, which are `LEFT`,
+            `CENTER` or `RIGHT`. The default value is `CENTER`.
+      examples:
+        - - Align the generated comments to the left
+          - '\\OFF#format LEFT'
+        - - >
+            Align the generated comments to the right and limit
+            [width](#user_width) to 64
+          - '\\OFF#format RIGHT 64'
+    - name: width
+      info: |
+            If one wants to specify the width of the generated header-comment,
+            one has to provide the `#format` macro as the first
+            token in `INFO` file with the desired width.
+            The default value is `80`.
+            \\n\\n
+            **Note:** *`ccom` won't wrap lines in `INFO` file, therefore if the
+            provided width is smaller than the line widths those lines won't
+            change.*
+      examples:
+        - - Specify width to `79` of the generated comments
+          - '\\OFF#format 79'
+        - - >
+            Specify width to `100` and [align](#user_LEFT_CENTER_RIGHT) `CENTER`
+            the text of the generated comments
+          - '\\OFF#format CENTER 100'
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - - variables
+    - name: VERSION
+      info: Grab content of VERSION file if exists
+    - name: LICENSE
+      info: Grab content of LICENSE file if exists
+    - name: DATE
+      info: Get current date (`YYYY.MM.DD`)
+    - name: SIZE
+      info: Get current file's size, convert and format it (`B/KB/MB/GB`)
+    - name: FILE
+      info: Get current file's relative path from root + file name
+    - name: FILE_NAME
+      info: Get current file's name with extension
+    - name: FILE_BASE
+      info: Get current file's name without extension
+
+#------------------------------------------------------------------------------#
+FUNC:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: clic.header
+    args:
+      - - str
+        - path
+      - - iterable of strs
+        - line
+      - - dict
+        - block
+      - - iterable of strs
+        - extensions
+    info: >
+          `clic` can be used a module, which provides a module-level variable
+          `clic.EXTENSIONS` and a public function called `clic.header()`. The
+          latter can be used to customise the scanning and capturing settings.
+    examples:
+      - - >
+          Using `clic.header` to scan all `HTML`, Python and AppleScript files
+          and capture single line comments start with `--` and `#` and block
+          comments start with `<!--` ends with `-->` or start with `(*` ends
+          with `*)` in the current folder and in all its subfolders
+        - |
+          \\OFF
+          from clic import header
+          \\n
+          header(path='.',
+                 line=('--', '#'),
+                 block={'<!--': '-->', '(*', '*)'},
+                 extensions=('.html', '.py', '.scpt'))

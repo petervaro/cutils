@@ -1,5 +1,18 @@
-## INFO ##
-## INFO ##
+## INFO ########################################################################
+##                                                                            ##
+##                                   cutils                                   ##
+##                                   ======                                   ##
+##                                                                            ##
+##                     Modern and Lightweight C Utilities                     ##
+##                       Version: 0.8.72.004 (20140703)                       ##
+##                                                                            ##
+##                         File: doc/src/19_cfps.yaml                         ##
+##                                                                            ##
+##           Designed and written by Peter Varo. Copyright (c) 2014           ##
+##             License agreement is provided in the LICENSE file              ##
+##                 For more info visit: http://www.cutils.org                 ##
+##                                                                            ##
+######################################################################## INFO ##
 
 #------------------------------------------------------------------------------#
 PAGE: CFPS Frame Per Second
@@ -16,8 +29,8 @@ INFO:
   - - br
   - - p
     - string: |
-              A single header-only frame per second counter. It implements two
-              inline functions.
+              A single header-only frame per second counter. It implements an
+              inline functions and a macro wrapper around that.
 
 #------------------------------------------------------------------------------#
 USER:
@@ -25,28 +38,44 @@ USER:
     VARS:
       VAR_head: cfps
       VAR_func: printfps
-  - - About
-    - name: Summary
-      info: >
-            A single header-only unit testing system as minimal as possible.
-            \\n\\n
-            *Coming soon...*
 
 #------------------------------------------------------------------------------#
 FUNC:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - func: printfps
     args:
       - - double(*
         - timer_func
         - )(void)
     info: |
-          It requires a timer function `timer_func` as it's only argument
-          which returns a double value. It prints the frame per second value
-          to the standard output stream
+          `printfps` is a function-like macro, which wraps the
+          [`getfps`](#func_getfps) function. It requires a timer function
+          `timer_func` as it's only argument which has to return a `double`
+          value. It prints the frame per second value to the standard `stdout`
+          stream.
     examples:
-      - - ...
-        - ...
+      - - The next example prints the fps to the `stdout`
+        - |
+          #include <GLFW/glfw3.h>   /* glfw...(), GLFW... */
+          #include <cutils/cfps.h>  /* printfps() */
+          \\n
+          /* ... GLFW setup */
+          \\n
+          glfwSwapInterval(0);
+          void run(GLFWwindow *window)
+          {
+              while (!glfwWindowShouldClouse(window))
+              {
+                  /* ... Draw something */
+                  \\n
+                  glfwSwapBuffers(window);
+                  glfwPollEvents();
+                  \\n
+                  printfps(glfwGetTime);
+              }
+          }
 
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - func: getfps
     args:
       - - double(*
@@ -88,12 +117,12 @@ FUNC:
               int  fps_title_len = 10;
               void *data[] = {window, fps_title_txt, &fps_title_len};
               \\n
-              glfwSwapInterval(0)
+              glfwSwapInterval(0);
               while (!glfwWindowShouldClose(window))
               {
                   /* ... Draw something */
                   \\n
-                  glfwSwapBuffers(window)
+                  glfwSwapBuffers(window);
                   glfwPollEvents();
                   \\n
                   getfps(glfwGetTime, fps_title_setter, &data);

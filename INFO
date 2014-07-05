@@ -1,0 +1,13 @@
+#format CENTER 80
+
+cutils
+======
+
+Modern and Lightweight C Utilities
+Version: {VERSION}
+
+File: {FILE}
+
+Designed and written by Peter Varo. Copyright (c) 2014
+License agreement is provided in the LICENSE file
+For more info visit: http://www.cutils.org

@@ -1,17 +1,25 @@
-/*
- * C Standard Library Reference
- *
- * Collected and implemented by
- * Peter Varo Copyright (C) 2014
- *
- * Version: 1.5.3
- *
- * Based on Jospeh H. Silverman,
- *          http://www.tutorialspoint.com
- *          http://www.stackoverflow.com
- *          http://en.cppreference.com
- *          http://en.wikipedia.org
- */
+/* INFO ************************************************************************
+**                                                                            **
+**                                   cutils                                   **
+**                                   ======                                   **
+**                                                                            **
+**                     Modern and Lightweight C Utilities                     **
+**                       Version: 0.8.72.004 (20140703)                       **
+**                                                                            **
+**                                File: cref.c                                **
+**                                                                            **
+**           Designed and written by Peter Varo. Copyright (c) 2014           **
+**             License agreement is provided in the LICENSE file              **
+**                 For more info visit: http://www.cutils.org                 **
+**                                                                            **
+************************************************************************ INFO */
+
+/* Inspired by:
+    Jospeh H. Silverman
+    http://www.tutorialspoint.com
+    http://www.stackoverflow.com
+    http://en.cppreference.com
+    http://en.wikipedia.org */
 
 
 

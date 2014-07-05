@@ -1,5 +1,18 @@
-// INFO //
-// INFO //
+/* INFO ************************************************************************
+**                                                                            **
+**                                   cutils                                   **
+**                                   ======                                   **
+**                                                                            **
+**                     Modern and Lightweight C Utilities                     **
+**                       Version: 0.8.72.004 (20140703)                       **
+**                                                                            **
+**                                File: cpro.h                                **
+**                                                                            **
+**           Designed and written by Peter Varo. Copyright (c) 2014           **
+**             License agreement is provided in the LICENSE file              **
+**                 For more info visit: http://www.cutils.org                 **
+**                                                                            **
+************************************************************************ INFO */
 
 #ifndef _C_PROFILER_H_6503982333617538_
 #define _C_PROFILER_H_6503982333617538_

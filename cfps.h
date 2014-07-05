@@ -1,5 +1,18 @@
-// INFO //
-// INFO //
+/* INFO ************************************************************************
+**                                                                            **
+**                                   cutils                                   **
+**                                   ======                                   **
+**                                                                            **
+**                     Modern and Lightweight C Utilities                     **
+**                       Version: 0.8.72.004 (20140703)                       **
+**                                                                            **
+**                                File: cfps.h                                **
+**                                                                            **
+**           Designed and written by Peter Varo. Copyright (c) 2014           **
+**             License agreement is provided in the LICENSE file              **
+**                 For more info visit: http://www.cutils.org                 **
+**                                                                            **
+************************************************************************ INFO */
 
 #ifndef _C_FRAME_PER_SECOND_H_2834550704086395_
 #define _C_FRAME_PER_SECOND_H_2834550704086395_

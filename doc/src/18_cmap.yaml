@@ -6,7 +6,7 @@
 ##                     Modern and Lightweight C Utilities                     ##
 ##                       Version: 0.8.72.004 (20140703)                       ##
 ##                                                                            ##
-##                         File: doc/src/02_cref.yaml                         ##
+##                         File: doc/src/18_cmap.yaml                         ##
 ##                                                                            ##
 ##           Designed and written by Peter Varo. Copyright (c) 2014           ##
 ##             License agreement is provided in the LICENSE file              ##
@@ -15,8 +15,8 @@
 ######################################################################## INFO ##
 
 #------------------------------------------------------------------------------#
-PAGE: CREF Quick Reference
-NAME: cref
+PAGE: CMAP HashMap
+NAME: cmap
 
 #------------------------------------------------------------------------------#
 HEAD:
@@ -28,18 +28,14 @@ INFO:
 
 #------------------------------------------------------------------------------#
 USER:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/cdar.yaml
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - About
     - name: Summary
       info: >
-            An up-to-date reference to standard C library. It has two purposes:
-            \\n\\n
-            1. To be a quick reference guide, with short explanations\\n
-            2. To use it in a text editor to extend the auto complition's
-            functionality\\n\\n
-            *THIS FILE IS* ***NOT A VALID C FILE****, DON'T COMPILE NOR INCLUDE
-            IT!\\n
-            (The only reason it has `.c` extension, is to make it easier for
-            text editors to set the proper syntax highlighter automatically to
-            this file.)*
+            Associative list / Hash Table / Hash Map / Dictionary implementation.
             \\n\\n
             *Coming soon...*
+
+# TODO: Implement cmap: Hash Map

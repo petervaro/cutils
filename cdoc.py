@@ -1,5 +1,18 @@
-## INFO ##
-## INFO ##
+## INFO ########################################################################
+##                                                                            ##
+##                                   cutils                                   ##
+##                                   ======                                   ##
+##                                                                            ##
+##                     Modern and Lightweight C Utilities                     ##
+##                       Version: 0.8.72.004 (20140703)                       ##
+##                                                                            ##
+##                               File: cdoc.py                                ##
+##                                                                            ##
+##           Designed and written by Peter Varo. Copyright (c) 2014           ##
+##             License agreement is provided in the LICENSE file              ##
+##                 For more info visit: http://www.cutils.org                 ##
+##                                                                            ##
+######################################################################## INFO ##
 
 # Import Python modules
 from re import (VERBOSE as re_VERBOSE,
@@ -22,6 +35,7 @@ from collections import OrderedDict, _Link
 from sys import argv as sys_argv
 
 # Import third party modules
+# TODO: add yaml and bs4 dependencies to documentation
 from yaml import load as yaml_load
 from bs4 import BeautifulSoup
 
@@ -161,7 +175,11 @@ padding:0 3pt;border-bottom:1.5pt solid #dddddd}a.inline_link:hover{background:
 
 #------------------------------------------------------------------------------#
 # Custom Exceptions
-class _MissingValue(Exception):
+class _CDOC_Exception(Exception):
+    def __str__(self):
+        return self.error
+
+class _MissingValue(_CDOC_Exception):
     def __init__(self, value, name, section, *solutions):
         msg = """\n
     Missing {0!r} from {1!r} {2} definition
@@ -177,12 +195,15 @@ class _MissingValue(Exception):
         # Create message if value is missing from a list
         elif isinstance(self, MissingListValue):
             self.error = msg.format(value, name, section, ' '.join(solutions), '')
-    def __str__(self):
-        return self.error
+
+class InvalidSchema(_CDOC_Exception):
+    def __init__(self, name, section):
+        self.error = """\n
+    Schema of {} in {!r} is not valid
+    """.format(section, name)
 
 class MissingDictValue(_MissingValue): pass
 class MissingListValue(_MissingValue): pass
-
 
 #------------------------------------------------------------------------------#
 # Function wrapper (post-decorator for BS's factory function)
@@ -301,22 +322,25 @@ def _func_args(parent, func_name, args, new_line):
     new(parent, 'span', class_='name', string=func_name)
     new(parent, 'span', class_='space_name_arg_paren', string=' ')
     new(parent, 'span', class_='arg_paren', string='(')
-    # Add arguments
-    for comma, (arg_type, arg_name, *arg_rest) in enumerate(args):
-        # If more than one argument
-        if comma:
-            new(parent, 'span', class_='arg_comma', string=',')
-        # Add type
-        new(parent, 'span', class_='space_arg_comma_type', string=' ')
-        new(parent, 'span', class_='arg_type', string=arg_type)
-        new(parent, 'span', class_='space_arg_type_name', string=' ')
-        # Add name
-        if arg_name:
-            new(parent, 'span', class_='arg_name', string=arg_name)
-            new(parent, 'span', class_='space_arg_name_paren', string=' ')
-        if arg_rest:
-            new(parent, 'span', class_='arg_type', string=arg_rest[0])
+    try:
+        # Add arguments
+        for comma, (arg_type, arg_name, *arg_rest) in enumerate(args):
+            # If more than one argument
+            if comma:
+                new(parent, 'span', class_='arg_comma', string=',')
+            # Add type
+            new(parent, 'span', class_='space_arg_comma_type', string=' ')
+            new(parent, 'span', class_='arg_type', string=arg_type)
             new(parent, 'span', class_='space_arg_type_name', string=' ')
+            # Add name
+            if arg_name:
+                new(parent, 'span', class_='arg_name', string=arg_name)
+                new(parent, 'span', class_='space_arg_name_paren', string=' ')
+            if arg_rest:
+                new(parent, 'span', class_='arg_type', string=arg_rest[0])
+                new(parent, 'span', class_='space_arg_type_name', string=' ')
+    except ValueError:
+        raise InvalidSchema(func_name, 'arguments') from None
     # Close parenthesis
     new(parent, 'span', class_='arg_paren', string=')')
 
@@ -677,6 +701,18 @@ def document(infolder, outfolder, extension, loader, generate_toc=None):
     # Load all pages
     for file in os_listdir(infolder):
         if file.endswith(extension):
+
+            # TODO: Improve performance by using check.py module's Checker
+            #       to decide if file needs to be reprocessed or not. The
+            #       problem is right now with the TOC, because it is generated
+            #       based on the pages dictionary. But to generate this
+            #       dictionary we have to open the file to get essential data.
+            #       Possible solutions:
+            #       1) Generate the menu into a separate file (const folder) and
+            #          and use it later on, and only update that if the number
+            #          of files changed or at least one of the filenames changed
+            #       2) Save the PAGE and NAME data into a cache file.. ?
+
             with open(os_path_join(infolder, file), encoding='utf-8') as f:
                 pagedata = _import(loader(f.read()), infolder, loader)
                 pagename = pagedata.get('PAGE', 'Document {}'.format(next(anonym)))
@@ -692,7 +728,9 @@ def document(infolder, outfolder, extension, loader, generate_toc=None):
 #------------------------------------------------------------------------------#
 if __name__ == '__main__':
     try:
+        # TODO: add 'external CSS path' argument
         script, infolder, outfolder, *rest = sys_argv
+        # Create documentation
         document(infolder=infolder,
                  outfolder=outfolder,
                  extension='.yaml',

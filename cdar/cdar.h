@@ -1,9 +1,18 @@
-
-// INFO //
-// Automatically Generated Type Specific
-// Function Wrappers and Pointers
-// For The Type Generic Dynamic Array (cdar)
-// INFO //
+/* INFO ************************************************************************
+**                                                                            **
+**                                   cutils                                   **
+**                                   ======                                   **
+**                                                                            **
+**                     Modern and Lightweight C Utilities                     **
+**                       Version: 0.8.72.004 (20140703)                       **
+**                                                                            **
+**                             File: cdar/cdar.h                              **
+**                                                                            **
+**           Designed and written by Peter Varo. Copyright (c) 2014           **
+**             License agreement is provided in the LICENSE file              **
+**                 For more info visit: http://www.cutils.org                 **
+**                                                                            **
+************************************************************************ INFO */
 
 #ifndef _DYNAMIC_ARRAY_INTERFACE_H_
 #define _DYNAMIC_ARRAY_INTERFACE_H_

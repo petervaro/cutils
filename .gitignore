@@ -1,2 +1,5 @@
 *.DS_Store
 readme.html
+.cutils_filescache
+*.pyc
+*.pyo

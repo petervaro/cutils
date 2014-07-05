@@ -1,11 +1,12 @@
-#cutils
+![cutils: C Utilities](brand/cutils.svg "cutils logo")
 
 **cutils** is a set of very simple but powerful tools to make one's life a
 little easier while one is programming in C. I created the tools mostly for
 use in my personal projects, however I hope/believe many will find it just as
 useful as I do.
 
-for more info visit: [www.cutils.org](http://www.cutils.org)
+***For more information or documentation, please visit:***
+[www.cutils.org](http://www.cutils.org)!
 
 - - -
 Copyright &copy; 2014 Peter Varo
