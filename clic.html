@@ -1,5 +1,109 @@
-<html><!-- www.cutils.org | Peter Varo | 2014 --><head><link href="http://www.cutils.org/favicon.ico" rel="shortcut icon" type="image/x-icon"/><link href="http://www.cutils.org/favicon.ico" rel="icon" type="image/x-icon"/><title>CLIC License Comment Generator</title><meta charset="utf-8"/><link href="css/cdoc.css" rel="stylesheet" type="text/css"/></head><body><div id="column1"><div id="generic"><img src="img/cutils.svg"/><br/><h2><span>MODERN AND LIGHTWEIGHT C UTILITIES</span></h2><p><span>&mdash;</span></p><p><span>DESIGNED BY</span></p><p><span>PETER VARO &copy;2014</span></p><p><span>&mdash;</span></p><br/></div><div id="sidebar"><div><p class="label">Modules:</p></div><br/><a class="toc" href="index.html">CUTILS</a><a class="toc" href="c11.html">C11 Syntax Highlighter</a><a class="toc" href="cref.html">CREF Quick Reference</a><a class="toc" href="cenv.html">CENV Environment Generator</a><a class="toc" href="cdep.html">CDEP Dependeny Graph</a><a class="toc" href="ccom.html">CCOM Comment Scanner and List Generator</a><a class="toc toc_current" href="#">CLIC License Comment Generator</a><a class="toc" href="cres.html">CRES External Resources Packer</a><a class="toc" href="carg.html">CARG Variadic Argument Macro</a><a class="toc" href="cbug.html">CBUG Debugging &amp; Logging</a><a class="toc" href="cexc.html">CEXC Exception Handling</a><a class="toc" href="cpro.html">CPRO Profiling</a><a class="toc" href="cutt.html">CUTT Unit Testing Tools</a><a class="toc" href="cdar.html">CDAR Dynamic Array</a><a class="toc" href="cstr.html">CSTR Strings</a><a class="toc" href="csll.html">CSLL Single Linked List</a><a class="toc" href="cdll.html">CDLL Double Linked List</a><a class="toc" href="cmap.html">CMAP HashMap</a><a class="toc" href="cfps.html">CFPS Frame Per Second</a><a class="toc" href="ccol.html">CCOL Color Helper</a><a class="toc" href="cdoc.html">CDOC Documenting Tool</a><br/><div><p class="label">About:</p><br/><a class="toc" href="#user_Summary">Summary</a><a class="toc" href="#user_TODO">TODO</a></div><br/></div></div><div id="column2"><div id="content"><h3><span>!!! WORK IN PROGRESS !!!</span></h3><br/><p><span>This module is highly experimental and far from being complete. It is not even decided whether it is needed in </span><code>cutils</code><span> or not. USE IT AT YOUR OWN RISK!
-</span></p><br/><br/><div><h2 class="title">About</h2><div class="entity" id="user_Summary"><p class="name">Summary</p><br/><p class="info"><span>Generates document header-comments to files implement a special comment mark. </span><br/><span></span><br/><span> </span><i><span>Coming soon...</span></i><span>
-</span></p><br/></div><div class="entity" id="user_TODO"><p class="name">TODO</p><br/><p class="info"><span>C multiline comment based INFO</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>Use the symbol after </span><code>INFO</code><span>:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_comments">/* INFO **
-** INFO */</span><span>
-</span></code></pre><br/></div></div></div></body></html>
+<html><!-- www.cutils.org | Peter Varo | 2014 --><head><link href="http://www.cutils.org/favicon.ico" rel="shortcut icon" type="image/x-icon"/><link href="http://www.cutils.org/favicon.ico" rel="icon" type="image/x-icon"/><title>CLIC License Comment Generator</title><meta charset="utf-8"/><link href="css/cdoc.css" rel="stylesheet" type="text/css"/></head><body><div id="column1"><div id="generic"><img src="img/cutils.svg"/><br/><h2><span>MODERN AND LIGHTWEIGHT C UTILITIES</span></h2><p><span>&mdash;</span></p><p><span>DESIGNED BY</span></p><p><span>PETER VARO &copy;2014</span></p><p><span>&mdash;</span></p><br/></div><div id="sidebar"><div><p class="label">Modules:</p></div><br/><a class="toc" href="index.html">CUTILS</a><a class="toc" href="c11.html">C11 Syntax Highlighter</a><a class="toc" href="cref.html">CREF Quick Reference</a><a class="toc" href="cenv.html">CENV Environment Generator</a><a class="toc" href="cdep.html">CDEP Dependeny Graph</a><a class="toc" href="ccom.html">CCOM Comment Scanner</a><a class="toc" href="cver.html">CVER Versioning</a><a class="toc toc_current" href="#">CLIC License Comment Generator</a><a class="toc" href="cres.html">CRES External Resources Packer</a><a class="toc" href="carg.html">CARG Variadic Argument Macro</a><a class="toc" href="cbug.html">CBUG Debugging &amp; Logging</a><a class="toc" href="cexc.html">CEXC Exception Handling</a><a class="toc" href="cpro.html">CPRO Profiling</a><a class="toc" href="cutt.html">CUTT Unit Testing Tools</a><a class="toc" href="cdar.html">CDAR Dynamic Array</a><a class="toc" href="cstr.html">CSTR Strings</a><a class="toc" href="csll.html">CSLL Single Linked List</a><a class="toc" href="cdll.html">CDLL Double Linked List</a><a class="toc" href="cmap.html">CMAP HashMap</a><a class="toc" href="cfps.html">CFPS Frame Per Second</a><a class="toc" href="ccol.html">CCOL Color Helper</a><a class="toc" href="cdoc.html">CDOC Documenting Tool</a><br/><div><p class="label">Dependencies:</p><br/><a class="toc" href="#user_Python_3">Python 3</a></div><br/><div><p class="label">Usage:</p><br/><a class="toc" href="#user_Command_Line_Tool">Command Line Tool</a></div><br/><div><p class="label">Files:</p><br/><a class="toc" href="#user_INFO_file">INFO file</a></div><br/><div><p class="label">Format Macro:</p><br/><a class="toc" href="#user_LEFT_CENTER_RIGHT">LEFT|CENTER|RIGHT</a><a class="toc" href="#user_width">width</a></div><br/><div><p class="label">Variables:</p><br/><a class="toc" href="#user_VERSION">VERSION</a><a class="toc" href="#user_LICENSE">LICENSE</a><a class="toc" href="#user_DATE">DATE</a><a class="toc" href="#user_SIZE">SIZE</a><a class="toc" href="#user_FILE">FILE</a><a class="toc" href="#user_FILE_NAME">FILE_NAME</a><a class="toc" href="#user_FILE_BASE">FILE_BASE</a></div><br/><div><p class="label">Functions:</p><br/><a class="toc" href="#func_clic_header">clic.header()</a></div></div></div><div id="column2"><div id="content"><h1><span>CLIC | License Comment Generator</span></h1><br/><p><span></span><code>clic</code><span> generates header-comments based on a file called
+</span><a class="inline_link" href="#user_INFO_file"><span></span><code>INFO</code><span></span></a><span> to all files implement a special
+comment at their beginnings. This file can contain a
+</span><a class="inline_link" href="#user_LEFT_CENTER_RIGHT"><span></span><code>#format</code><span></span></a><span> macro and special
+</span><a class="inline_link" href="#user_VERSION"><span></span><code>variables</code><span></span></a><span>.
+</span><br/><span></span><br/><span>
+The comment syntax, which all files need to implement is the
+following (for actual examples check the </span><a class="inline_link" href="#user_INFO_file"><span></span><code>INFO</code><span></span></a><span>
+file's 2nd, 3rd and 4th examples):
+</span></p><br/><pre><code><span>&lt;token&gt;     INFO      &lt;char&gt; ...  &lt;char&gt;      INFO     &lt;token&gt;
+   ^    ^     ^    ^     ^    ^     ^    ^     ^    ^     ^
+   |    |     |    |     |    |     |    |     |    |     |
+   | optional | optional | anything | optional | optional |
+   |  spaces  |  spaces  |          |  spaces  |  spaces  |
+   |          |          |          |          |          |
+opening      all     decorator  decorator     all      closing
+symbol    uppercase  character  character  uppercase   symbol
+</span></code></pre><br/><div><h2 class="title">Dependencies</h2><div class="entity" id="user_Python_3"><p class="name">Python 3</p><br/><p class="info"><span>This module is written in </span><code>Python 3</code><span>, therefore it needs the interpreter
+to be installed on your system to run it. I suggest you to use a
+package-manager to keep your installations ordered, clean and upto-date.
+</span></p><br/></div><p class="info label"></p><p class="info note"><span></span><b><span>Macintosh:</span></b><span> one can use </span><a class="inline_link" href="http://brew.sh/"><span>homebrew</span></a><span>:</span></p><br/><pre class="info"><code class="snippet">brew install python3</code></pre><br/><p class="info note"><span></span><b><span>Windows:</span></b><span> one can use </span><a class="inline_link" href="https://chocolatey.org/"><span>chocolatey</span></a><span>:</span></p><br/><pre class="info"><code class="snippet">cinst python3</code></pre><br/><p class="info note"><span></span><b><span>Linux:</span></b><span> on Ubuntu and LinuxMint it is already installed:</span></p><br/><pre class="info"><code class="snippet">sudo apt-get install python3</code></pre><br/></div><div><h2 class="title">Usage</h2><div class="entity" id="user_Command_Line_Tool"><p class="name">Command Line Tool</p><br/><p class="info"><span></span><code>clic</code><span> is a command line tool that takes a path to a folder as a single argument, however it can also be used as a </span><a class="inline_link" href="#func_clic_header"><span>function</span></a><span> imported from a Python module to customise the file extensions it will scan through searching for the special comment or to extend the language capabilities (adding more comment symbols).
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>Using it as a command line utility on the current folder:</span></p><br/><pre class="info"><code class="snippet">$ python3 clic.py .</code></pre><br/></div><div><h2 class="title">Files</h2><div class="entity" id="user_INFO_file"><p class="name">INFO file</p><br/><p class="info"><span>This file doesn't have any extension and its name has to be </span><code>INFO</code><span>
+with all uppercase letters. This file contains the text which will
+be placed to any file in the provided folder (and in all sub
+folders) if the files define the a special comment which can be
+found in the following examples.
+</span><br/><span></span><br/><span>
+It can also implement the </span><a class="inline_link" href="#user_LEFT_CENTER_RIGHT"><span></span><code>#format</code><span></span></a><span> macro
+to specify the alignment and width of the generated comment.
+</span><br/><span></span><br/><span>
+It can also implement special </span><a class="inline_link" href="#user_VERSION"><span>variables</span></a><span> which will
+be substitutated during the comment text generation. The syntax of
+the variables is to put them inside curly braces, for example:
+</span><a class="inline_link" href="#user_VERSION"><span></span><code>{VERSION}</code><span></span></a><span> will import the content of the
+</span><code>VERSION</code><span> file and replace the placeholder with it.
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>Example of an </span><code>INFO</code><span> file:</span></p><br/><pre class="info"><code class="snippet">#format CENTER 64
+
+My Wonderful Library
+~~~~~~~~~~~~~~~~~~~~
+
+File: {FILE} Size: {SIZE}
+Update: {DATE}
+
+Implemented by the one and only John Doe.
+(C) 2014 John Doe. All rights reserved.</code></pre><br/><p class="info note"><span>For each Python file which has the following comment at its beginning
+:</span></p><br/><pre class="info"><code class="snippet">## INFO #
+ # INFO ##</code></pre><br/><p class="info note"><span>Will be replaced by this:</span></p><br/><pre class="info"><code class="snippet">## INFO ########################################################
+##                                                            ##
+##                    My Wonderful Library                    ##
+##                    ~~~~~~~~~~~~~~~~~~~~                    ##
+##                                                            ##
+##                File: file.py Size: 6.22 KB                 ##
+##                     Update: 2014.07.05                     ##
+##                                                            ##
+##         Implemented by the one and only John Doe.          ##
+##          (C) 2014 John Doe. All rights reserved.           ##
+##                                                            ##
+######################################################## INFO ##</code></pre><br/><p class="info note"><span>For each C or H file which has the following comment at its beginning
+:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_comments">/* INFO *
+ * INFO */</span><span>
+</span></code></pre><br/><p class="info note"><span>Will be replaced by this:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_comments">/* INFO ********************************************************
+**                                                            **
+**                    My Wonderful Library                    **
+**                    ~~~~~~~~~~~~~~~~~~~~                    **
+**                                                            **
+**                 File: file.c Size: 2.47 KB                 **
+**                     Update: 2014.07.05                     **
+**                                                            **
+**         Implemented by the one and only John Doe.          **
+**          (C) 2014 John Doe. All rights reserved.           **
+**                                                            **
+******************************************************** INFO */</span><span>
+</span></code></pre><br/><p class="info note"><span>For each C or H file which has the following C99-style comment at its beginning
+:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_comments">// INFO //</span><span>
+</span><span class="code_comments">// INFO //</span><span>
+</span></code></pre><br/><p class="info note"><span>Will be replaced by this:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_comments">// INFO ////////////////////////////////////////////////////////</span><span>
+</span><span class="code_comments">//                                                            //</span><span>
+</span><span class="code_comments">//                    My Wonderful Library                    //</span><span>
+</span><span class="code_comments">//                    ~~~~~~~~~~~~~~~~~~~~                    //</span><span>
+</span><span class="code_comments">//                                                            //</span><span>
+</span><span class="code_comments">//                 File: file.h Size: 1.31 KB                 //</span><span>
+</span><span class="code_comments">//                     Update: 2014.07.05                     //</span><span>
+</span><span class="code_comments">//                                                            //</span><span>
+</span><span class="code_comments">//         Implemented by the one and only John Doe.          //</span><span>
+</span><span class="code_comments">//          (C) 2014 John Doe. All rights reserved.           //</span><span>
+</span><span class="code_comments">//                                                            //</span><span>
+</span><span class="code_comments">//////////////////////////////////////////////////////// INFO //</span><span>
+</span></code></pre><br/></div><div><h2 class="title">Format Macro</h2><div class="entity" id="user_LEFT_CENTER_RIGHT"><p class="name">LEFT|CENTER|RIGHT</p><br/><p class="info"><span>If one wants to specify the alignment of the generated
+header-comment, one has to provide the </span><code>#format</code><span> macro as the first
+token in </span><code>INFO</code><span> file with the desired aligntment, which are </span><code>LEFT</code><span>,
+</span><code>CENTER</code><span> or </span><code>RIGHT</code><span>. The default value is </span><code>CENTER</code><span>.
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>Align the generated comments to the left:</span></p><br/><pre class="info"><code class="snippet">#format LEFT</code></pre><br/><p class="info note"><span>Align the generated comments to the right and limit </span><a class="inline_link" href="#user_width"><span>width</span></a><span> to 64
+:</span></p><br/><pre class="info"><code class="snippet">#format RIGHT 64</code></pre><br/><div class="entity" id="user_width"><p class="name">width</p><br/><p class="info"><span>If one wants to specify the width of the generated header-comment,
+one has to provide the </span><code>#format</code><span> macro as the first
+token in </span><code>INFO</code><span> file with the desired width.
+The default value is </span><code>80</code><span>.
+</span><br/><span></span><br/><span>
+</span><b><span>Note:</span></b><span> </span><i><span></span><code>ccom</code><span> won't wrap lines in </span><code>INFO</code><span> file, therefore if the
+provided width is smaller than the line widths those lines won't
+change.</span></i><span>
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>Specify width to </span><code>79</code><span> of the generated comments:</span></p><br/><pre class="info"><code class="snippet">#format 79</code></pre><br/><p class="info note"><span>Specify width to </span><code>100</code><span> and </span><a class="inline_link" href="#user_LEFT_CENTER_RIGHT"><span>align</span></a><span> </span><code>CENTER</code><span> the text of the generated comments
+:</span></p><br/><pre class="info"><code class="snippet">#format CENTER 100</code></pre><br/></div><div><h2 class="title">Variables</h2><div class="entity" id="user_VERSION"><p class="name">VERSION</p><br/><p class="info"><span>Grab content of VERSION file if exists</span></p><br/></div><div class="entity" id="user_LICENSE"><p class="name">LICENSE</p><br/><p class="info"><span>Grab content of LICENSE file if exists</span></p><br/></div><div class="entity" id="user_DATE"><p class="name">DATE</p><br/><p class="info"><span>Get current date (</span><code>YYYY.MM.DD</code><span>)</span></p><br/></div><div class="entity" id="user_SIZE"><p class="name">SIZE</p><br/><p class="info"><span>Get current file's size, convert and format it (</span><code>B/KB/MB/GB</code><span>)</span></p><br/></div><div class="entity" id="user_FILE"><p class="name">FILE</p><br/><p class="info"><span>Get current file's relative path from root + file name</span></p><br/></div><div class="entity" id="user_FILE_NAME"><p class="name">FILE_NAME</p><br/><p class="info"><span>Get current file's name with extension</span></p><br/></div><div class="entity" id="user_FILE_BASE"><p class="name">FILE_BASE</p><br/><p class="info"><span>Get current file's name without extension</span></p><br/></div></div><div><h2 class="title">Functions</h2><div class="entity" id="func_clic_header"><p><span class="name">clic.header</span><span class="space_name_arg_paren"> </span><span class="arg_paren">(</span><span class="space_arg_comma_type"> </span><span class="arg_type">str</span><span class="space_arg_type_name"> </span><span class="arg_name">path</span><span class="space_arg_name_paren"> </span><span class="arg_comma">,</span><span class="space_arg_comma_type"> </span><span class="arg_type">iterable of strs</span><span class="space_arg_type_name"> </span><span class="arg_name">line</span><span class="space_arg_name_paren"> </span><span class="arg_comma">,</span><span class="space_arg_comma_type"> </span><span class="arg_type">dict</span><span class="space_arg_type_name"> </span><span class="arg_name">block</span><span class="space_arg_name_paren"> </span><span class="arg_comma">,</span><span class="space_arg_comma_type"> </span><span class="arg_type">iterable of strs</span><span class="space_arg_type_name"> </span><span class="arg_name">extensions</span><span class="space_arg_name_paren"> </span><span class="arg_paren">)</span></p><br/><p class="info"><span></span><code>clic</code><span> can be used a module, which provides a module-level variable </span><code>clic.EXTENSIONS</code><span> and a public function called </span><code>clic.header()</code><span>. The latter can be used to customise the scanning and capturing settings.
+</span></p><br/><p class="info return"><span class="label">Return: </span><code class="return_case"><span>void</span></code></p><br/><p class="info label">Examples:</p><p class="info note"><span>Using </span><code>clic.header</code><span> to scan all </span><code>HTML</code><span>, Python and AppleScript files and capture single line comments start with </span><code>--</code><span> and </span><code>#</code><span> and block comments start with </span><code>&lt;!--</code><span> ends with </span><code>--&gt;</code><span> or start with </span><code>(*</code><span> ends with </span><code>*)</code><span> in the current folder and in all its subfolders
+:</span></p><br/><pre class="info"><code class="snippet">from clic import header
+
+header(path='.',
+       line=('--', '#'),
+       block={'&lt;!--': '--&gt;', '(*', '*)'},
+       extensions=('.html', '.py', '.scpt'))</code></pre><br/></div></div></div></div></body></html>
