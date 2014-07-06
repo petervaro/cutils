@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.004 (20140703)                       **
+**                       Version: 0.8.72.026 (20140706)                       **
 **                                                                            **
 **                                File: cpro.h                                **
 **                                                                            **
@@ -21,10 +21,6 @@
 #include <stdlib.h>
 
 /*----------------------------------------------------------------------------*/
-/* cycles      : number of times the given function should run
- * double time : output of profile
- * function    : function to be called
- * ...         : arguments passed to function */
 #ifdef __profile
   #error we are so fucked
 #endif

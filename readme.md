@@ -1,4 +1,4 @@
-![cutils: C Utilities](brand/cutils.svg "cutils logo")
+![cutils: C Utilities](http://www.cutils.org/img/cutils.svg "cutils logo")
 
 **cutils** is a set of very simple but powerful tools to make one's life a
 little easier while one is programming in C. I created the tools mostly for

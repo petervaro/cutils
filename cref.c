@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.004 (20140703)                       **
+**                       Version: 0.8.72.026 (20140706)                       **
 **                                                                            **
 **                                File: cref.c                                **
 **                                                                            **
@@ -345,6 +345,7 @@ char *format =
 "\n";
 
 // TODO: %ju and %lf
+//       http://www.mekong.net/tech/printf.htm
 
 // Closes the stream. All buffers are flushed
 int

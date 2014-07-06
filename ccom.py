@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.004 (20140703)                       ##
+##                       Version: 0.8.72.043 (20140706)                       ##
 ##                                                                            ##
 ##                               File: ccom.py                                ##
 ##                                                                            ##
@@ -26,9 +26,16 @@ from re import (IGNORECASE as re_IGNORECASE,
                 split as re_split,
                 finditer as re_finditer,
                 compile as re_compile)
+from pickle import (dump as pickle_dump,
+                    load as pickle_load,
+                    HIGHEST_PROTOCOL as pickle_HIGHEST_PROTOCOL)
 
 # Import cutils modules
-import comment
+from internal.check import Checker as check_Checker
+from internal.comment import (LINE as comment_LINE,
+                              BLOCK as comment_BLOCK,
+                              escape as comment_escape,
+                              block_comments as comment_block_comments)
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 # Special tags to look for
@@ -94,6 +101,8 @@ def _search(collected, content_pattern, newline_pattern, string, filepath, marks
     # Collect all locations of new lines in string
     line = 0
     newlines = [match.start() for match in re_finditer(newline_pattern, string)]
+    # Create a dictionary for the different posts in file
+    collected[filepath] = posts = {}
     # For each match in
     for match in re_finditer(content_pattern, string):
         # Character-index where the match starts
@@ -122,55 +131,67 @@ def _search(collected, content_pattern, newline_pattern, string, filepath, marks
         tag = (word or marks[mark]).upper()
         # Get line-number
         line = next(l for l, c in enumerate(newlines[line:], start=line + 1) if c > start)
-
-        # If post type already exits
-        try:
-            collected[tag].append((filepath, line, content))
-        # If not create new post type
-        except KeyError:
-            collected[tag] = [(filepath, line, content)]
+        # Store post in posts
+        posts.setdefault(tag, []).append((line, content))
+    print('CCOM: processed {!r}'.format(filepath))
 
 #------------------------------------------------------------------------------#
 # TODO: add 'exceptions' argument
+
+# TODO: rename path => infolder; probably do the same in clic as well
 def collect(path,
-            line  = comment.LINE,
-            block = comment.BLOCK,
+            line  = comment_LINE,
+            block = comment_BLOCK,
             tags  = WORDS,
             marks = MARKS,
             extensions=EXTENSIONS):
     # Process block comment marks
-    blocks_open, blocks_close = comment.block_comments(block)
+    blocks_open, blocks_close = comment_block_comments(block)
 
-    # Collection of all posts
-    collected = {}
+    # TODO: Make hidden files OS independent, probably using
+    #       https://docs.python.org/3.4/library/tempfile.html ?
+
+    # Get previously generated collection of all posts
+    COLLECTED = os_path_join(path, '.ccom_todo')
+    try:
+        with open(COLLECTED, 'rb') as file:
+            collected = pickle_load(file)
+    except (FileNotFoundError, EOFError):
+        collected = {}
     # Compile regular expression patterns
-    pattern1 = re_compile(_COMMENT.format(r'|'.join(map(comment.escape, line)),
+    pattern1 = re_compile(_COMMENT.format(r'|'.join(map(comment_escape, line)),
                                           blocks_open,
-                                          r'|'.join(map(comment.escape, tags)),
-                                          r'|'.join(map(comment.escape, marks)),
+                                          r'|'.join(map(comment_escape, tags)),
+                                          r'|'.join(map(comment_escape, marks)),
                                           blocks_close),
                          flags=re_IGNORECASE | re_DOTALL | re_MULTILINE | re_VERBOSE)
     pattern2 = re_compile(r'\n')
 
-    # TODO: Improve performance by using the check.py module's Checker
-    #       1) read back the previously generated TODO file
-    #       2) _search should extend the parsed data structure
-    #       3) when loading keep the order if necessary
-    #       4) when loading or when writing make both structure compatible
-    #          to each other: right now the collected is a tuple with three
-    #          items, while the parsed YAML doc is a dictionary. Also: the
-    #          list of line in collected has indentation, while the loaded
-    #          lines doesn't have one
-
     # Scan through all files and folders
-    for root, dirs, filenames in os_walk(path):
-        for filename in filenames:
-            for extension in extensions:
-                if filename.endswith(extension):
-                    filepath = os_path_join(root, filename)[2:]
-                    with open(filepath, encoding='utf-8') as file:
-                        _search(collected, pattern1, pattern2,
-                                file.read(), filepath, marks)
+    with check_Checker(path) as checker:
+        for root, dirs, filenames in os_walk(path):
+            for filename in filenames:
+                for extension in extensions:
+                    if filename.endswith(extension):
+                        filepath = os_path_join(root, filename)[2:]
+                        if checker.ischanged(filepath):
+                            with open(filepath, encoding='utf-8') as file:
+                                _search(collected, pattern1, pattern2,
+                                        file.read(), filepath, marks)
+    # Save collection of all posts
+    with open(COLLECTED, 'wb') as file:
+        pickle_dump(collected, file, pickle_HIGHEST_PROTOCOL)
+    # Process collected
+    processed = {}
+    # TODO: Try to make it more optimised -> don't restructure the data
+    #       before it is processed. Right now, it needs this, otherwise
+    #       the can't compare/overwrite the serialised data COLLECTED
+    #       to/with the newly added data
+    for filename, allposts in sorted(collected.items()):
+        for key, posts in allposts.items():
+            data = processed.setdefault(key.upper(), [])
+            for line, content in posts:
+                data.append((filename, line, content))
     # Open the todo file and write out the results
     with open('TODO', 'w', encoding='utf-8') as todo:
         # Make it compatible with cver.py
@@ -179,7 +200,7 @@ def collect(path,
         for key in itertools_chain(tags, marks.values()):
             KEY = key.upper()
             try:
-                post = collected[KEY]
+                post = processed[KEY]
                 todo.write('\n#{}#\n'.format('-'*78))
                 todo.write('{}: # POSTS: {}\n'.format(KEY, len(post)))
                 for i, (filename, linenumber, content) in enumerate(post, start=1):
@@ -193,13 +214,15 @@ def collect(path,
                 todo.write('\n')
             except KeyError:
                 continue
-        print('TODO file {!r} has been '
-              'successfully generated.'.format(os_path_join(path, 'todo')))
+        print('CCOM: placed {!r}'.format(os_path_join(path, 'TODO')))
 
 #------------------------------------------------------------------------------#
 if __name__ == '__main__':
+    print('- '*40)
     try:
         script, folder, *rest = sys_argv
         collect(folder)
+        print('='*80)
+        print('CCOM: All special-comments has been successfully collected.\n')
     except ValueError:
-        print('Warning: No folder provided')
+        print('CCOM: !!! WARNING !!! No folder provided\n')

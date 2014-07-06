@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.004 (20140703)                       ##
+##                       Version: 0.8.72.043 (20140706)                       ##
 ##                                                                            ##
 ##                               File: cdoc.py                                ##
 ##                                                                            ##
@@ -29,16 +29,26 @@ from os.path import (splitext as os_path_splitext,
                      join as os_path_join,
                      dirname as os_path_dirname,
                      isdir as os_path_isdir,
-                     isfile as os_path_isfile)
+                     isfile as os_path_isfile,
+                     abspath as os_path_abspath)
 from itertools import count as iter_count
 from collections import OrderedDict, _Link
 from sys import argv as sys_argv
+from pickle import (dump as pickle_dump,
+                    load as pickle_load,
+                    HIGHEST_PROTOCOL as pickle_HIGHEST_PROTOCOL)
 
 # Import third party modules
 # TODO: add yaml and bs4 dependencies to documentation
 from yaml import load as yaml_load
+try:
+    from yaml import CLoader as yaml_Loader
+except ImportError:
+    from yaml import yaml_Loader
 from bs4 import BeautifulSoup
 
+# Import cutils modules
+from internal.check import Checker as check_Checker
 
 #------------------------------------------------------------------------------#
 # Module level constants
@@ -471,7 +481,7 @@ def _html_format(parent, source, path):
 #------------------------------------------------------------------------------#
 # Index formatter -- TOC generator
 def _indx_format(sidebar, selfname, sources):
-    for pagename, (filepath, pagedata) in sources.items():
+    for pagename, filepath in sources.items():
         if pagename == selfname:
             new(sidebar, 'a', href='#', class_='toc toc_current', string=pagename)
             continue
@@ -575,7 +585,7 @@ def _type_format(sidebar, content, source):
 
 
 #------------------------------------------------------------------------------#
-def _build(sources, filepath, gentoc):
+def _build(sources, filepath, gentoc, toc):
     for pagename in sources:
         # Clear soup and add en empty, new body
         SOUP.body.decompose()
@@ -584,7 +594,8 @@ def _build(sources, filepath, gentoc):
         # Set title
         SOUP.html.head.title.string = pagename
         # Get essentail values
-        filename, source = sources[pagename]
+        source = sources[pagename]
+        filename = toc[pagename]
         # Constants
         SECTIONS = 6
         # Build basic structure
@@ -618,7 +629,7 @@ def _build(sources, filepath, gentoc):
             sidebar_type = new(sidebar, 'div')
             new(sidebar_type, 'p', class_='label', string='Modules:')
             new(sidebar, 'br')
-            _indx_format(sidebar, pagename, sources)
+            _indx_format(sidebar, pagename, toc)
             new(sidebar, 'br')
 
         # TODO: add FOOT key
@@ -675,9 +686,9 @@ def _build(sources, filepath, gentoc):
             output = os_path_join(filepath, filename)
             with open(output, 'w', encoding='utf-8') as file:
                 file.write(SOUP.decode(formatter='html'))
-                print('File {!r} has been successfully generated.'.format(output))
+                print('CDOC: {!r} processed'.format(output))
             continue
-        print('Warning: in {!r} no data provided'.format(pagename))
+        print('CDOC: !!! WARNING !!! in {!r} no data provided'.format(pagename))
     # Create folder if not exists to css
     stylepath = os_path_join(filepath, 'css')
     try:
@@ -689,44 +700,49 @@ def _build(sources, filepath, gentoc):
     stylesheet = os_path_join(stylepath, 'cdoc.css')
     with open(stylesheet, 'w', encoding='utf-8') as file:
         file.write(STYLE)
-        print('File {!r} has been '
-              'successfully generated.'.format(stylesheet))
+        print('CDOC: {!r} processed'.format(stylesheet))
 
 
 #------------------------------------------------------------------------------#
 def document(infolder, outfolder, extension, loader, generate_toc=None):
     # TODO: collect 'reserved' names
+
+    # Get previously generated TOC object
+    TOC = os_path_join(infolder, '.cdoc_toc')
+    try:
+        with open(TOC, 'rb') as file:
+            toc = pickle_load(file)
+    except (FileNotFoundError, EOFError):
+        toc = OrderedDict()
+
     pages = OrderedDict()
     anonym = iter_count()
     # Load all pages
-    for file in os_listdir(infolder):
-        if file.endswith(extension):
+    with check_Checker(infolder) as checker:
+        for file in os_listdir(infolder):
+            if file.endswith(extension):
+                filepath = os_path_join(infolder, file)
+                if checker.ischanged(filepath):
+                    with open(filepath, encoding='utf-8') as f:
+                        pagedata = _import(loader(f.read()), infolder, loader)
+                        pagename = pagedata.get('PAGE', 'Document {}'.format(next(anonym)))
+                        filename = pagedata.get('NAME', os_path_splitext(file)[0]) + '.html'
+                        pages[pagename] = pagedata
+                        toc[pagename] = filename
 
-            # TODO: Improve performance by using check.py module's Checker
-            #       to decide if file needs to be reprocessed or not. The
-            #       problem is right now with the TOC, because it is generated
-            #       based on the pages dictionary. But to generate this
-            #       dictionary we have to open the file to get essential data.
-            #       Possible solutions:
-            #       1) Generate the menu into a separate file (const folder) and
-            #          and use it later on, and only update that if the number
-            #          of files changed or at least one of the filenames changed
-            #       2) Save the PAGE and NAME data into a cache file.. ?
-
-            with open(os_path_join(infolder, file), encoding='utf-8') as f:
-                pagedata = _import(loader(f.read()), infolder, loader)
-                pagename = pagedata.get('PAGE', 'Document {}'.format(next(anonym)))
-                filename = pagedata.get('NAME', os_path_splitext(file)[0]) + '.html'
-                pages[pagename] = filename, pagedata
+    # Write back TOC object
+    with open(TOC, 'wb') as file:
+        pickle_dump(toc, file, pickle_HIGHEST_PROTOCOL)
     # Generate Table of Content?
     if generate_toc is None:
-        generate_toc = len(pages) > 1
+        generate_toc = len(toc) > 1
     # Create documents
-    _build(pages, outfolder, generate_toc)
+    _build(pages, outfolder, generate_toc, toc)
 
 
 #------------------------------------------------------------------------------#
 if __name__ == '__main__':
+    print('- '*40)
     try:
         # TODO: add 'external CSS path' argument
         script, infolder, outfolder, *rest = sys_argv
@@ -734,6 +750,8 @@ if __name__ == '__main__':
         document(infolder=infolder,
                  outfolder=outfolder,
                  extension='.yaml',
-                 loader=yaml_load)
+                 loader=lambda s: yaml_load(s, Loader=yaml_Loader))
+        print('='*80)
+        print('CDOC: All documents has been successfully converted.\n')
     except ValueError:
-        print('Warning: No folder provided.')
+        print('CDOC: !!! Warning !!! No folder provided\n')

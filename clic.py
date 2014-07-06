@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.004 (20140703)                       ##
+##                       Version: 0.8.72.026 (20140706)                       ##
 ##                                                                            ##
 ##                               File: clic.py                                ##
 ##                                                                            ##
@@ -29,8 +29,11 @@ from re import (DOTALL  as re_DOTALL,
 
 # Import cutils modules
 # FIXME: if modules cannot be found?
-import comment
-from check import Checker
+from internal.check import Checker as check_Checker
+from internal.comment import (LINE as comment_LINE,
+                              BLOCK as comment_BLOCK,
+                              escape as comment_escape,
+                              block_comments as comment_block_comments)
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 # Comment symbols
@@ -78,29 +81,34 @@ def _comment(header, filepath, pattern, align, width):
     # Generate header-comment and place it into the file
     with open(filepath, 'r+', encoding='utf-8') as file:
         # Capture INFO comments
-        stream = file.read()
-        match = re_match(pattern, stream)
-        # If there was a match
-        if match:
-            opening, pad, closing = match.group('opening', 'pad', 'closing')
-            file.seek(0)
-            file.write(_OPENING.format(pad, width).format(opening))
-            # Substitute variables with values
-            for line in header.split('\n'):
-                file.write(_CONTENT.format(align, width - 6).format(pad, line))
-            file.write(_CLOSING.format(pad, width).format(closing))
-             # Write back content of file
-            file.write(stream[match.end():])
-            file.truncate()
+        try:
+            stream = file.read()
+            match = re_match(pattern, stream)
+            # If there was a match
+            if match:
+                opening, pad, closing = match.group('opening', 'pad', 'closing')
+                file.seek(0)
+                file.write(_OPENING.format(pad, width).format(opening))
+                # Substitute variables with values
+                for line in header.split('\n'):
+                    file.write(_CONTENT.format(align, width - 6).format(pad, line))
+                file.write(_CLOSING.format(pad, width).format(closing))
+                 # Write back content of file
+                file.write(stream[match.end():])
+                file.truncate()
+                return True
+        except UnicodeDecodeError:
+            pass
+        return False
 
 #------------------------------------------------------------------------------#
 def header(path,
-           line=comment.LINE,
-           block=comment.BLOCK,
+           line=comment_LINE,
+           block=comment_BLOCK,
            extensions=EXTENSIONS):
     # Compile regular expression pattern to match in scanned files
-    pattern = re_compile(_COMMENT.format(r'|'.join(map(comment.escape, line)),
-                                         *comment.block_comments(block)),
+    pattern = re_compile(_COMMENT.format(r'|'.join(map(comment_escape, line)),
+                                         *comment_block_comments(block)),
                          flags=re_DOTALL | re_VERBOSE | re_MULTILINE)
     # Define default values
     align = _FORMAT['CENTER']
@@ -135,7 +143,7 @@ def header(path,
 
     # Walk through all files and folders in the passed folder
     # FIXME: what if none of the files changed only INFO has been updated?
-    with Checker(path) as checker:
+    with check_Checker(path) as checker:
         for root, dirs, files in os_walk(path):
             for file in files:
                 # TODO: reconsider: if somethign like:
@@ -146,24 +154,25 @@ def header(path,
                     if file.lower().endswith(extension):
                         filepath = os_path_join(root, file)
                         # If file has been changed since last check
-                        if checker.ischanged(filepath, absolute_path=True):
+                        if checker.ischanged(filepath):
                             values['SIZE'] = _size(os_path_getsize(filepath))
                             # FIXME: make it more generic than ./ -- what if ../../?
                             values['FILE'] = filepath[2:] if filepath.startswith('./') else filepath
                             values['FILE_NAME'] = file
                             values['FILE_BASE'] = os_path_splitext(file)
-                            _comment(header.format(**values), filepath, pattern, align, width)
-                            # Update checker after the file has been modified
-                            checker.update()
-                            # Report
-                            print('Header-comment for file: {!r}, has been '
-                                  'successfully generated.'.format(filepath))
+                            if _comment(header.format(**values), filepath, pattern, align, width):
+                                # Update checker after the file has been modified
+                                checker.update()
+                                # Report
+                                print('CLIC: processed {!r}'.format(filepath))
 
 #------------------------------------------------------------------------------#
 if __name__ == '__main__':
+    print('- '*40)
     try:
         script, folder, *rest = sys_argv
         header(folder)
-        print('All header-comments has been successfully generated.')
+        print('='*80)
+        print('CLIC: All header-comments has been successfully generated.\n')
     except ValueError:
-        print('Warning: No folder provided')
+        print('CLIC: !!! WARNING !!! No folder provided\n')

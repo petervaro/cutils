@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.004 (20140703)                       ##
+##                       Version: 0.8.72.026 (20140706)                       ##
 ##                                                                            ##
 ##                        File: doc/src/00_cutils.yaml                        ##
 ##                                                                            ##
@@ -14,9 +14,9 @@
 ##                                                                            ##
 ######################################################################## INFO ##
 
-# note: https://www.youtube.com/playlist?list=PLhoQnW-6zPr8UhlY31AbHE6E5bAcNcT4d
+# NOTE: https://www.youtube.com/playlist?list=PLhoQnW-6zPr8UhlY31AbHE6E5bAcNcT4d
 #       BBNG3 <- Can't leave the night
-#       munkaugyek: 01e25
+#       munkaugyek: next s02e23
 
 #------------------------------------------------------------------------------#
 PAGE: CUTILS
@@ -37,13 +37,30 @@ INFO:
               life a little easier while one is programming in C. I created the
               tools mostly for use in my personal projects, however I hope /
               believe many will find it just as useful as I do.
-  # - - br
+
+# TODO: consider changing `clic` -> `ccom` and `ccom` -> `ctag`
+
+# TODO: cutils.h or interface.h -> unified API for
+#       _Generic and vargs macros maybe it even can
+#       contain the the name mangler ?
+
+# TODO: create a proper makefile
+
+# NOTE: Timing: 1) CUTT
+#               2) CDAR
+#               3) CSLL
+#               4) CMAP
+#               5) C11
+
+# TODO: add EXEC to cdoc to add "interactive" python snippets to code
+EXEC: |
+  with open('VERSION') as file:
+      # Insert to USER:About
+      DOC[USER][0].insert(0, {'name': 'Version', 'info': file.read()})
 
 #------------------------------------------------------------------------------#
 USER:
   - - About
-    - name: TODO
-      info: find out how to import properly formatted todo here..
     - name: LICENSE
       info: |
             Copyright © 2014 Peter Varo

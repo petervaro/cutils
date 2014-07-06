@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.004 (20140703)                       ##
+##                       Version: 0.8.72.040 (20140706)                       ##
 ##                                                                            ##
 ##                         File: doc/src/13_cutt.yaml                         ##
 ##                                                                            ##
@@ -24,13 +24,15 @@ HEAD:
 
 #------------------------------------------------------------------------------#
 INFO:
-  FILE: const/wip.yaml
+  - - h1
+    - string: 'CUTT | Unit Testing Tools'
+  - - br
+  - - p
+    - string: |
+              A single header-only unit testing system as minimal as possible.
 
 #------------------------------------------------------------------------------#
 USER:
-  - - About
-    - name: Summary
-      info: >
-            A single header-only unit testing system as minimal as possible.
-            \\n\\n
-            *Coming soon...*
+  - - ..
+    - name: ..
+      info: ...

@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.004 (20140703)                       ##
+##                       Version: 0.8.72.026 (20140706)                       ##
 ##                                                                            ##
 ##                         File: doc/src/14_cdar.yaml                         ##
 ##                                                                            ##
@@ -44,98 +44,84 @@ TYPE:
     original: char
     info: >
           A dynamic array type, to contain `char` type of items.
-          It must be declared as a pointer, pointing to `NULL`.
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - type: DynamicArray_string
     original: char *
     info: >
           A dynamic array type, to contain `char *` type of items.
-          It must be declared as a pointer, pointing to `NULL`.
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - type: DynamicArray_String
     original: String
     info: >
           A dynamic array type, to contain `String` type of items.
-          It must be declared as a pointer, pointing to `NULL`.
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - type: DynamicArray_int
     original: int
     info: >
           A dynamic array type, to contain `int` type of items.
-          It must be declared as a pointer, pointing to `NULL`.
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - type: DynamicArray_short
     original: short
     info: >
           A dynamic array type, to contain `short` type of items.
-          It must be declared as a pointer, pointing to `NULL`.
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - type: DynamicArray_long
     original: long
     info: >
           A dynamic array type, to contain `long` type of items.
-          It must be declared as a pointer, pointing to `NULL`.
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - type: DynamicArray_long_long
     original: long long
     info: >
           A dynamic array type, to contain `long long` type of items.
-          It must be declared as a pointer, pointing to `NULL`.
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - type: DynamicArray_unsigned
     original: unsigned
     info: >
           A dynamic array type, to contain `unsigned` type of items.
-          It must be declared as a pointer, pointing to `NULL`.
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - type: DynamicArray_unsigned_long
     original: unsigned long
     info: >
           A dynamic array type, to contain `unsigned long` type of items.
-          It must be declared as a pointer, pointing to `NULL`.
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - type: DynamicArray_unsigned_long_long
     original: unsigned long long
     info: >
           A dynamic array type, to contain `unsigned long long` type of items.
-          It must be declared as a pointer, pointing to `NULL`.
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - type: DynamicArray_float
     original: float
     info: >
           A dynamic array type, to contain `float` type of items.
-          It must be declared as a pointer, pointing to `NULL`.
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - type: DynamicArray_double
     original: double
     info: >
           A dynamic array type, to contain `double` type of items.
-          It must be declared as a pointer, pointing to `NULL`.
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - type: DynamicArray_long_double
     original: long double
     info: >
           A dynamic array type, to contain `long double` type of items.
-          It must be declared as a pointer, pointing to `NULL`.
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - type: DynamicArray_void
     original: void *
     info: >
           A dynamic array type, to contain `void *` type of items.
-          It must be declared as a pointer, pointing to `NULL`.
 
 #------------------------------------------------------------------------------#
 FUNC:

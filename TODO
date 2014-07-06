@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.004 (20140703)                       ##
+##                       Version: 0.8.72.085 (20140706)                       ##
 ##                                                                            ##
 ##                                 File: TODO                                 ##
 ##                                                                            ##
@@ -26,14 +26,14 @@ FIXME: # POSTS: 4
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 2
   - file: clic.py
-    line: 137
+    line: 145
     note: |
           what if none of the files changed only INFO has been updated?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 3
   - file: clic.py
-    line: 151
+    line: 159
     note: |
           make it more generic than ./ -- what if ../../?
 
@@ -49,7 +49,7 @@ FIXME: # POSTS: 4
 
 
 #------------------------------------------------------------------------------#
-TODO: # POSTS: 37
+TODO: # POSTS: 46
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
   - file: cbug.h
@@ -61,7 +61,7 @@ TODO: # POSTS: 37
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 2
   - file: ccom.py
-    line: 54
+    line: 61
     note: |
           consider: can <space> be anything?
           Like this example:
@@ -73,162 +73,58 @@ TODO: # POSTS: 37
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 3
   - file: ccom.py
-    line: 134
+    line: 139
     note: |
           add 'exceptions' argument
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 4
   - file: ccom.py
-    line: 155
+    line: 141
     note: |
-          Improve performance by using the check.py module's Checker
-          1) read back the previously generated TODO file
-          2) _search should extend the parsed data structure
-          3) when loading keep the order if necessary
-          4) when loading or when writing make both structure compatible
-             to each other: right now the collected is a tuple with three
-             items, while the parsed YAML doc is a dictionary. Also: the
-             list of line in collected has indentation, while the loaded
-             lines doesn't have one
+          rename path => infolder; probably do the same in clic as well
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 5
-  - file: cdoc.py
-    line: 38
+  - file: ccom.py
+    line: 151
     note: |
-          add yaml and bs4 dependencies to documentation
+          Make hidden files OS independent, probably using
+          https://docs.python.org/3.4/library/tempfile.html ?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 6
-  - file: cdoc.py
-    line: 57
+  - file: ccom.py
+    line: 186
     note: |
-          REGEX fix func5 <- number should not be matched
+          Try to make it more optimised -> don't restructure the data
+          before it is processed. Right now, it needs this, otherwise
+          the can't compare/overwrite the serialised data COLLECTED
+          to/with the newly added data
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 7
-  - file: cdoc.py
-    line: 484
-    note: |
-          support formatted TODO import
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 8
-  - file: cdoc.py
-    line: 544
-    note: |
-          add `members` support in TYPE
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 9
-  - file: cdoc.py
-    line: 624
-    note: |
-          add FOOT key
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 10
-  - file: cdoc.py
-    line: 698
-    note: |
-          collect 'reserved' names
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 11
-  - file: cdoc.py
-    line: 705
-    note: |
-          Improve performance by using check.py module's Checker
-          to decide if file needs to be reprocessed or not. The
-          problem is right now with the TOC, because it is generated
-          based on the pages dictionary. But to generate this
-          dictionary we have to open the file to get essential data.
-          Possible solutions:
-          1) Generate the menu into a separate file (const folder) and
-             and use it later on, and only update that if the number
-             of files changed or at least one of the filenames changed
-          2) Save the PAGE and NAME data into a cache file.. ?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 12
-  - file: cdoc.py
-    line: 731
-    note: |
-          add 'external CSS path' argument
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 13
-  - file: cenv.py
-    line: 26
-    note: |
-          Add cdep, ccom, cver and clic support to makefile
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 14
-  - file: cexc.h
-    line: 136
-    note: |
-          OPTION 1: catch returns 1 if error, else 0, CON: if func removed by macro?
-          OPTION 2: use ccatch for that? (the callback does what the
-                    `if (catch())` would have done)
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 15
-  - file: cfps.h
-    line: 22
-    note: |
-          At the moment in a single scope only the first appearence of
-          these functions will work. NOTE: If you want to use both printfps
-          and getfps at the same time, use the getfps function only, and pass
-          a getter function which can also implement the printing functionality
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 16
-  - file: clic.py
-    line: 141
-    note: |
-          reconsider: if somethign like:
-              if extension in extensions
-          is better ot not -> profile it!
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 17
-  - file: cref.c
-    line: 347
-    note: |
-          %ju and %lf
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 18
-  - file: cver.py
-    line: 63
-    note: |
-          ask for folder or file input
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 19
   - file: cdar/darv.c
     line: 50
     note: |
           rename types 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 20
+  # 8
   - file: cdar/darv.c
     line: 51
     note: |
           update cdar.py with macros 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 21
+  # 9
   - file: cdar/darv.c
     line: 52
     note: |
           add #ifdef NAMESPACE new -> cutils_new 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 22
+  # 10
   - file: cdar/darv.c
     line: 54
     note: |
@@ -237,7 +133,7 @@ TODO: # POSTS: 37
           DynamicArray_string: char * 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 23
+  # 11
   - file: cdar/darv.c
     line: 58
     note: |
@@ -245,7 +141,7 @@ TODO: # POSTS: 37
           DynamicArray_DynamicArray: nested arrays 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 24
+  # 12
   - file: cdar/darv.c
     line: 61
     note: |
@@ -256,7 +152,7 @@ TODO: # POSTS: 37
                           size_t count) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 25
+  # 13
   - file: cdar/darv.c
     line: 67
     note: |
@@ -268,7 +164,7 @@ TODO: # POSTS: 37
           next(IterObject *iterator); 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 26
+  # 14
   - file: cdar/darv.c
     line: 74
     note: |
@@ -280,7 +176,7 @@ TODO: # POSTS: 37
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 27
+  # 15
   - file: cdar/darv.c
     line: 81
     note: |
@@ -288,7 +184,7 @@ TODO: # POSTS: 37
           #define swapto(dar_ptr_src, dar_ptr_dst, index_src, index_dst, count) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 28
+  # 16
   - file: cdar/darv.c
     line: 84
     note: |
@@ -300,7 +196,7 @@ TODO: # POSTS: 37
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 29
+  # 17
   - file: cdar/darv.c
     line: 92
     note: |
@@ -312,7 +208,7 @@ TODO: # POSTS: 37
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 30
+  # 18
   - file: cdar/darv.c
     line: 99
     note: |
@@ -324,7 +220,7 @@ TODO: # POSTS: 37
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 31
+  # 19
   - file: cdar/darv.c
     line: 106
     note: |
@@ -339,7 +235,7 @@ TODO: # POSTS: 37
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 32
+  # 20
   - file: cdar/darv.h
     line: 23
     note: |
@@ -370,14 +266,14 @@ TODO: # POSTS: 37
           print() -> printf
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 33
+  # 21
   - file: cdar/darv.h
     line: 49
     note: |
           copy() => new(&darf2, len(darf1), raw(darf1));
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 34
+  # 22
   - file: cdar/darv.h
     line: 51
     note: |
@@ -386,7 +282,143 @@ TODO: # POSTS: 37
           #define append(dar_ptr, data_ptr) push(data_ptr, len(dar_ptr) - 1, 1, data_ptr) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 23
+  - file: cdoc.py
+    line: 42
+    note: |
+          add yaml and bs4 dependencies to documentation
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 24
+  - file: cdoc.py
+    line: 67
+    note: |
+          REGEX fix func5 <- number should not be matched
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 25
+  - file: cdoc.py
+    line: 494
+    note: |
+          support formatted TODO import
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 26
+  - file: cdoc.py
+    line: 554
+    note: |
+          add `members` support in TYPE
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 27
+  - file: cdoc.py
+    line: 635
+    note: |
+          add FOOT key
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 28
+  - file: cdoc.py
+    line: 708
+    note: |
+          collect 'reserved' names
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 29
+  - file: cdoc.py
+    line: 747
+    note: |
+          add 'external CSS path' argument
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 30
+  - file: cenv.py
+    line: 26
+    note: |
+          Add cdep, ccom, cver and clic support to makefile
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 31
+  - file: cexc.h
+    line: 136
+    note: |
+          OPTION 1: catch returns 1 if error, else 0, CON: if func removed by macro?
+          OPTION 2: use ccatch for that? (the callback does what the
+                    `if (catch())` would have done)
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 32
+  - file: cfps.h
+    line: 22
+    note: |
+          At the moment in a single scope only the first appearence of
+          these functions will work. NOTE: If you want to use both printfps
+          and getfps at the same time, use the getfps function only, and pass
+          a getter function which can also implement the printing functionality
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 33
+  - file: clic.py
+    line: 149
+    note: |
+          reconsider: if somethign like:
+              if extension in extensions
+          is better ot not -> profile it!
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 34
+  - file: cref.c
+    line: 347
+    note: |
+          %ju and %lf
+          http://www.mekong.net/tech/printf.htm
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 35
+  - file: cutt.h
+    line: 29
+    note: |
+          CUTT_DRY -> will output a summary instead of all the other infos 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 36
+  - file: cver.py
+    line: 62
+    note: |
+          ask for folder or file input
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 37
+  - file: doc/src/00_cutils.yaml
+    line: 41
+    note: |
+          consider changing `clic` -> `ccom` and `ccom` -> `ctag`
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 38
+  - file: doc/src/00_cutils.yaml
+    line: 43
+    note: |
+          cutils.h or interface.h -> unified API for
+          _Generic and vargs macros maybe it even can
+          contain the the name mangler ?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 39
+  - file: doc/src/00_cutils.yaml
+    line: 47
+    note: |
+          create a proper makefile
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 40
+  - file: doc/src/00_cutils.yaml
+    line: 55
+    note: |
+          add EXEC to cdoc to add "interactive" python snippets to code
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 41
   - file: doc/src/15_cstr.yaml
     line: 42
     note: |
@@ -398,23 +430,47 @@ TODO: # POSTS: 37
           rethink all string methods!
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 36
+  # 42
   - file: doc/src/16_csll.yaml
     line: 38
     note: |
           implement csll: Single Linked List
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 37
+  # 43
   - file: doc/src/18_cmap.yaml
     line: 41
     note: |
           Implement cmap: Hash Map
 
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 44
+  - file: doc/src/21_cdoc.yaml
+    line: 79
+    note: |
+          update dependencies: PyYaml && BeautifulSoup 4
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 45
+  - file: internal/pre_commit.py
+    line: 19
+    note: |
+          generate documentation to some better place, maybe /tmp ?
+          after committed, change the branch copy the content and
+          then commit changed to the gh-pages branch and switch
+          back to master branch
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 46
+  - file: internal/pre_commit.py
+    line: 24
+    note: |
+          Make error messages and reports of cver/cdoc/ccom/clic similar!
+
 
 
 #------------------------------------------------------------------------------#
-NOTE: # POSTS: 2
+NOTE: # POSTS: 3
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
   - file: doc/src/00_cutils.yaml
@@ -422,10 +478,21 @@ NOTE: # POSTS: 2
     note: |
           https://www.youtube.com/playlist?list=PLhoQnW-6zPr8UhlY31AbHE6E5bAcNcT4d
           BBNG3 <- Can't leave the night
-          munkaugyek: 01e25
+          munkaugyek: next s02e23
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 2
+  - file: doc/src/00_cutils.yaml
+    line: 49
+    note: |
+          Timing: 1) CUTT
+                  2) CDAR
+                  3) CSLL
+                  4) CMAP
+                  5) C11
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 3
   - file: doc/src/05_ccom.yaml
     line: 82
     note: |

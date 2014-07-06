@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.004 (20140703)                       ##
+##                       Version: 0.8.72.026 (20140706)                       ##
 ##                                                                            ##
 ##                               File: cver.py                                ##
 ##                                                                            ##
@@ -47,7 +47,6 @@ def version(sub_max, rev_max, build_max, main=0, sub=1, rev=0, build=0):
                 file.seek(0)
                 file.write(FORMAT.format(main, sub, rev, build, DATETIME))
                 file.truncate()
-                print('Version informations successfully updated.')
             # If version format in file is invalid
             except IndexError:
                 raise Exception('Invalid version format '
@@ -64,3 +63,5 @@ if __name__ == '__main__':
     version(sub_max=9,
             rev_max=99,
             build_max=999)
+    print('='*80)
+    print('CVER: Version informations successfully updated.\n')

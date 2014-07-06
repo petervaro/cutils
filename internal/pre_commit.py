@@ -6,7 +6,7 @@
 ##                     Modern and Lightweight C Utilities                     ##
 ##                       Version: 0.8.72.026 (20140706)                       ##
 ##                                                                            ##
-##                         File: doc/src/16_csll.yaml                         ##
+##                        File: internal/pre_commit.py                        ##
 ##                                                                            ##
 ##           Designed and written by Peter Varo. Copyright (c) 2014           ##
 ##             License agreement is provided in the LICENSE file              ##
@@ -14,25 +14,17 @@
 ##                                                                            ##
 ######################################################################## INFO ##
 
-#------------------------------------------------------------------------------#
-PAGE: CSLL Single Linked List
-NAME: csll
+from os import system
 
-#------------------------------------------------------------------------------#
-HEAD:
-  FILE: const/head.yaml
+# TODO: generate documentation to some better place, maybe /tmp ?
+#       after committed, change the branch copy the content and
+#       then commit changed to the gh-pages branch and switch
+#       back to master branch
 
-#------------------------------------------------------------------------------#
-INFO:
-  FILE: const/wip.yaml
+# TODO: Make error messages and reports of cver/cdoc/ccom/clic similar!
 
-#------------------------------------------------------------------------------#
-USER:
-  - - About
-    - name: Summary
-      info: >
-            Implementation of a single linked list object type and its methods.
-            \\n\\n
-            *Coming soon...*
+system('python3 cver.py')
+system('python3 cdoc.py doc/src ../../../temporary_stuffs/git_shit')
+system('python3 ccom.py .')
+system('python3 clic.py .')
 
-# TODO: implement csll: Single Linked List

@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.004 (20140703)                       **
+**                       Version: 0.8.72.026 (20140706)                       **
 **                                                                            **
 **                                File: cutt.h                                **
 **                                                                            **
@@ -24,12 +24,11 @@ typedef int errno_t;
 #include <errno.h>
 #endif
 
-/* If setup mode */
-#ifdef CUTT_SET
 #include <stdio.h>  /* fprintf(), stderr, stdout */
 
-/*------------------------------------------------------------------------------
- * Setup tester object */
+/* TODO: CUTT_DRY -> will output a summary instead of all the other infos */
+
+/*----------------------------------------------------------------------------*/
 #undef  tester
 #define tester()                                                               \
         struct {                                                               \
@@ -38,8 +37,7 @@ typedef int errno_t;
             const char *funcs[];                                               \
         } _TESTER_2755985868339231_ = {0}
 
-/*------------------------------------------------------------------------------
- * Interface function-like macro for testcase function */
+/*----------------------------------------------------------------------------*/
 #undef  test
 #define test(function, ...)                                                    \
     do {                                                                       \
@@ -57,10 +55,7 @@ typedef int errno_t;
         _TESTER_2755985868339231_.count++;                                     \
     } while (0)
 
-#endif /* CUTT_SET */
-
-/*------------------------------------------------------------------------------
- * Test reporting function */
+/*----------------------------------------------------------------------------*/
 #undef  report
 #define report()                                                               \
     do {                                                                       \
@@ -87,6 +82,7 @@ typedef int errno_t;
                 _TESTER_2755985868339231_.count);                              \
     } while (0)
 
+/*----------------------------------------------------------------------------*/
 #undef  try
 #define try(expr)                                                              \
     do {                                                                       \
@@ -99,6 +95,7 @@ typedef int errno_t;
         }                                                                      \
     } while (0)
 
+/*----------------------------------------------------------------------------*/
 #undef  pass
 #define pass()                                                                 \
     do {                                                                       \

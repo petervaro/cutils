@@ -4,9 +4,9 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.004 (20140703)                       ##
+##                       Version: 0.8.72.028 (20140706)                       ##
 ##                                                                            ##
-##                               File: check.py                               ##
+##                          File: internal/check.py                           ##
 ##                                                                            ##
 ##           Designed and written by Peter Varo. Copyright (c) 2014           ##
 ##             License agreement is provided in the LICENSE file              ##
@@ -14,38 +14,32 @@
 ##                                                                            ##
 ######################################################################## INFO ##
 
-from contextlib import ContextDecorator
-from re import (compile as re_compile,
-                finditer as re_finditer,
-                MULTILINE as re_MULTILINE)
 from os.path import (getmtime as os_path_getmtime,
-                     join as os_path_join)
+                     join as os_path_join,
+                     isfile as os_path_isfile,
+                     abspath as os_path_abspath)
+from pickle import (dump as pickle_dump,
+                    load as pickle_load,
+                    HIGHEST_PROTOCOL as pickle_HIGHEST_PROTOCOL)
 
 #------------------------------------------------------------------------------#
 class Checker:
 
     # Class level constant
     FILE = '.cutils_filescache'
-    FORMAT = '{!r} {}\n'
-    REGEXP = re_compile(r"^\s*(?P<quote>'|\")(?P<path>.+)(?P=quote)"
-                        r"\s*(?P<time>\d+.\d)+\s*$", flags=re_MULTILINE)
 
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
     def __init__(self, folder):
-        REGEXP = self.REGEXP
         self.file = os_path_join(folder, self.FILE)
-        self.root = folder
         self.cache = cache = {}
         # If cache file already exists
         try:
-            with open(self.file, 'r') as file:
-                for match in re_finditer(REGEXP, file.read()):
-                    try:
-                        filepath, mtime = match.group('path', 'time')
-                        cache[filepath] = float(mtime)
-                    except TypeError:
-                        pass
-        except FileNotFoundError:
+            with open(self.file, 'rb') as file:
+                for filepath, mtime in pickle_load(file).items():
+                    # If file still exists
+                    if os_path_isfile(filepath):
+                        cache[filepath] = mtime
+        except (FileNotFoundError, EOFError):
             pass
 
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
@@ -54,18 +48,16 @@ class Checker:
 
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
     def __exit__(self, *exceptions):
-        FORMAT = self.FORMAT
-        # If the context was exited without an exceptio
+        # If the context was exited without an exception
         if not all(exceptions):
-            with open(self.file, 'w') as file:
-                for key, value in self.cache.items():
-                    file.write(FORMAT.format(key, value))
+            with open(self.file, 'wb') as file:
+                pickle_dump(self.cache, file, pickle_HIGHEST_PROTOCOL)
 
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-    def ischanged(self, filepath, absolute_path=False):
+    def ischanged(self, filepath):
         # Get local references
         cache = self.cache
-        self.last = last = filepath if absolute_path else os_path_join(self.root, filepath)
+        self.last = last = os_path_abspath(filepath)
         mtime = os_path_getmtime(last)
         # If file didn't change
         if cache.get(last, -1.0) == mtime:

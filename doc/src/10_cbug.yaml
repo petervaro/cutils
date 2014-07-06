@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.004 (20140703)                       ##
+##                       Version: 0.8.72.026 (20140706)                       ##
 ##                                                                            ##
 ##                         File: doc/src/10_cbug.yaml                         ##
 ##                                                                            ##
@@ -89,7 +89,7 @@ FUNC:
           formatted message will be indented and printed out after the default
           debugging line.
 
-    example:
+    examples:
       - - Calling `debug` in all 3 forms from the main function
         - |
           #include <stdio.h>        /* fprintf(), stderr */
