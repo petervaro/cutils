@@ -37,4 +37,60 @@ other arguments can be any type specified in the format-string. It
 works exactly as the standard library's </span><code>printf</code><span> function. The
 formatted message will be indented and printed out after the default
 debugging line.
-</span></p><br/><p class="info return"><span class="label">Return: </span><code class="return_case"><span>void</span></code></p><br/></div></div></div></div></body></html>
+</span></p><br/><p class="info return"><span class="label">Return: </span><code class="return_case"><span>void</span></code></p><br/><p class="info label">Examples:</p><p class="info note"><span>Calling </span><code>debug</code><span> in all 3 forms from the main function:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>stdio</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>        </span><span class="code_comments">/* fprintf(), stderr */</span><span>
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cbug</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>  </span><span class="code_comments">/* debug() */</span><span>
+
+</span><span class="code_types">int</span><span> </span><span class="code_functions">main</span><span>(</span><span class="code_types">void</span><span>)
+{
+    </span><span class="code_keywords">for</span><span> (</span><span class="code_types">int</span><span> i</span><span class="code_operators">=</span><span></span><span class="code_numbers">0</span><span>; i</span><span class="code_operators">&lt;</span><span></span><span class="code_numbers">3</span><span>; i</span><span class="code_operators">+</span><span></span><span class="code_operators">+</span><span>)
+    {
+        </span><span class="code_functions">fprintf</span><span>(</span><span class="code_constants">stderr</span><span>, </span><span class="code_strings">"- - - - -\n"</span><span>);
+        </span><span class="code_functions">debug</span><span>();
+        </span><span class="code_functions">debug</span><span>(</span><span class="code_strings">"I'm debugging..."</span><span>);
+        </span><span class="code_functions">debug</span><span>(</span><span class="code_strings">"Value of i is: %d"</span><span>, i);
+    }
+    </span><span class="code_keywords">return</span><span> </span><span class="code_numbers">0</span><span>;
+}
+</span></code></pre><br/><p class="info note"><span>OUTPUT:</span></p><br/><pre class="info"><code class="snippet">- - - - -
+000 File: 'main.c', line: 9, function: 'main'
+001 File: 'main.c', line: 10, function: 'main'
+    "I'm debugging..."
+002 File: 'main.c', line: 11, function: 'main'
+    "Value of i is: 0"
+- - - - -
+003 File: 'main.c', line: 9, function: 'main'
+004 File: 'main.c', line: 10, function: 'main'
+    "I'm debugging..."
+005 File: 'main.c', line: 11, function: 'main'
+    "Value of i is: 1"
+- - - - -
+006 File: 'main.c', line: 9, function: 'main'
+007 File: 'main.c', line: 10, function: 'main'
+    "I'm debugging..."
+008 File: 'main.c', line: 11, function: 'main'
+    "Value of i is: 2"</code></pre><br/><p class="info note"><span>Another great usecase of </span><code>debug</code><span> is to extend the functionality of the </span><a class="inline_link" href="cexc.html"><span></span><code>cexc</code><span></span></a><span> utility. While the handling mode is set to logging, so the exceptions are printed out to </span><code>stderr</code><span> for example, </span><code>debug</code><span> can print the exact file location. This can be seen in the next example
+:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>stdio</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>        </span><span class="code_comments">/* stderr */</span><span>
+</span><span class="code_macros">#define</span><span> CEXC_LOG
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cexc</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>  </span><span class="code_comments">/* (start|stop)_exception_handling(), raise() */</span><span>
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cbug</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>  </span><span class="code_comments">/* debug() */</span><span>
+
+</span><span class="code_types">void</span><span> </span><span class="code_functions">func</span><span>(</span><span class="code_types">void</span><span> </span><span class="code_operators">*</span><span>ptr)
+{
+    </span><span class="code_keywords">if</span><span> (ptr </span><span class="code_operators">!</span><span></span><span class="code_operators">=</span><span> </span><span class="code_constants">NULL</span><span>)
+        </span><span class="code_keywords">return</span><span>;
+    </span><span class="code_functions">debug</span><span>();
+</span><span class="code_macros">    #define</span><span> MSG </span><span class="code_strings">"Pointer is NULL"</span><span>
+    </span><span class="code_functions">raise</span><span>(MSG, </span><span class="code_keywords">sizeof</span><span> MSG);
+}
+
+</span><span class="code_types">int</span><span> </span><span class="code_functions">main</span><span>(</span><span class="code_types">void</span><span>)
+{
+    </span><span class="code_functions">start_exception_handling</span><span>(</span><span class="code_constants">stderr</span><span>);
+    
+    </span><span class="code_functions">func</span><span>(</span><span class="code_constants">NULL</span><span>);
+    
+    </span><span class="code_functions">stop_exception_handling</span><span>();
+    </span><span class="code_keywords">return</span><span> </span><span class="code_numbers">0</span><span>;
+}
+</span></code></pre><br/><p class="info note"><span>OUTPUT:</span></p><br/><pre class="info"><code class="snippet">000 File: 'main.c', line: 10, function: 'func'
+EXCEPTION: Pointer is NULL</code></pre><br/></div></div></div></div></body></html>

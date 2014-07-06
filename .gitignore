@@ -1,5 +1,7 @@
 *.DS_Store
-readme.html
-.cutils_filescache
 *.pyc
 *.pyo
+.cutils_filescache
+.ccom_todo
+.cdoc_toc
+readme.html
