@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.026 (20140706)                       ##
+##                       Version: 0.8.72.217 (20140708)                       ##
 ##                                                                            ##
 ##                         File: doc/src/09_carg.yaml                         ##
 ##                                                                            ##
@@ -80,6 +80,7 @@ USER:
             arguments were passed
           - |
             #include <cutils/carg.h>
+            #include <cutils/capi.h>
             \\n
             #define nil_arg() printf("No arguments passed\n")
             \\n

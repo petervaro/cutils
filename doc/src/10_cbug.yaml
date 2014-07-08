@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.026 (20140706)                       ##
+##                       Version: 0.8.72.230 (20140708)                       ##
 ##                                                                            ##
 ##                         File: doc/src/10_cbug.yaml                         ##
 ##                                                                            ##
@@ -94,6 +94,7 @@ FUNC:
         - |
           #include <stdio.h>        /* fprintf(), stderr */
           #include <cutils/cbug.h>  /* debug() */
+          #include <cutils/capi.h>
           \\n
           int main(void)
           {
@@ -139,6 +140,7 @@ FUNC:
           #define CEXC_LOG
           #include <cutils/cexc.h>  /* (start|stop)_exception_handling(), raise() */
           #include <cutils/cbug.h>  /* debug() */
+          #include <cutils/capi.h>
           \\n
           void func(void *ptr)
           {

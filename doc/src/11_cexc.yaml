@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.026 (20140706)                       ##
+##                       Version: 0.8.72.230 (20140708)                       ##
 ##                                                                            ##
 ##                         File: doc/src/11_cexc.yaml                         ##
 ##                                                                            ##
@@ -38,9 +38,19 @@ INFO:
 USER:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - FILE: const/python.yaml
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/name.yaml
+    VARS:
+      VAR_head: cexc
+      VAR_func: raise
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - Flags
+    - name: CEXC_SET
+      info: >
+            If `CEXC_SET` is defined the global exception handling object will
+            be created. Define this macro only once.
     - name: CEXC_OFF
-      info: |
+      info: >
             The whole exception handling system can be removed from the source
             by defining the `CEXC_OFF` macro variable before the `cexc.h`
             included or by passing `-DCEXCOFF` to the compiler.
@@ -51,7 +61,7 @@ USER:
             #include <cutils/cexc.h>
             #undef CEXC_OFF
     - name: CEXC_LOG
-      info: |
+      info: >
             The bahaviour of the exception handling system can be set to
             "logging-mode", which means, the [`catch`](#func_catch) and
             [`ccatch`](#func_ccatch) functions will be removed, and the
@@ -137,6 +147,7 @@ FUNC:
           #include <cutils/cexc.h>  /* (start|stop)_exception_handling(),
                                        set_exception_handling_(poiner|_custom_(raise|catch))(),
                                        craise(), ccatch() */
+          #include <cutils/capi.h>
           \\n
           /* Callback function which will be called by craise */
           static void

@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.028 (20140706)                       ##
+##                       Version: 0.8.72.195 (20140707)                       ##
 ##                                                                            ##
 ##                          File: internal/check.py                           ##
 ##                                                                            ##
@@ -25,13 +25,12 @@ from pickle import (dump as pickle_dump,
 #------------------------------------------------------------------------------#
 class Checker:
 
-    # Class level constant
-    FILE = '.cutils_filescache'
-
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-    def __init__(self, folder):
-        self.file = os_path_join(folder, self.FILE)
+    def __init__(self, folder, file, reset=False):
+        self.file = os_path_join(folder, file)
         self.cache = cache = {}
+        if reset:
+            return
         # If cache file already exists
         try:
             with open(self.file, 'rb') as file:

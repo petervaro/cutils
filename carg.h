@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.026 (20140706)                       **
+**                       Version: 0.8.72.220 (20140708)                       **
 **                                                                            **
 **                                File: carg.h                                **
 **                                                                            **
@@ -14,8 +14,8 @@
 **                                                                            **
 ************************************************************************ INFO */
 
-#ifndef _CARG_H_19836769466709525_
-#define _CARG_H_19836769466709525_
+#ifndef _C_ARGUMENTS_19836769466709525_
+#define _C_ARGUMENTS_19836769466709525_
 
 /* Make macro variables available */
 #undef __args8
@@ -45,7 +45,7 @@
 #undef __vargs16
 #undef __state0
 #undef __state1
-#undef __vargs
+#undef cutils_carg_vargs
 
 /*
  * Empty argument list detection based on Jens Gustedt's blogpost 2010
@@ -246,8 +246,7 @@
                   _N,_O,_P,_Q,_R,_S,_T,_U,_V,_W,_X,_Y,_Z,a,b,c,token,...) token
 
 /* Catch empty arguments */
-static inline void __zero(char empty){}
-#define zero(empty) __zero(empty)
+static inline void cutils_carg_zero(char empty){}
 
 /* If zero argument or if one or more argument */
 #define __state0(n) __vargs1
@@ -255,15 +254,6 @@ static inline void __zero(char empty){}
 
 /* Generic dispatcher */
 /* Decide whether the macro was called with zero or one or more arguments */
-#define __vargs(...) __merge(__state, __empty(__VA_ARGS__))
+#define cutils_carg_vargs(...) __merge(__state, __empty(__VA_ARGS__))
 
-/* Use prefix or not */
-#ifdef CUTILS_NAMESPACE
-  #undef  cutils_vargs
-  #define cutils_vargs(...) __vargs(__VA_ARGS__)
-#else
-  #undef  vargs
-  #define vargs(...) __vargs(__VA_ARGS__)
-#endif
-
-#endif /* _CARG_H_19836769466709525_ */
+#endif /* _C_ARGUMENTS_19836769466709525_ */

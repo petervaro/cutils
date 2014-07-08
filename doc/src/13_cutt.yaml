@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.040 (20140706)                       ##
+##                       Version: 0.8.72.216 (20140708)                       ##
 ##                                                                            ##
 ##                         File: doc/src/13_cutt.yaml                         ##
 ##                                                                            ##
@@ -29,10 +29,111 @@ INFO:
   - - br
   - - p
     - string: |
-              A single header-only unit testing system as minimal as possible.
+              `cutt` is a minimal, single header-only unit testing system.
 
 #------------------------------------------------------------------------------#
 USER:
-  - - ..
-    - name: ..
-      info: ...
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/name.yaml
+    VARS:
+      VAR_head: cutt
+      VAR_func: report
+
+#------------------------------------------------------------------------------#
+TYPE:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: Tester
+    info: This object collects the failure messages and locations.
+
+#------------------------------------------------------------------------------#
+FUNC:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: new
+    args:
+      - - Tester **
+        - tester
+      - - size_t
+        - count
+    info: >
+          Creates a new [`Tester`](#type_Tester) object to the pointer the
+          passed pointer is pointing at. The `count` argument indicates the
+          number of [`try`](#func_try) functions calls in the test environment.
+    examples:
+      - - The following testing session has two test cases
+        - |
+          #include <cutils/cutt.h>
+          #include <cutils/capi.h>
+          \\n
+          static void
+          case1(Tester *tester)
+          {
+              try(tester, 1 == -1);
+          }
+          \\n
+          static void
+          case2(Tester *tester)
+          {
+              try(tester, 1 >= -1);
+          }
+          \\n
+          int main(void)
+          {
+              Tester *tester;
+              new(&tester, 2);
+              \\n
+              case1(tester);
+              case2(tester);
+              \\n
+              report(tester);
+              del(tester);
+              \\n
+              return 0;
+          }
+      - - OUTPUT
+        - |
+          \\OFF
+          CUTT: Some tests (1 / 2) failed:
+          CUTT: in file: 'main.c', at line: 7: '1 == -1'
+
+      - - 'If all tests passed, the OUTPUT is:'
+        - |
+          \\OFF
+          CUTT: All tests (10 / 10) passed.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: del
+    args:
+      - - Tester *
+        - tester
+    info: |
+          Removes the previously created [`Tester`](#type_Tester) object.
+          \\n\\n
+          *To see it in action, take a look at the example of the
+          the [`new`](#func_new) function.*
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: try
+    args:
+      - - Tester *
+        - tester
+      - - bool
+        - expression
+    info: |
+          Tests if the passed `expression` evaluates to `true` or `false`. If
+          fails, stores the expression, and location of the expression in the
+          [`Tester`](#type_Tester) object.
+          \\n\\n
+          *To see it in action, take a look at the example of the
+          the [`new`](#func_new) function.*
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: report
+    args:
+      - - Tester *
+        - tester
+    info: |
+          Get all th einformations from the [`Tester`](#type_Tester) object, and
+          prints out the result of the test-session.
+          \\n\\n
+          *To see it in action, take a look at the example of the
+          the [`new`](#func_new) function.*

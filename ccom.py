@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.043 (20140706)                       ##
+##                       Version: 0.8.72.196 (20140707)                       ##
 ##                                                                            ##
 ##                               File: ccom.py                                ##
 ##                                                                            ##
@@ -17,6 +17,7 @@
 # Import Python modules
 from os import walk as os_walk
 from sys import argv as sys_argv
+from collections import OrderedDict
 from os.path import join as os_path_join
 from itertools import chain as itertools_chain
 from re import (IGNORECASE as re_IGNORECASE,
@@ -31,6 +32,7 @@ from pickle import (dump as pickle_dump,
                     HIGHEST_PROTOCOL as pickle_HIGHEST_PROTOCOL)
 
 # Import cutils modules
+from internal.table import Table as table_Table
 from internal.check import Checker as check_Checker
 from internal.comment import (LINE as comment_LINE,
                               BLOCK as comment_BLOCK,
@@ -101,8 +103,8 @@ def _search(collected, content_pattern, newline_pattern, string, filepath, marks
     # Collect all locations of new lines in string
     line = 0
     newlines = [match.start() for match in re_finditer(newline_pattern, string)]
-    # Create a dictionary for the different posts in file
-    collected[filepath] = posts = {}
+    # Remove all data of file if exists
+    del collected[filepath]
     # For each match in
     for match in re_finditer(content_pattern, string):
         # Character-index where the match starts
@@ -131,15 +133,13 @@ def _search(collected, content_pattern, newline_pattern, string, filepath, marks
         tag = (word or marks[mark]).upper()
         # Get line-number
         line = next(l for l, c in enumerate(newlines[line:], start=line + 1) if c > start)
-        # Store post in posts
-        posts.setdefault(tag, []).append((line, content))
+        # Store data
+        collected.setdefault(filepath, tag, []).append((line, content))
     print('CCOM: processed {!r}'.format(filepath))
 
 #------------------------------------------------------------------------------#
 # TODO: add 'exceptions' argument
-
-# TODO: rename path => infolder; probably do the same in clic as well
-def collect(path,
+def collect(infolder,
             line  = comment_LINE,
             block = comment_BLOCK,
             tags  = WORDS,
@@ -152,12 +152,12 @@ def collect(path,
     #       https://docs.python.org/3.4/library/tempfile.html ?
 
     # Get previously generated collection of all posts
-    COLLECTED = os_path_join(path, '.ccom_todo')
+    COLLECTED = os_path_join(infolder, '.ccom_todo')
     try:
         with open(COLLECTED, 'rb') as file:
             collected = pickle_load(file)
     except (FileNotFoundError, EOFError):
-        collected = {}
+        collected = table_Table(row=OrderedDict)
     # Compile regular expression patterns
     pattern1 = re_compile(_COMMENT.format(r'|'.join(map(comment_escape, line)),
                                           blocks_open,
@@ -168,8 +168,8 @@ def collect(path,
     pattern2 = re_compile(r'\n')
 
     # Scan through all files and folders
-    with check_Checker(path) as checker:
-        for root, dirs, filenames in os_walk(path):
+    with check_Checker(infolder, file='.ccom_cache') as checker:
+        for root, dirs, filenames in os_walk(infolder):
             for filename in filenames:
                 for extension in extensions:
                     if filename.endswith(extension):
@@ -181,17 +181,7 @@ def collect(path,
     # Save collection of all posts
     with open(COLLECTED, 'wb') as file:
         pickle_dump(collected, file, pickle_HIGHEST_PROTOCOL)
-    # Process collected
-    processed = {}
-    # TODO: Try to make it more optimised -> don't restructure the data
-    #       before it is processed. Right now, it needs this, otherwise
-    #       the can't compare/overwrite the serialised data COLLECTED
-    #       to/with the newly added data
-    for filename, allposts in sorted(collected.items()):
-        for key, posts in allposts.items():
-            data = processed.setdefault(key.upper(), [])
-            for line, content in posts:
-                data.append((filename, line, content))
+
     # Open the todo file and write out the results
     with open('TODO', 'w', encoding='utf-8') as todo:
         # Make it compatible with cver.py
@@ -200,21 +190,33 @@ def collect(path,
         for key in itertools_chain(tags, marks.values()):
             KEY = key.upper()
             try:
-                post = processed[KEY]
-                todo.write('\n#{}#\n'.format('-'*78))
-                todo.write('{}: # POSTS: {}\n'.format(KEY, len(post)))
-                for i, (filename, linenumber, content) in enumerate(post, start=1):
-                    todo.write(_ITEM.format(msg='\n'.join(content),
-                                            index=i,
-                                            short=_SHORT,
-                                            long=_SHORT*2,
-                                            sep='- '*38,
-                                            file=filename,
-                                            line=linenumber))
+                types = collected[KEY].items()
+                len_pos = todo.tell()
+                # Offset for separator comment and
+                # leading and trailing new lines
+                todo.write(' '*82)
+                todo.write('{}:\n'.format(KEY))
+                index = 1
+                for filename, posts in types:
+                    for i, (linenumber, content) in enumerate(posts, start=index):
+                        todo.write(_ITEM.format(msg='\n'.join(content),
+                                                index=i,
+                                                short=_SHORT,
+                                                long=_SHORT*2,
+                                                sep='- '*38,
+                                                file=filename,
+                                                line=linenumber))
+                    index = i + 1
                 todo.write('\n')
+                # Move back to tag separator comment
+                todo.seek(len_pos)
+                todo.write('\n#{:-^78}#\n'.format(
+                    ' {} POSTS IN {} FILES '.format(index - 1, len(types))))
+                # Move back to the end
+                todo.seek(0, 2)
             except KeyError:
                 continue
-        print('CCOM: placed {!r}'.format(os_path_join(path, 'TODO')))
+        print('CCOM: placed {!r}'.format(os_path_join(infolder, 'TODO')))
 
 #------------------------------------------------------------------------------#
 if __name__ == '__main__':

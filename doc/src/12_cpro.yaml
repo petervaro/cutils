@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.026 (20140706)                       ##
+##                       Version: 0.8.72.230 (20140708)                       ##
 ##                                                                            ##
 ##                         File: doc/src/12_cpro.yaml                         ##
 ##                                                                            ##
@@ -68,6 +68,7 @@ FUNC:
         - |
           #include <stdio.h>        /* printf() */
           #include <cutils/cpro.h>  /* profile() */
+          #include <cutils/capi.h>
           \\n
           static void
           myfunction(unsigned long long *i)

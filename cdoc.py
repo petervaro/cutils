@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.043 (20140706)                       ##
+##                       Version: 0.8.72.212 (20140708)                       ##
 ##                                                                            ##
 ##                               File: cdoc.py                                ##
 ##                                                                            ##
@@ -431,7 +431,7 @@ def _func_examples(parent, source):
                 new(parent, 'p', class_='info label',
                                  string=LABEL + ':' if LABEL else LABEL)
             n = new(parent, 'p', class_='info note')
-            _str(n, note + ':')
+            _str(n, str(note) + ':')
             new(parent, 'br')
             pre = new(parent, 'pre', class_='info')
             c = new(pre, 'code', class_='snippet')
@@ -718,7 +718,7 @@ def document(infolder, outfolder, extension, loader, generate_toc=None):
     pages = OrderedDict()
     anonym = iter_count()
     # Load all pages
-    with check_Checker(infolder) as checker:
+    with check_Checker(infolder, file='.cdoc_cache') as checker:
         for file in os_listdir(infolder):
             if file.endswith(extension):
                 filepath = os_path_join(infolder, file)

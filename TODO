@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.085 (20140706)                       ##
+##                       Version: 0.8.72.233 (20140708)                       ##
 ##                                                                            ##
 ##                                 File: TODO                                 ##
 ##                                                                            ##
@@ -14,8 +14,8 @@
 ##                                                                            ##
 ######################################################################## INFO ##
 
-#------------------------------------------------------------------------------#
-FIXME: # POSTS: 4
+#----------------------------- 4 POSTS IN 2 FILES -----------------------------#
+FIXME:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
   - file: clic.py
@@ -26,14 +26,14 @@ FIXME: # POSTS: 4
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 2
   - file: clic.py
-    line: 145
+    line: 147
     note: |
           what if none of the files changed only INFO has been updated?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 3
   - file: clic.py
-    line: 159
+    line: 160
     note: |
           make it more generic than ./ -- what if ../../?
 
@@ -48,194 +48,32 @@ FIXME: # POSTS: 4
 
 
 
-#------------------------------------------------------------------------------#
-TODO: # POSTS: 46
+#---------------------------- 42 POSTS IN 16 FILES ----------------------------#
+TODO:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
-  - file: cbug.h
-    line: 20
+  - file: cenv.py
+    line: 26
     note: |
-          sdebug() -> expands to string literal or
-          debugexc(func, msg, len) -> calls raise() or ccraise() 
+          Add cdep, ccom, cver and clic support to makefile
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 2
-  - file: ccom.py
-    line: 61
+  - file: cref.c
+    line: 347
     note: |
-          consider: can <space> be anything?
-          Like this example:
-          some line of code # tag: starts here
-                            #      another line goes here
-                            #      and the third here..
-          the code goes on...
+          %ju and %lf
+          http://www.mekong.net/tech/printf.htm
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 3
-  - file: ccom.py
-    line: 139
+  - file: cver.py
+    line: 62
     note: |
-          add 'exceptions' argument
+          ask for folder or file input
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 4
-  - file: ccom.py
-    line: 141
-    note: |
-          rename path => infolder; probably do the same in clic as well
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 5
-  - file: ccom.py
-    line: 151
-    note: |
-          Make hidden files OS independent, probably using
-          https://docs.python.org/3.4/library/tempfile.html ?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 6
-  - file: ccom.py
-    line: 186
-    note: |
-          Try to make it more optimised -> don't restructure the data
-          before it is processed. Right now, it needs this, otherwise
-          the can't compare/overwrite the serialised data COLLECTED
-          to/with the newly added data
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 7
-  - file: cdar/darv.c
-    line: 50
-    note: |
-          rename types 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 8
-  - file: cdar/darv.c
-    line: 51
-    note: |
-          update cdar.py with macros 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 9
-  - file: cdar/darv.c
-    line: 52
-    note: |
-          add #ifdef NAMESPACE new -> cutils_new 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 10
-  - file: cdar/darv.c
-    line: 54
-    note: |
-          add String to cdar
-          DynamicArray_String: String
-          DynamicArray_string: char * 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 11
-  - file: cdar/darv.c
-    line: 58
-    note: |
-          add DynamicArray to cdar
-          DynamicArray_DynamicArray: nested arrays 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 12
-  - file: cdar/darv.c
-    line: 61
-    note: |
-          implement: reverses count number of sub data starts at index
-          void
-          darv_reversesub(DynamicArray *dynarr,
-                          size_t index,
-                          size_t count) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 13
-  - file: cdar/darv.c
-    line: 67
-    note: |
-          consider if an iterator method is necessary or not
-          IterObject
-          iter(DynamicArray *dynarr,
-               size_t index);
-          void *
-          next(IterObject *iterator); 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 14
-  - file: cdar/darv.c
-    line: 74
-    note: |
-          Implement `copy`
-          #define copy(dar_ptr_src, dar_ptr_dst)
-              do {
-                  if (dar_ptr_dst) del(dar_ptr_src);
-                  new(dar_ptr_dst, len(dar_ptr_src), raw(dar_ptr_src));
-              } while (0) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 15
-  - file: cdar/darv.c
-    line: 81
-    note: |
-          Implement `swapto`
-          #define swapto(dar_ptr_src, dar_ptr_dst, index_src, index_dst, count) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 16
-  - file: cdar/darv.c
-    line: 84
-    note: |
-          Implement `appendto`
-          #define appendto(dar_ptr_dst, dar_ptr_src)
-              do {
-                  if (!dar_ptr_src) break;
-                  append(dar_ptr_dst, len(dar_ptr_src), raw(dar_ptr_src));
-              } while (0) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 17
-  - file: cdar/darv.c
-    line: 92
-    note: |
-          Implement `insertto`
-          #define insertto(dar_ptr_dst, index, dar_ptr_src)
-              do {
-                  if (!dar_ptr_src) break;
-                  insert(dar_ptr_dst, index, len(dar_ptr_src), raw(dar_ptr_src));
-              } while (0) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 18
-  - file: cdar/darv.c
-    line: 99
-    note: |
-          Implement `setto`
-          #define setto(dar_ptr_dst, index, dar_ptr_dst)
-              do {
-                  if (!dar_ptr_dst) break;
-                  set(dar_ptr_dst, index, len(dar_ptr_dst), raw(dar_ptr_dst));
-              } while (0) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 19
-  - file: cdar/darv.c
-    line: 106
-    note: |
-          Implement `popto`
-          #define popto(dar_ptr_dst, index, count, dar_ptr_src)
-              do {
-                  void *temp = malloc((size(dar_ptr_dst) / len(dar_ptr_dst)) * count);
-                  if (!temp) break;
-                  pop(dar_ptr_src, index, count, temp);
-                  append(dar_ptr_dst, count, temp);
-                  free(temp);
-              } while (0) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 20
   - file: cdar/darv.h
     line: 23
     note: |
@@ -266,14 +104,14 @@ TODO: # POSTS: 46
           print() -> printf
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 21
+  # 5
   - file: cdar/darv.h
     line: 49
     note: |
           copy() => new(&darf2, len(darf1), raw(darf1));
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 22
+  # 6
   - file: cdar/darv.h
     line: 51
     note: |
@@ -282,143 +120,7 @@ TODO: # POSTS: 46
           #define append(dar_ptr, data_ptr) push(data_ptr, len(dar_ptr) - 1, 1, data_ptr) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 23
-  - file: cdoc.py
-    line: 42
-    note: |
-          add yaml and bs4 dependencies to documentation
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 24
-  - file: cdoc.py
-    line: 67
-    note: |
-          REGEX fix func5 <- number should not be matched
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 25
-  - file: cdoc.py
-    line: 494
-    note: |
-          support formatted TODO import
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 26
-  - file: cdoc.py
-    line: 554
-    note: |
-          add `members` support in TYPE
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 27
-  - file: cdoc.py
-    line: 635
-    note: |
-          add FOOT key
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 28
-  - file: cdoc.py
-    line: 708
-    note: |
-          collect 'reserved' names
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 29
-  - file: cdoc.py
-    line: 747
-    note: |
-          add 'external CSS path' argument
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 30
-  - file: cenv.py
-    line: 26
-    note: |
-          Add cdep, ccom, cver and clic support to makefile
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 31
-  - file: cexc.h
-    line: 136
-    note: |
-          OPTION 1: catch returns 1 if error, else 0, CON: if func removed by macro?
-          OPTION 2: use ccatch for that? (the callback does what the
-                    `if (catch())` would have done)
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 32
-  - file: cfps.h
-    line: 22
-    note: |
-          At the moment in a single scope only the first appearence of
-          these functions will work. NOTE: If you want to use both printfps
-          and getfps at the same time, use the getfps function only, and pass
-          a getter function which can also implement the printing functionality
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 33
-  - file: clic.py
-    line: 149
-    note: |
-          reconsider: if somethign like:
-              if extension in extensions
-          is better ot not -> profile it!
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 34
-  - file: cref.c
-    line: 347
-    note: |
-          %ju and %lf
-          http://www.mekong.net/tech/printf.htm
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 35
-  - file: cutt.h
-    line: 29
-    note: |
-          CUTT_DRY -> will output a summary instead of all the other infos 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 36
-  - file: cver.py
-    line: 62
-    note: |
-          ask for folder or file input
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 37
-  - file: doc/src/00_cutils.yaml
-    line: 41
-    note: |
-          consider changing `clic` -> `ccom` and `ccom` -> `ctag`
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 38
-  - file: doc/src/00_cutils.yaml
-    line: 43
-    note: |
-          cutils.h or interface.h -> unified API for
-          _Generic and vargs macros maybe it even can
-          contain the the name mangler ?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 39
-  - file: doc/src/00_cutils.yaml
-    line: 47
-    note: |
-          create a proper makefile
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 40
-  - file: doc/src/00_cutils.yaml
-    line: 55
-    note: |
-          add EXEC to cdoc to add "interactive" python snippets to code
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 41
+  # 7
   - file: doc/src/15_cstr.yaml
     line: 42
     note: |
@@ -430,28 +132,28 @@ TODO: # POSTS: 46
           rethink all string methods!
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 42
+  # 8
   - file: doc/src/16_csll.yaml
     line: 38
     note: |
           implement csll: Single Linked List
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 43
+  # 9
   - file: doc/src/18_cmap.yaml
     line: 41
     note: |
           Implement cmap: Hash Map
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 44
+  # 10
   - file: doc/src/21_cdoc.yaml
     line: 79
     note: |
           update dependencies: PyYaml && BeautifulSoup 4
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 45
+  # 11
   - file: internal/pre_commit.py
     line: 19
     note: |
@@ -461,18 +163,289 @@ TODO: # POSTS: 46
           back to master branch
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 46
+  # 12
   - file: internal/pre_commit.py
     line: 24
     note: |
           Make error messages and reports of cver/cdoc/ccom/clic similar!
 
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 13
+  - file: ccom.py
+    line: 63
+    note: |
+          consider: can <space> be anything?
+          Like this example:
+          some line of code # tag: starts here
+                            #      another line goes here
+                            #      and the third here..
+          the code goes on...
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 14
+  - file: ccom.py
+    line: 141
+    note: |
+          add 'exceptions' argument
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 15
+  - file: ccom.py
+    line: 151
+    note: |
+          Make hidden files OS independent, probably using
+          https://docs.python.org/3.4/library/tempfile.html ?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 16
+  - file: cdoc.py
+    line: 42
+    note: |
+          add yaml and bs4 dependencies to documentation
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 17
+  - file: cdoc.py
+    line: 67
+    note: |
+          REGEX fix func5 <- number should not be matched
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 18
+  - file: cdoc.py
+    line: 494
+    note: |
+          support formatted TODO import
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 19
+  - file: cdoc.py
+    line: 554
+    note: |
+          add `members` support in TYPE
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 20
+  - file: cdoc.py
+    line: 635
+    note: |
+          add FOOT key
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 21
+  - file: cdoc.py
+    line: 708
+    note: |
+          collect 'reserved' names
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 22
+  - file: cdoc.py
+    line: 747
+    note: |
+          add 'external CSS path' argument
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 23
+  - file: cfps.h
+    line: 22
+    note: |
+          At the moment in a single scope only the first appearence of
+          these functions will work. NOTE: If you want to use both printfps
+          and getfps at the same time, use the getfps function only, and pass
+          a getter function which can also implement the printing functionality 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 24
+  - file: cbug.h
+    line: 20
+    note: |
+          sdebug() -> expands to string literal or
+          debugexc(func, msg, len) -> calls raise() or ccraise() 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 25
+  - file: cexc.h
+    line: 145
+    note: |
+          OPTION 1: catch returns 1 if error, else 0, CON: if func removed by macro?
+          OPTION 2: use ccatch for that? (the callback does what the
+                    `if (catch())` would have done) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 26
+  - file: doc/src/00_cutils.yaml
+    line: 41
+    note: |
+          consider changing `clic` -> `ccom` and `ccom` -> `ctag`
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 27
+  - file: doc/src/00_cutils.yaml
+    line: 43
+    note: |
+          create a proper makefile
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 28
+  - file: doc/src/00_cutils.yaml
+    line: 50
+    note: |
+          create call - which will include all the header files available
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 29
+  - file: doc/src/00_cutils.yaml
+    line: 52
+    note: |
+          add EXEC to cdoc to add "interactive" python snippets to code
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 30
+  - file: cdar/darv.c
+    line: 50
+    note: |
+          rename types 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 31
+  - file: cdar/darv.c
+    line: 51
+    note: |
+          update cdar.py with macros 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 32
+  - file: cdar/darv.c
+    line: 52
+    note: |
+          add #ifdef NAMESPACE new -> cutils_new 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 33
+  - file: cdar/darv.c
+    line: 54
+    note: |
+          add String to cdar
+          DynamicArray_String: String
+          DynamicArray_string: char * 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 34
+  - file: cdar/darv.c
+    line: 58
+    note: |
+          add DynamicArray to cdar
+          DynamicArray_DynamicArray: nested arrays 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 35
+  - file: cdar/darv.c
+    line: 61
+    note: |
+          implement: reverses count number of sub data starts at index
+          void
+          darv_reversesub(DynamicArray *dynarr,
+                          size_t index,
+                          size_t count) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 36
+  - file: cdar/darv.c
+    line: 67
+    note: |
+          consider if an iterator method is necessary or not
+          IterObject
+          iter(DynamicArray *dynarr,
+               size_t index);
+          void *
+          next(IterObject *iterator); 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 37
+  - file: cdar/darv.c
+    line: 74
+    note: |
+          Implement `copy`
+          #define copy(dar_ptr_src, dar_ptr_dst)
+              do {
+                  if (dar_ptr_dst) del(dar_ptr_src);
+                  new(dar_ptr_dst, len(dar_ptr_src), raw(dar_ptr_src));
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 38
+  - file: cdar/darv.c
+    line: 81
+    note: |
+          Implement `swapto`
+          #define swapto(dar_ptr_src, dar_ptr_dst, index_src, index_dst, count) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 39
+  - file: cdar/darv.c
+    line: 84
+    note: |
+          Implement `appendto`
+          #define appendto(dar_ptr_dst, dar_ptr_src)
+              do {
+                  if (!dar_ptr_src) break;
+                  append(dar_ptr_dst, len(dar_ptr_src), raw(dar_ptr_src));
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 40
+  - file: cdar/darv.c
+    line: 92
+    note: |
+          Implement `insertto`
+          #define insertto(dar_ptr_dst, index, dar_ptr_src)
+              do {
+                  if (!dar_ptr_src) break;
+                  insert(dar_ptr_dst, index, len(dar_ptr_src), raw(dar_ptr_src));
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 41
+  - file: cdar/darv.c
+    line: 99
+    note: |
+          Implement `setto`
+          #define setto(dar_ptr_dst, index, dar_ptr_dst)
+              do {
+                  if (!dar_ptr_dst) break;
+                  set(dar_ptr_dst, index, len(dar_ptr_dst), raw(dar_ptr_dst));
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 42
+  - file: cdar/darv.c
+    line: 106
+    note: |
+          Implement `popto`
+          #define popto(dar_ptr_dst, index, count, dar_ptr_src)
+              do {
+                  void *temp = malloc((size(dar_ptr_dst) / len(dar_ptr_dst)) * count);
+                  if (!temp) break;
+                  pop(dar_ptr_src, index, count, temp);
+                  append(dar_ptr_dst, count, temp);
+                  free(temp);
+              } while (0) 
 
 
-#------------------------------------------------------------------------------#
-NOTE: # POSTS: 3
+
+#----------------------------- 3 POSTS IN 2 FILES -----------------------------#
+NOTE:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
+  - file: doc/src/05_ccom.yaml
+    line: 82
+    note: |
+          length of the char
+          array stored in string 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 2
   - file: doc/src/00_cutils.yaml
     line: 17
     note: |
@@ -481,22 +454,13 @@ NOTE: # POSTS: 3
           munkaugyek: next s02e23
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 2
-  - file: doc/src/00_cutils.yaml
-    line: 49
-    note: |
-          Timing: 1) CUTT
-                  2) CDAR
-                  3) CSLL
-                  4) CMAP
-                  5) C11
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 3
-  - file: doc/src/05_ccom.yaml
-    line: 82
+  - file: doc/src/00_cutils.yaml
+    line: 45
     note: |
-          length of the char
-          array stored in string 
+          Timing: 1) CDAR
+                  2) CSLL
+                  3) CMAP
+                  4) C11
 
 

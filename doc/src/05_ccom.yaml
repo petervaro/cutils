@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.026 (20140706)                       ##
+##                       Version: 0.8.72.209 (20140708)                       ##
 ##                                                                            ##
 ##                         File: doc/src/05_ccom.yaml                         ##
 ##                                                                            ##
@@ -97,23 +97,23 @@ USER:
         - - '`ccom` will produce the follwoing `TODO` file from this'
           - |
             \\OFF
-            #------------------------------------------------------------------------------#
-            FIXME: # POSTS: 1
+            #----------------------------- 1 POSTS IN 1 FILES -----------------------------#
+            FIXME:
               #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
               # 1
-              - file: wizards/wizard.h
-                line: 6
+              - file: main.c
+                line: 10
                 note: |
                       We need to use the String
                       "object" of cutils here
                       instead of this simple struct
-            \\n\\n
-            #------------------------------------------------------------------------------#
-            NOTE: # POSTS: 1
+            \\n\\n\\n\\n
+            #----------------------------- 1 POSTS IN 1 FILES -----------------------------#
+            NOTE:
               #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
               # 1
-              - file: wizards/wizard.h
-                line: 10
+              - file: main.c
+                line: 6
                 note: |
                       length of the char
                       array stored in string

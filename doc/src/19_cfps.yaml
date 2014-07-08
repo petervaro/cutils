@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.026 (20140706)                       ##
+##                       Version: 0.8.72.230 (20140708)                       ##
 ##                                                                            ##
 ##                         File: doc/src/19_cfps.yaml                         ##
 ##                                                                            ##
@@ -58,6 +58,7 @@ FUNC:
         - |
           #include <GLFW/glfw3.h>   /* glfw...(), GLFW... */
           #include <cutils/cfps.h>  /* printfps() */
+          #include <cutils/capi.h>
           \\n
           /* ... GLFW setup */
           \\n
@@ -100,6 +101,7 @@ FUNC:
           #include <stdio.h>        /* snprintf() */
           #include <GLFW/glfw3.h>   /* glfw...(), GLFW... */
           #include <cutils/cfps.h>  /* getfps() */
+          #include <cutils/capi.h>
           \\n
           static void fps_title_setter(int fps, void *data)
           {

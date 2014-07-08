@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.026 (20140706)                       **
+**                       Version: 0.8.72.229 (20140708)                       **
 **                                                                            **
 **                                File: cexc.h                                **
 **                                                                            **
@@ -17,29 +17,38 @@
 #ifndef _C_EXCEPTIONS_H_5362957038900146_
 #define _C_EXCEPTIONS_H_5362957038900146_
 
-#include <stdio.h>   // size_t, fprintf(), stderr
-#include <stdlib.h>  // malloc(), realloc(), free()
-#include <string.h>  // strncpy()
+#include <stdio.h>    /* size_t, stdout, stderr, fprintf() */
+#include <stdlib.h>   /* malloc(), realloc(), free() */
+#include <string.h>   /* strncpy() */
+#include <stdbool.h>  /* bool, true, false */
+
+#undef cutils_cexc_start_exception_handling
+#undef cutils_cexc_stop_exception_handling
+#undef cutils_cexc_set_exception_handling_pointer
+#undef cutils_cexc_set_exception_handling_custom_raise
+#undef cutils_cexc_set_exception_handling_custom_catch
+#undef cutils_cexc_raise
+#undef cutils_cexc_catch
+#undef cutils_cexc_craise
+#undef cutils_cexc_ccatch
 
 #ifdef CEXC_OFF
-  #define start_exception_handling(out)
-  #define stop_exception_handling()
-  #define raise(msg, len)
-  #define catch()
-  #define set_exception_handling_pointer(ptr)
-  #define set_exception_handling_custom_raise(func)
-  #define set_exception_handling_custom_catch(func)
-  #define craise(msg, len)
-  #define ccatch()
+  #define cutils_cexc_start_exception_handling(out)
+  #define cutils_cexc_stop_exception_handling()
+  #define cutils_cexc_raise(msg, len)
+  #define cutils_cexc_catch()
+  #define cutils_cexc_set_exception_handling_pointer(ptr)
+  #define cutils_cexc_set_exception_handling_custom_raise(func)
+  #define cutils_cexc_set_exception_handling_custom_catch(func)
+  #define cutils_cexc_craise(msg, len)
+  #define cutils_cexc_ccatch()
 #else
-  #undef  CEXC_MSG_LEN
-  #define CEXC_MSG_LEN 9
-  #undef  CEXC_PREFIX
-  #define CEXC_PREFIX "EXCEPTION: "
-  #undef  CEXC_NO_ERR
-  #define CEXC_NO_ERR "NO ERROR"
-  #undef  CEXC_ALLOC_ERR
-  #define CEXC_ALLOC_ERR "INTERNAL"
+  #undef __CEXC_PREFIX
+  #undef __CEXC_NO_ERROR
+  #undef __CEXC_INTERNAL
+  #define __CEXC_PREFIX "EXCEPTION: "
+  #define __CEXC_NO_ERROR "NO ERROR"
+  #define __CEXC_INTERNAL "INTERNAL"
 
 /*----------------------------------------------------------------------------*/
 typedef struct
@@ -47,7 +56,7 @@ typedef struct
     // Essential values
     char *buffer;
     size_t chars;
-    size_t error;
+    bool error;
     FILE *output;
 
     // Custom values
@@ -55,164 +64,163 @@ typedef struct
     void (*raisecb)(void*);
     void (*catchcb)(void*);
 
-} ExceptionHandler;
+} __cexc_ExceptionHandler;
 
+
+#ifdef CEXC_SET
+/*----------------------------------------------------------------------------*/
+static inline void __cexc_callback(void *ptr){return;}
+static char __CUTILS_CEXC_EXCEPTION_HANDLER_BUFFER[] = __CEXC_NO_ERROR;
 
 /*----------------------------------------------------------------------------*/
-#ifdef _CEXC_EXCEPTION_HANDLER_STRUCT_
-  extern ExceptionHandler *__CEXC_Exception_Handler__;
+__cexc_ExceptionHandler __CUTILS_CEXC_EXCEPTION_HANDLER = {
+    .chars   = sizeof __CEXC_NO_ERROR,
+    .error   = false,
+    .buffer  = __CUTILS_CEXC_EXCEPTION_HANDLER_BUFFER,
+    .custom  = (void *)NULL,
+    .raisecb = __cexc_callback,
+    .catchcb = __cexc_callback
+};
 #else
-  #define _CEXC_EXCEPTION_HANDLER_STRUCT_
-  ExceptionHandler *__CEXC_Exception_Handler__;
-#endif // _CEXC_EXCEPTION_HANDLER_STRUCT_
+extern __cexc_ExceptionHandler __CUTILS_CEXC_EXCEPTION_HANDLER;
+#endif /* CEXC_SET */
 
-/*----------------------------------------------------------------------------*/
-static inline void __cexc_handler_init_cb__(void *ptr) { return; }
 
 /*----------------------------------------------------------------------------*/
 static inline void
-start_exception_handling(FILE *output)
+cutils_cexc_start_exception_handling(FILE *output)
 {
-    // Set essential values
-    __CEXC_Exception_Handler__ = malloc(sizeof(ExceptionHandler));
-    if (!__CEXC_Exception_Handler__)
+    __CUTILS_CEXC_EXCEPTION_HANDLER.output = output;
+    /* Try to dynamically allocate space for buffer */
+    char *buffer = malloc(sizeof __CEXC_NO_ERROR);
+    if (!buffer)
     {
-        fprintf(stderr, "Failed to allocate memory for ExceptionHandler\n");
+        __CUTILS_CEXC_EXCEPTION_HANDLER.error  = true;
+        __CUTILS_CEXC_EXCEPTION_HANDLER.buffer = __CEXC_INTERNAL;
         return;
     }
-    __CEXC_Exception_Handler__->buffer = malloc(CEXC_MSG_LEN * sizeof(char));
-    if (!__CEXC_Exception_Handler__->buffer)
-    {
-        fprintf(stderr, "Failed to allocate memory for"
-                        "ExceptionHandler's buffer\n");
-        return;
-    }
-    __CEXC_Exception_Handler__->chars  = CEXC_MSG_LEN;
-    strncpy(__CEXC_Exception_Handler__->buffer, CEXC_NO_ERR, CEXC_MSG_LEN);
-    __CEXC_Exception_Handler__->output = output;
-    __CEXC_Exception_Handler__->error = 0;
-
-    //Set custom values
-    __CEXC_Exception_Handler__->custom = (void *)NULL;
-    __CEXC_Exception_Handler__->raisecb = __cexc_handler_init_cb__;
-    __CEXC_Exception_Handler__->catchcb = __cexc_handler_init_cb__;
+    /* Reset error message and set newly allocated space */
+    strncpy(buffer, __CEXC_NO_ERROR, sizeof __CEXC_NO_ERROR);
+    __CUTILS_CEXC_EXCEPTION_HANDLER.buffer = buffer;
 }
 
 
 /*----------------------------------------------------------------------------*/
 static inline void
-stop_exception_handling(void)
+cutils_cexc_stop_exception_handling(void)
 {
-    free(__CEXC_Exception_Handler__->buffer);
-    free(__CEXC_Exception_Handler__);
+    /* If the initialisation was successful */
+    if (strncmp(__CUTILS_CEXC_EXCEPTION_HANDLER.buffer,
+                __CEXC_INTERNAL,
+                sizeof __CEXC_INTERNAL))
+        free(__CUTILS_CEXC_EXCEPTION_HANDLER.buffer);
 }
 
 
 /*----------------------------------------------------------------------------*/
 static inline void
-set_exception_handling_pointer(void *pointer)
+cutils_cesc_set_exception_handling_pointer(void *pointer)
 {
-    __CEXC_Exception_Handler__->custom = pointer;
+    __CUTILS_CEXC_EXCEPTION_HANDLER.custom = pointer;
 }
 
 
 /*----------------------------------------------------------------------------*/
 static inline void
-set_exception_handling_custom_catch(void (*callback)(void*))
+cutils_cexc_set_exception_handling_custom_catch(void (*callback)(void*))
 {
-    __CEXC_Exception_Handler__->catchcb = callback;
+    __CUTILS_CEXC_EXCEPTION_HANDLER.catchcb = callback;
 }
 
 
 /*----------------------------------------------------------------------------*/
 static inline void
-set_exception_handling_custom_raise(void (*callback)(void*))
+cutils_cexc_set_exception_handling_custom_raise(void (*callback)(void*))
 {
-    __CEXC_Exception_Handler__->raisecb = callback;
+    __CUTILS_CEXC_EXCEPTION_HANDLER.raisecb = callback;
 }
 
 
 /*----------------------------------------------------------------------------*/
-// TODO: OPTION 1: catch returns 1 if error, else 0, CON: if func removed by macro?
-//       OPTION 2: use ccatch for that? (the callback does what the
-//                 `if (catch())` would have done)
+/* TODO: OPTION 1: catch returns 1 if error, else 0, CON: if func removed by macro?
+         OPTION 2: use ccatch for that? (the callback does what the
+                   `if (catch())` would have done) */
 #ifdef CEXC_LOG
-  #define catch()
+  #define cutils_cexc_catch()
 #else
 static inline void
-catch(void)
+cutils_cexc_catch(void)
 {
-    // Write buffer data to output
-    fprintf(__CEXC_Exception_Handler__->output,
-            CEXC_PREFIX "%s\n",
-            __CEXC_Exception_Handler__->buffer);
-    // Clear buffer
-    strncpy(__CEXC_Exception_Handler__->buffer, CEXC_NO_ERR, CEXC_MSG_LEN);
-    __CEXC_Exception_Handler__->error = 0;
+    /* Write buffer data to output */
+    fprintf(__CUTILS_CEXC_EXCEPTION_HANDLER.output,
+            __CEXC_PREFIX "%s\n",
+            __CUTILS_CEXC_EXCEPTION_HANDLER.buffer);
+    /* Clear buffer */
+    strncpy(__CUTILS_CEXC_EXCEPTION_HANDLER.buffer,
+            __CEXC_NO_ERROR,
+            sizeof __CEXC_NO_ERROR);
+    __CUTILS_CEXC_EXCEPTION_HANDLER.error = false;
 }
 #endif /* CEXC_LOG */
 
 
 /*----------------------------------------------------------------------------*/
 static inline void
-raise(const char *message,
-      size_t length)
+cutils_cexc_raise(const char *message,
+                  size_t length)
 {
 #ifdef CEXC_LOG
-    fprintf(__CEXC_Exception_Handler__->output, CEXC_PREFIX "%s\n", message);
+    fprintf(__CUTILS_CEXC_EXCEPTION_HANDLER.output,
+            __CEXC_PREFIX "%s\n",
+            message);
 #else
     /* Raise new error only, if no previous error raised */
-    if (__CEXC_Exception_Handler__->error) return;
+    if (__CUTILS_CEXC_EXCEPTION_HANDLER.error) return;
     /* Switch error flag */
-    __CEXC_Exception_Handler__->error = 1;
-    // Check if buffer has enough size
-    if (length > __CEXC_Exception_Handler__->chars)
+    __CUTILS_CEXC_EXCEPTION_HANDLER.error = true;
+    /* Check if buffer has enough size */
+    if ((length + 1) > __CUTILS_CEXC_EXCEPTION_HANDLER.chars)
     {
-        // If buffer is too small resize it
-        char *buffer = realloc(__CEXC_Exception_Handler__->buffer,
+        /* If buffer is too small resize it */
+        char *buffer = realloc(__CUTILS_CEXC_EXCEPTION_HANDLER.buffer,
                                2 * length * sizeof(char));
         if (!buffer)
         {
-            strncpy(__CEXC_Exception_Handler__->buffer,
-                    CEXC_ALLOC_ERR, CEXC_MSG_LEN);
+            strncpy(__CUTILS_CEXC_EXCEPTION_HANDLER.buffer,
+                    __CEXC_INTERNAL, sizeof __CEXC_INTERNAL);
             return;
         }
-        __CEXC_Exception_Handler__->buffer = buffer;
-        // Update size information
-        __CEXC_Exception_Handler__->chars = length;
+        /* Update size information and point at new memory block */
+        __CUTILS_CEXC_EXCEPTION_HANDLER.chars  = length;
+        __CUTILS_CEXC_EXCEPTION_HANDLER.buffer = buffer;
     }
-    // Set exception buffer
-    strncpy(__CEXC_Exception_Handler__->buffer, message, length);
-    // Stop it
-    if (length < __CEXC_Exception_Handler__->chars)
-        __CEXC_Exception_Handler__->buffer[length] = '\0';
-#endif // CEXC_LOG
+    /* Set exception buffer */
+    strncpy(__CUTILS_CEXC_EXCEPTION_HANDLER.buffer, message, length);
+    /* Make sure it is null-terminated */
+    if (length < __CUTILS_CEXC_EXCEPTION_HANDLER.chars)
+        __CUTILS_CEXC_EXCEPTION_HANDLER.buffer[length] = '\0';
+#endif /* CEXC_LOG */
 }
 
 /*----------------------------------------------------------------------------*/
 #ifdef CEXC_LOG
-  #define ccatch()
+  #define cutils_cexc_ccatch()
 #else
 static inline void
-ccatch(void)
+cutils_cexc_ccatch(void)
 {
-    catch();
-    __CEXC_Exception_Handler__->catchcb(__CEXC_Exception_Handler__->custom);
+    cutils_cexc_catch();
+    __CUTILS_CEXC_EXCEPTION_HANDLER.catchcb(__CUTILS_CEXC_EXCEPTION_HANDLER.custom);
 }
 #endif /* CEXC_LOG */
 
 /*----------------------------------------------------------------------------*/
 static inline void
-craise(const char *message,
-       size_t length)
+cutils_cexc_craise(const char *message,
+                   size_t length)
 {
-    raise(message, length);
-    __CEXC_Exception_Handler__->raisecb(__CEXC_Exception_Handler__->custom);
+    cutils_cexc_raise(message, length);
+    __CUTILS_CEXC_EXCEPTION_HANDLER.raisecb(__CUTILS_CEXC_EXCEPTION_HANDLER.custom);
 }
-
-  #undef CEXC_MSG_LEN
-  #undef CEXC_PREFIX
-  #undef CEXC_NO_ERR
-  #undef CEXC_ALLOC_ERR
-#endif // CEXC_OFF
+#endif /* CEXC_OFF */
 #endif /* _C_EXCEPTIONS_H_5362957038900146_ */

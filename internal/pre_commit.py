@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.026 (20140706)                       ##
+##                       Version: 0.8.72.195 (20140707)                       ##
 ##                                                                            ##
 ##                        File: internal/pre_commit.py                        ##
 ##                                                                            ##
@@ -26,5 +26,4 @@ from os import system
 system('python3 cver.py')
 system('python3 cdoc.py doc/src ../../../temporary_stuffs/git_shit')
 system('python3 ccom.py .')
-system('python3 clic.py .')
-
+system('python3 clic.py .') # modifying files => has to be the last one

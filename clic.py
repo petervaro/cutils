@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.026 (20140706)                       ##
+##                       Version: 0.8.72.204 (20140707)                       ##
 ##                                                                            ##
 ##                               File: clic.py                                ##
 ##                                                                            ##
@@ -36,9 +36,11 @@ from internal.comment import (LINE as comment_LINE,
                               block_comments as comment_block_comments)
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-# Comment symbols
+# File extensions
 EXTENSIONS = ('.h', '.c', '.fs', '.vs', '.py', '.yaml',
-              'make', 'makefile', 'todo', 'readme')
+              'make', 'makefile', 'MAKE', 'MAKEFILE',
+              'todo', 'TODO', 'readme', 'README')
+EXCEPTIONS = ('.ccom_todo', '.cutils_filescache', '.cdoc_toc')
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 _FORMAT = {'CENTER': '^', 'LEFT':'<', 'RIGHT': '>'}
@@ -98,14 +100,14 @@ def _comment(header, filepath, pattern, align, width):
                 file.truncate()
                 return True
         except UnicodeDecodeError:
-            pass
-        return False
+            print('CLIC: cannot decode {!r}'.format(filepath))
 
 #------------------------------------------------------------------------------#
-def header(path,
+def header(infolder,
            line=comment_LINE,
            block=comment_BLOCK,
-           extensions=EXTENSIONS):
+           extensions=EXTENSIONS,
+           exceptions=EXCEPTIONS):
     # Compile regular expression pattern to match in scanned files
     pattern = re_compile(_COMMENT.format(r'|'.join(map(comment_escape, line)),
                                          *comment_block_comments(block)),
@@ -115,7 +117,7 @@ def header(path,
     width = 80
     # Update values based on INFO file
     values = {}
-    with open(os_path_join(path, 'INFO'), 'r', encoding='utf-8') as file:
+    with open(os_path_join(infolder, 'INFO'), 'r', encoding='utf-8') as file:
         header = file.read()
         match = re_match(r'\s*#\s*format\s+'
                          r'((?P<align>CENTER|LEFT|RIGHT)\s+)?'
@@ -133,7 +135,7 @@ def header(path,
     # Get file contents of special files
     for filename in _FILES:
         try:
-            with open(os_path_join(path, filename), 'r', encoding='utf-8') as file:
+            with open(os_path_join(infolder, filename), 'r', encoding='utf-8') as file:
                 values[filename] = file.read().strip()
         except FileNotFoundError:
             values[filename] = ''
@@ -143,28 +145,27 @@ def header(path,
 
     # Walk through all files and folders in the passed folder
     # FIXME: what if none of the files changed only INFO has been updated?
-    with check_Checker(path) as checker:
-        for root, dirs, files in os_walk(path):
+    with check_Checker(infolder, file='.clic_cache') as checker:
+        for root, dirs, files in os_walk(infolder):
             for file in files:
-                # TODO: reconsider: if somethign like:
-                #           if extension in extensions
-                #       is better ot not -> profile it!
-                for extension in extensions:
-                    # If file has the proper extension
-                    if file.lower().endswith(extension):
-                        filepath = os_path_join(root, file)
-                        # If file has been changed since last check
-                        if checker.ischanged(filepath):
-                            values['SIZE'] = _size(os_path_getsize(filepath))
-                            # FIXME: make it more generic than ./ -- what if ../../?
-                            values['FILE'] = filepath[2:] if filepath.startswith('./') else filepath
-                            values['FILE_NAME'] = file
-                            values['FILE_BASE'] = os_path_splitext(file)
-                            if _comment(header.format(**values), filepath, pattern, align, width):
-                                # Update checker after the file has been modified
-                                checker.update()
-                                # Report
-                                print('CLIC: processed {!r}'.format(filepath))
+                name, extension = os_path_splitext(file)
+                if not extension:
+                    extension = name
+                if (extension in extensions and
+                    extension not in exceptions):
+                    filepath = os_path_join(root, file)
+                    # If file has been changed since last check
+                    if checker.ischanged(filepath):
+                        values['SIZE'] = _size(os_path_getsize(filepath))
+                        # FIXME: make it more generic than ./ -- what if ../../?
+                        values['FILE'] = filepath[2:] if filepath.startswith('./') else filepath
+                        values['FILE_NAME'] = file
+                        values['FILE_BASE'] = name
+                        if _comment(header.format(**values), filepath, pattern, align, width):
+                            # Update checker after the file has been modified
+                            checker.update()
+                            # Report
+                            print('CLIC: processed {!r}'.format(filepath))
 
 #------------------------------------------------------------------------------#
 if __name__ == '__main__':

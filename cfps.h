@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.026 (20140706)                       **
+**                       Version: 0.8.72.220 (20140708)                       **
 **                                                                            **
 **                                File: cfps.h                                **
 **                                                                            **
@@ -19,16 +19,16 @@
 
 #include <stdio.h>  /* fprintf() */
 
-// TODO: At the moment in a single scope only the first appearence of
-//       these functions will work. NOTE: If you want to use both printfps
-//       and getfps at the same time, use the getfps function only, and pass
-//       a getter function which can also implement the printing functionality
+/* TODO: At the moment in a single scope only the first appearence of
+         these functions will work. NOTE: If you want to use both printfps
+         and getfps at the same time, use the getfps function only, and pass
+         a getter function which can also implement the printing functionality */
 
 /*----------------------------------------------------------------------------*/
 static inline void
-__getfps(double (*gettime)(void),
-         void (*getter)(int, void*),
-         void *data)
+cutils_cfps_getfps(double (*gettime)(void),
+            void (*getter)(int, void*),
+            void *data)
 {
     static double old_time = 0.0;
     static double time_sum = 0.0;
@@ -58,21 +58,7 @@ __printfps_getter_func(int fps, void *data)
 
 
 /*----------------------------------------------------------------------------*/
-#undef  __printfps
-#define __printfps(gettime) __getfps(gettime, __printfps_getter_func, NULL)
-
-
-/* Decide use prefix or not */
-#ifdef CUTILS_NAMESPACE
-  #undef  cutils_getfps
-  #define cutils_getfps(...) __getfps(__VA_ARGS__)
-  #undef  cutils_printfps
-  #define cutils_printfps(...) __printfps(__VA_ARGS__)
-#else
-  #undef  getfps
-  #define getfps(...) __getfps(__VA_ARGS__)
-  #undef  printfps
-  #define printfps(...) __printfps(__VA_ARGS__)
-#endif /* CUTILS_NAMESPACE*/
+#undef  cutils_cfps_printfps
+#define cutils_cfps_printfps(gettime) __getfps(gettime, __printfps_getter_func, NULL)
 
 #endif /* _C_FRAME_PER_SECOND_H_2834550704086395_ */

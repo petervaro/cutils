@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.026 (20140706)                       **
+**                       Version: 0.8.72.231 (20140708)                       **
 **                                                                            **
 **                                File: cutt.h                                **
 **                                                                            **
@@ -17,90 +17,74 @@
 #ifndef _C_UNIT_TEST_TOOLS_H_3818217702141947_
 #define _C_UNIT_TEST_TOOLS_H_3818217702141947_
 
-/* Return value type */
-#if __STDC__
-typedef int errno_t;
-#else
-#include <errno.h>
-#endif
+#include <stdio.h>   /* fprintf(), stderr, stdout */
+#include <stdlib.h>  /* malloc(), free(), exit(), EXIT_FAILURE */
 
-#include <stdio.h>  /* fprintf(), stderr, stdout */
+#undef  __str
+#undef  _str
+#undef cutils_cutt_try
+#undef cutils_cutt_report
 
-/* TODO: CUTT_DRY -> will output a summary instead of all the other infos */
-
-/*----------------------------------------------------------------------------*/
-#undef  tester
-#define tester()                                                               \
-        struct {                                                               \
-            size_t count;                                                      \
-            size_t fails;                                                      \
-            const char *funcs[];                                               \
-        } _TESTER_2755985868339231_ = {0}
+#define __str(value) #value
+#define _str(value) __str(value)
 
 /*----------------------------------------------------------------------------*/
-#undef  test
-#define test(function, ...)                                                    \
+typedef struct
+{
+    size_t fail;
+    size_t size;
+    char *info[];
+} cutils_cutt_Tester;
+
+/*----------------------------------------------------------------------------*/
+static inline void
+cutils_cutt_new(cutils_cutt_Tester **tester,
+                size_t count)
+{
+    cutils_cutt_Tester *_tester = malloc(sizeof(cutils_cutt_Tester) +
+                                         count*sizeof(char *));
+    if (!_tester)
+    {
+        fprintf(stderr, "CUTT: Internal allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
+    _tester->fail = 0;
+    _tester->size = count;
+    *tester = _tester;
+}
+
+/*----------------------------------------------------------------------------*/
+static inline void
+cutils_cutt_del(cutils_cutt_Tester *tester)
+{
+    free(tester);
+}
+
+
+/*----------------------------------------------------------------------------*/
+#define cutils_cutt_try(tester, expression)                                    \
     do {                                                                       \
-        fprintf(stderr,                                                        \
-                "----- TEST %03zu -----\n%s()\n",                              \
-                _TESTER_2755985868339231_.count,                               \
-                #function);                                                    \
-        /* If test failed */                                                   \
-        if (function(__VA_ARGS__))                                             \
-        {                                                                      \
-            _TESTER_2755985868339231_.funcs[_TESTER_2755985868339231_.fails] = \
-            #function;                                                         \
-            _TESTER_2755985868339231_.fails++;                                 \
-        }                                                                      \
-        _TESTER_2755985868339231_.count++;                                     \
+        if (!(expression))                                                     \
+            tester->info[tester->fail++] = "CUTT: in file: '" __FILE__         \
+                                           "', at line: "_str(__LINE__)        \
+                                           ": '"#expression"'";                \
     } while (0)
 
-/*----------------------------------------------------------------------------*/
-#undef  report
-#define report()                                                               \
-    do {                                                                       \
-        fprintf(stderr, "----- REPORT -----\n");                               \
-        /* If some tests failed */                                             \
-        if (_TESTER_2755985868339231_.fails)                                   \
-        {                                                                      \
-            fprintf(stderr,                                                    \
-                    "SOME TESTS [FAILED] (%zu/%zu)\n"                          \
-                    "In the following function(s):\n",                         \
-                    _TESTER_2755985868339231_.fails,                           \
-                    _TESTER_2755985868339231_.count);                          \
-            for (size_t i=0; i<_TESTER_2755985868339231_.fails; i++)           \
-                fprintf(stderr,                                                \
-                        "\t%s()\n",                                            \
-                        _TESTER_2755985868339231_.funcs[i]);                   \
-            fprintf(stderr, "\n");                                             \
-            break;                                                             \
-        }                                                                      \
-        /* If everything went fine */                                          \
-        fprintf(stderr,                                                        \
-                "ALL TESTS [PASSED] (%zu/%zu)\n\n",                            \
-                _TESTER_2755985868339231_.count,                               \
-                _TESTER_2755985868339231_.count);                              \
-    } while (0)
 
 /*----------------------------------------------------------------------------*/
-#undef  try
-#define try(expr)                                                              \
+#define cutils_cutt_report(tester)                                             \
     do {                                                                       \
-        if (!(expr))                                                           \
+        size_t fail = tester->fail, size = tester->size;                       \
+        if (fail)                                                              \
         {                                                                      \
-            fprintf(stderr,                                                    \
-                    "\n\t[FAILED] File: '%s', line: %d, function: '%s'\n\n\n", \
-                    __FILE__, __LINE__, __func__);                             \
-            return 1;                                                          \
+            fprintf(stderr, "CUTT: Some tests "                                \
+                            "(%zu / %zu) failed:\n", size-fail, size);         \
+            for (size_t i=0; i<fail; i++)                                      \
+                fprintf(stderr, "%s\n", tester->info[i]);                      \
         }                                                                      \
-    } while (0)
-
-/*----------------------------------------------------------------------------*/
-#undef  pass
-#define pass()                                                                 \
-    do {                                                                       \
-        fprintf(stdout, "\n\t[PASSED]\n\n\n");                                 \
-        return 0;                                                              \
+        else                                                                   \
+            fprintf(stderr, "CUTT: All tests "                                 \
+                            "(%zu / %zu) passed.\n", size, size);              \
     } while (0)
 
 #endif /* _C_UNIT_TEST_TOOLS_H_3818217702141947_ */

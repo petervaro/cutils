@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.026 (20140706)                       **
+**                       Version: 0.8.72.220 (20140708)                       **
 **                                                                            **
 **                                File: cpro.h                                **
 **                                                                            **
@@ -21,11 +21,8 @@
 #include <stdlib.h>
 
 /*----------------------------------------------------------------------------*/
-#ifdef __profile
-  #error we are so fucked
-#endif
-#undef  __profile
-#define __profile(cycles, time, function, ...)                                 \
+#undef  cutils_cpro_profile
+#define cutils_cpro_profile(cycles, time, function, ...)                       \
     do {                                                                       \
         size_t start = clock();                                                \
         for(size_t i=0; i<(size_t)cycles; i++)                                 \
@@ -33,14 +30,5 @@
         size_t end = clock();                                                  \
         time = (double)(end - start) / CLOCKS_PER_SEC;                         \
     } while (0)
-
-/* Decide use prefix or not */
-#ifdef CUTILS_NAMESPACE
-  #undef  cutils_profile
-  #define cutils_profile(...) __profile(__VA_ARGS__)
-#else
-  #undef  profile
-  #define profile(...) __profile(__VA_ARGS__)
-#endif /* CUTILS_NAMESPACE*/
 
 #endif /* _C_PROFILER_H_6503982333617538_ */

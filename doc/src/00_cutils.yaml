@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.026 (20140706)                       ##
+##                       Version: 0.8.72.230 (20140708)                       ##
 ##                                                                            ##
 ##                        File: doc/src/00_cutils.yaml                        ##
 ##                                                                            ##
@@ -40,17 +40,14 @@ INFO:
 
 # TODO: consider changing `clic` -> `ccom` and `ccom` -> `ctag`
 
-# TODO: cutils.h or interface.h -> unified API for
-#       _Generic and vargs macros maybe it even can
-#       contain the the name mangler ?
-
 # TODO: create a proper makefile
 
-# NOTE: Timing: 1) CUTT
-#               2) CDAR
-#               3) CSLL
-#               4) CMAP
-#               5) C11
+# NOTE: Timing: 1) CDAR
+#               2) CSLL
+#               3) CMAP
+#               4) C11
+
+# TODO: create call - which will include all the header files available
 
 # TODO: add EXEC to cdoc to add "interactive" python snippets to code
 EXEC: |
