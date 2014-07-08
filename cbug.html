@@ -39,6 +39,7 @@ formatted message will be indented and printed out after the default
 debugging line.
 </span></p><br/><p class="info return"><span class="label">Return: </span><code class="return_case"><span>void</span></code></p><br/><p class="info label">Examples:</p><p class="info note"><span>Calling </span><code>debug</code><span> in all 3 forms from the main function:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>stdio</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>        </span><span class="code_comments">/* fprintf(), stderr */</span><span>
 </span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cbug</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>  </span><span class="code_comments">/* debug() */</span><span>
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>capi</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
 
 </span><span class="code_types">int</span><span> </span><span class="code_functions">main</span><span>(</span><span class="code_types">void</span><span>)
 {
@@ -73,6 +74,7 @@ debugging line.
 </span><span class="code_macros">#define</span><span> CEXC_LOG
 </span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cexc</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>  </span><span class="code_comments">/* (start|stop)_exception_handling(), raise() */</span><span>
 </span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cbug</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>  </span><span class="code_comments">/* debug() */</span><span>
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>capi</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
 
 </span><span class="code_types">void</span><span> </span><span class="code_functions">func</span><span>(</span><span class="code_types">void</span><span> </span><span class="code_operators">*</span><span>ptr)
 {

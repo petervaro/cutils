@@ -1,7 +1,12 @@
 *.DS_Store
 *.pyc
 *.pyo
-.cutils_filescache
+
 .ccom_todo
 .cdoc_toc
+
+.ccom_cache
+.clic_cache
+.cdoc_cache
+
 readme.html

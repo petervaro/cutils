@@ -26,23 +26,23 @@ package-manager to keep your installations ordered, clean and upto-date.
     
     </span><span class="code_keywords">return</span><span> </span><span class="code_numbers">0</span><span>;
 }
-</span></code></pre><br/><p class="info note"><span></span><code>ccom</code><span> will produce the follwoing </span><code>TODO</code><span> file from this:</span></p><br/><pre class="info"><code class="snippet">#------------------------------------------------------------------------------#
-FIXME: # POSTS: 1
+</span></code></pre><br/><p class="info note"><span></span><code>ccom</code><span> will produce the follwoing </span><code>TODO</code><span> file from this:</span></p><br/><pre class="info"><code class="snippet">#----------------------------- 1 POSTS IN 1 FILES -----------------------------#
+FIXME:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
-  - file: wizards/wizard.h
-    line: 6
+  - file: main.c
+    line: 10
     note: |
           We need to use the String
           "object" of cutils here
           instead of this simple struct
 
-#------------------------------------------------------------------------------#
-NOTE: # POSTS: 1
+#----------------------------- 1 POSTS IN 1 FILES -----------------------------#
+NOTE:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
-  - file: wizards/wizard.h
-    line: 10
+  - file: main.c
+    line: 6
     note: |
           length of the char
           array stored in string</code></pre><br/></div><div><h2 class="title">Functions</h2><div class="entity" id="func_ccom_collect"><p><span class="name">ccom.collect</span><span class="space_name_arg_paren"> </span><span class="arg_paren">(</span><span class="space_arg_comma_type"> </span><span class="arg_type">str</span><span class="space_arg_type_name"> </span><span class="arg_name">path</span><span class="space_arg_name_paren"> </span><span class="arg_comma">,</span><span class="space_arg_comma_type"> </span><span class="arg_type">iterable of strs</span><span class="space_arg_type_name"> </span><span class="arg_name">line</span><span class="space_arg_name_paren"> </span><span class="arg_comma">,</span><span class="space_arg_comma_type"> </span><span class="arg_type">dict</span><span class="space_arg_type_name"> </span><span class="arg_name">block</span><span class="space_arg_name_paren"> </span><span class="arg_comma">,</span><span class="space_arg_comma_type"> </span><span class="arg_type">iterable of strs</span><span class="space_arg_type_name"> </span><span class="arg_name">words</span><span class="space_arg_name_paren"> </span><span class="arg_comma">,</span><span class="space_arg_comma_type"> </span><span class="arg_type">dict</span><span class="space_arg_type_name"> </span><span class="arg_name">marks</span><span class="space_arg_name_paren"> </span><span class="arg_comma">,</span><span class="space_arg_comma_type"> </span><span class="arg_type">iterable of strs</span><span class="space_arg_type_name"> </span><span class="arg_name">extensions</span><span class="space_arg_name_paren"> </span><span class="arg_paren">)</span></p><br/><p class="info"><span></span><code>ccom</code><span> can also be used as a module, to customise which comment
