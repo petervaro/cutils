@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.220 (20140708)                       **
+**                       Version: 0.8.72.278 (20140710)                       **
 **                                                                            **
 **                                File: carg.h                                **
 **                                                                            **
@@ -14,8 +14,8 @@
 **                                                                            **
 ************************************************************************ INFO */
 
-#ifndef _C_ARGUMENTS_19836769466709525_
-#define _C_ARGUMENTS_19836769466709525_
+#ifndef _C_ARGUMENTS_H_19836769466709525_
+#define _C_ARGUMENTS_H_19836769466709525_
 
 /* Make macro variables available */
 #undef __args8
@@ -256,4 +256,4 @@ static inline void cutils_carg_zero(char empty){}
 /* Decide whether the macro was called with zero or one or more arguments */
 #define cutils_carg_vargs(...) __merge(__state, __empty(__VA_ARGS__))
 
-#endif /* _C_ARGUMENTS_19836769466709525_ */
+#endif /* _C_ARGUMENTS_H_19836769466709525_ */

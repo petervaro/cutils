@@ -1,4 +1,20 @@
-#include <stdio.h>   // printf()
+/* INFO ************************************************************************
+**                                                                            **
+**                                   cutils                                   **
+**                                   ======                                   **
+**                                                                            **
+**                     Modern and Lightweight C Utilities                     **
+**                       Version: 0.8.72.258 (20140709)                       **
+**                                                                            **
+**                   File: etc/cutils_func_overload_idea.c                    **
+**                                                                            **
+**           Designed and written by Peter Varo. Copyright (c) 2014           **
+**             License agreement is provided in the LICENSE file              **
+**                 For more info visit: http://www.cutils.org                 **
+**                                                                            **
+************************************************************************ INFO */
+
+#include <stdio.h>   /* printf() */
 
 typedef struct {} Alpha;
 typedef struct {} Beta;

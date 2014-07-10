@@ -4,9 +4,9 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.234 (20140708)                       **
+**                       Version: 0.8.72.235 (20140708)                       **
 **                                                                            **
-**                                File: cpro.h                                **
+**                                File: call.h                                **
 **                                                                            **
 **           Designed and written by Peter Varo. Copyright (c) 2014           **
 **             License agreement is provided in the LICENSE file              **
@@ -14,21 +14,21 @@
 **                                                                            **
 ************************************************************************ INFO */
 
-#ifndef _C_PROFILER_H_6503982333617538_
-#define _C_PROFILER_H_6503982333617538_
+#ifndef _C_ALL_HEADERS_H_459091641723151_
+#define _C_ALL_HEADERS_H_459091641723151_
 
-#include <time.h>
-#include <stdlib.h>
+#include "carg.h"
+#include "cbug.h"
+#include "cexc.h"
+#include "cpro.h"
+#include "cutt.h"
+#include "cdar.h"
+#include "cstr.h"
+#include "csll.h"
+#include "cdll.h"
+#include "cmap.h"
+#include "cfps.h"
+#include "ccol.h"
+#include "capi.h"
 
-/*----------------------------------------------------------------------------*/
-#undef  cutils_cpro_profile
-#define cutils_cpro_profile(cycles, time, function, ...)                       \
-    do {                                                                       \
-        size_t start = clock();                                                \
-        for(size_t i=0; i<(size_t)cycles; i++)                                 \
-            function(__VA_ARGS__);                                             \
-        size_t end = clock();                                                  \
-        time = (double)(end - start) / CLOCKS_PER_SEC;                         \
-    } while (0)
-
-#endif /* _C_PROFILER_H_6503982333617538_ */
+#endif /* _C_ALL_HEADERS_H_459091641723151_ */

@@ -4,9 +4,9 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.195 (20140707)                       ##
+##                       Version: 0.8.72.333 (20140710)                       ##
 ##                                                                            ##
-##                         File: doc/src/15_cstr.yaml                         ##
+##                         File: doc/src/16_cstr.yaml                         ##
 ##                                                                            ##
 ##           Designed and written by Peter Varo. Copyright (c) 2014           ##
 ##             License agreement is provided in the LICENSE file              ##
@@ -45,3 +45,7 @@ USER:
 #       probably this should be implemented for String (pop)
 #       concat(string1, string2) -- is this necessary?
 #       rethink all string methods!
+#       Update: But C already has escape sequence!
+#               char str[3];
+#               sprintf(str, "%%%c", 'd');
+#               printf(str,  12);

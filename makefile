@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.195 (20140707)                       ##
+##                       Version: 0.8.72.234 (20140708)                       ##
 ##                                                                            ##
 ##                               File: makefile                               ##
 ##                                                                            ##

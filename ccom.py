@@ -1,10 +1,11 @@
+#!/usr/bin/env python3
 ## INFO ########################################################################
 ##                                                                            ##
 ##                                   cutils                                   ##
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.196 (20140707)                       ##
+##                       Version: 0.8.72.331 (20140710)                       ##
 ##                                                                            ##
 ##                               File: ccom.py                                ##
 ##                                                                            ##
@@ -18,8 +19,10 @@
 from os import walk as os_walk
 from sys import argv as sys_argv
 from collections import OrderedDict
-from os.path import join as os_path_join
 from itertools import chain as itertools_chain
+from os.path import (join as os_path_join,
+                     splitext as os_path_splitext,
+                     isfile as os_path_isfile)
 from re import (IGNORECASE as re_IGNORECASE,
                 MULTILINE as re_MULTILINE,
                 DOTALL as re_DOTALL,
@@ -45,6 +48,9 @@ WORDS = r'fixme', r'todo', r'bug', r'hack', r'note', r'xxx'
 MARKS = {r'!'*3: 'alert', r'?'*3: 'question'}
 # Extension of files to look in
 EXTENSIONS = '.h', '.c', '.py', '.fs', '.vs', '.yaml'
+EXCEPTIONS = ('.ccom_cache', '.ccom_todo',
+              '.cdoc_cache', '.cdoc_toc',
+              '.clic_cache' )
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 _SHORT = ' '*2
@@ -138,26 +144,19 @@ def _search(collected, content_pattern, newline_pattern, string, filepath, marks
     print('CCOM: processed {!r}'.format(filepath))
 
 #------------------------------------------------------------------------------#
-# TODO: add 'exceptions' argument
 def collect(infolder,
             line  = comment_LINE,
             block = comment_BLOCK,
             tags  = WORDS,
             marks = MARKS,
-            extensions=EXTENSIONS):
+            extensions=EXTENSIONS,
+            exceptions=EXCEPTIONS):
     # Process block comment marks
     blocks_open, blocks_close = comment_block_comments(block)
 
     # TODO: Make hidden files OS independent, probably using
     #       https://docs.python.org/3.4/library/tempfile.html ?
 
-    # Get previously generated collection of all posts
-    COLLECTED = os_path_join(infolder, '.ccom_todo')
-    try:
-        with open(COLLECTED, 'rb') as file:
-            collected = pickle_load(file)
-    except (FileNotFoundError, EOFError):
-        collected = table_Table(row=OrderedDict)
     # Compile regular expression patterns
     pattern1 = re_compile(_COMMENT.format(r'|'.join(map(comment_escape, line)),
                                           blocks_open,
@@ -167,17 +166,34 @@ def collect(infolder,
                          flags=re_IGNORECASE | re_DOTALL | re_MULTILINE | re_VERBOSE)
     pattern2 = re_compile(r'\n')
 
+    # Get previously generated collection of all posts
+    COLLECTED = os_path_join(infolder, '.ccom_todo')
+    try:
+        with open(COLLECTED, 'rb') as file:
+            collected = pickle_load(file)
+    except (FileNotFoundError, EOFError):
+        collected = table_Table(row=OrderedDict)
+
+    # Clear cache -- remove all non-existing files
+    for filepath in collected.rows():
+        if not os_path_isfile(filepath):
+            del collected[filepath]
+
     # Scan through all files and folders
     with check_Checker(infolder, file='.ccom_cache') as checker:
         for root, dirs, filenames in os_walk(infolder):
             for filename in filenames:
-                for extension in extensions:
-                    if filename.endswith(extension):
-                        filepath = os_path_join(root, filename)[2:]
-                        if checker.ischanged(filepath):
-                            with open(filepath, encoding='utf-8') as file:
-                                _search(collected, pattern1, pattern2,
-                                        file.read(), filepath, marks)
+                name, extension = os_path_splitext(filename)
+                if not extension:
+                    extension = name
+                if (extension in extensions and
+                    extension not in exceptions):
+                    filepath = os_path_join(root, filename)[2:]
+                    if checker.ischanged(filepath):
+                        with open(filepath, encoding='utf-8') as file:
+                            _search(collected, pattern1, pattern2,
+                                    file.read(), filepath, marks)
+
     # Save collection of all posts
     with open(COLLECTED, 'wb') as file:
         pickle_dump(collected, file, pickle_HIGHEST_PROTOCOL)

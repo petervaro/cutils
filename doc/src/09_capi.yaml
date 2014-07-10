@@ -1,0 +1,126 @@
+## INFO ########################################################################
+##                                                                            ##
+##                                   cutils                                   ##
+##                                   ======                                   ##
+##                                                                            ##
+##                     Modern and Lightweight C Utilities                     ##
+##                       Version: 0.8.72.295 (20140710)                       ##
+##                                                                            ##
+##                         File: doc/src/09_capi.yaml                         ##
+##                                                                            ##
+##           Designed and written by Peter Varo. Copyright (c) 2014           ##
+##             License agreement is provided in the LICENSE file              ##
+##                 For more info visit: http://www.cutils.org                 ##
+##                                                                            ##
+######################################################################## INFO ##
+
+#------------------------------------------------------------------------------#
+PAGE: CAPI Interface
+NAME: capi
+
+#------------------------------------------------------------------------------#
+HEAD:
+  FILE: const/head.yaml
+
+#------------------------------------------------------------------------------#
+INFO:
+  - - h1
+    - string: 'CAPI | Interface'
+  - - br
+  - - p
+    - string: |
+              `capi` is the "interface" header of all other `cutils` headers. It
+              provides the name-mangling option, also the short
+
+#------------------------------------------------------------------------------#
+USER:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - - Usage
+    - name: Include The Interface
+      info: |
+            One of the best features of `cutils` is it's modern interface
+            approach, which makes it possible to use short function and macro
+            names, also possible to overload these names, and let the compiler
+            choose th eproper functions type-safely.
+            \\n\\n
+            `capi` also prevents name-collison as it can add the `cutils_`
+            prefix to all the types, macros, function-like macros and functions.
+      examples:
+      - - Without including `capi.h`
+        - |
+          #include <cutils/cbug.h>
+          #include <cutils/cstr.h>
+          #include <cutils/cdar.h>
+          #include <cutils/csll.h>
+          \\n
+          int main(void)
+          {
+              cutils_cbug_debug("kill long token names!");
+              \\n
+              cutils_cstr_String *string;
+              cutils_cdar_DynamicArray_unsigned_long_long *dynarr;
+              cutils_csll_SingleLinkedList_double *linlist;
+              \\n
+              cutils_cstr_String_new(&string, "the interface of cutils rocks!");
+              cutils_cdar_DynamicArray_unsigned_long_long_new(&dynarr);
+              cutils_csll_SingleLinkedList_double_new(&linlist, 2, (double[]){0.0, 1.0});
+              \\n
+              cutils_cstr_String_del(string);
+              cutils_cdar_DynamicArray_unsigned_long_long_del(dynarr);
+              cutils_csll_SingleLinkedList_double_del(linlist);
+              \\n
+              return 0;
+          }
+      - - With including `capi.h`
+        - |
+          #include <cutils/cbug.h>
+          #include <cutils/cstr.h>
+          #include <cutils/cdar.h>
+          #include <cutils/csll.h>
+          #include <cutils/capi.h>
+          \\n
+          int main(void)
+          {
+              debug("kill long token names!");
+              \\n
+              String *string;
+              DynamicArray_unsigned_long_long *dynarr;
+              SingleLinkedList_double *linlist;
+              \\n
+              new(&string, "the interface of cutils rocks!");
+              new(&dynarr);
+              new(&linlist, 2, ((double[]){0.0, 1.0}));
+              \\n
+              del(string);
+              del(dynarr);
+              del(linlist);
+              \\n
+              return 0;
+          }
+      - - With including `capi.h` and `CUTILS_NAMESPACE` "turned on"
+        - |
+          #include <cutils/cbug.h>
+          #include <cutils/cstr.h>
+          #include <cutils/cdar.h>
+          #include <cutils/csll.h>
+          #define CUTILS_NAMESPACE
+          #include <cutils/capi.h>
+          \\n
+          int main(void)
+          {
+              cutils_debug("kill long token names!");
+              \\n
+              cutils_String *string;
+              cutils_DynamicArray_unsigned_long_long *dynarr;
+              cutils_SingleLinkedList_double *linlist;
+              \\n
+              cutils_new(&string, "the interface of cutils rocks!");
+              cutils_new(&dynarr);
+              cutils_new(&linlist, 2, ((double[]){0.0, 1.0});
+              \\n
+              cutils_del(string);
+              cutils_del(dynarr);
+              cutils_del(linlist);
+              \\n
+              return 0;
+          }

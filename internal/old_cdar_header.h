@@ -1,69 +1,3 @@
-/* INFO ************************************************************************
-**                                                                            **
-**                                   cutils                                   **
-**                                   ======                                   **
-**                                                                            **
-**                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.195 (20140707)                       **
-**                                                                            **
-**                             File: cdar/darv.h                              **
-**                                                                            **
-**           Designed and written by Peter Varo. Copyright (c) 2014           **
-**             License agreement is provided in the LICENSE file              **
-**                 For more info visit: http://www.cutils.org                 **
-**                                                                            **
-************************************************************************ INFO */
-
-#ifndef _DYNAMIC_ARRAY_VOID_POINTER_H_0841908130052218_
-#define _DYNAMIC_ARRAY_VOID_POINTER_H_0841908130052218_
-
-#include <stdio.h>    /* size_t, printf() */
-#include <stdbool.h>  /* bool */
-
-// TODO: universal functions for all cutils data structures:
-//       new()
-//       del()
-//       data() -> alldata
-//       raw() -> data
-//       len()
-//       size()
-//       clear()
-//       scale() -> resize
-//       swap()
-//       reverse()
-//       add() -> append
-//       push() -> insert
-//       rem() -> remove
-//       pop()
-//       trunc() -> truncate
-//       set() -> replace
-//       get()
-//       sub()
-//       swapsub()
-//       reversesub()
-//       find()
-//       findall()
-//       sort()
-//       print() -> printf
-
-// TODO: copy() => new(&darf2, len(darf1), raw(darf1));
-
-/* TODO: #define at(dar_ptr, index, data_ptr) get(dar_ptr, index, 1, data_ptr)
-         #define pop(dar_ptr, data_ptr) pull(dar_ptr, len(dar_ptr) - 1, 1, data_ptr)
-         #define append(dar_ptr, data_ptr) push(data_ptr, len(dar_ptr) - 1, 1, data_ptr) */
-
-/*----------------------------------------------------------------------------*/
-/*
- * Exception handling of cutils is already included, here is how to activate it:
- *
- *    1) place 'cexc.h' header file next to the source file (cdar.c)
- *    2) compile source file with '-DCEXC_USE' flag
- *    3) call start_exception_handling(ptr) before using array
- *    4) call stop_exception_handling() after array used
- *
- * For exception handling's logging-mode use the '-DCEXC_LOG' compiler flag.
- */
-
 /*----------------------------------------------------------------------------*/
 // DynamicArray object type. DynamicArray stores items by their values, not only
 // by pointer to them, so all data passed to it with the following methods are
@@ -295,5 +229,3 @@ dartg_new(DynamicArray **dar,
             callback(i, *(void **)(__dar_tmp_data__ + i));                     \
         printf("}\n");                                                         \
     } while (0)
-
-#endif /* _DYNAMIC_ARRAY_VOID_POINTER_H_0841908130052218_ */

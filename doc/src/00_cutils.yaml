@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.230 (20140708)                       ##
+##                       Version: 0.8.72.254 (20140709)                       ##
 ##                                                                            ##
 ##                        File: doc/src/00_cutils.yaml                        ##
 ##                                                                            ##
@@ -14,9 +14,7 @@
 ##                                                                            ##
 ######################################################################## INFO ##
 
-# NOTE: https://www.youtube.com/playlist?list=PLhoQnW-6zPr8UhlY31AbHE6E5bAcNcT4d
-#       BBNG3 <- Can't leave the night
-#       munkaugyek: next s02e23
+# NOTE: The Dark Knight 67 Crane Warns...
 
 #------------------------------------------------------------------------------#
 PAGE: CUTILS
@@ -49,6 +47,7 @@ INFO:
 
 # TODO: create call - which will include all the header files available
 
+
 # TODO: add EXEC to cdoc to add "interactive" python snippets to code
 EXEC: |
   with open('VERSION') as file:
@@ -57,6 +56,25 @@ EXEC: |
 
 #------------------------------------------------------------------------------#
 USER:
+  # TODO: write article about modern interfaces
+  #       drawbacks[1]: macro(((cast){1, 2, 3}))
+  #                           ^
+  #                   extra parenthesis
+  #       drawbacks[2]: one has to write/exzend the interface header
+  #                     if one wants to use the same generic macro
+  #       drawbacks[3]: -std=c11
+  #
+  #       advantage: OOP => instance.method(args...)
+  #                                         ^
+  #                     instance passed implicitly as first argument
+  #
+  #                  before: object_method(instance, args...)
+  #                            ^              ^
+  #              name space is token name   instance passed explicitly
+  #
+  #                  now: method(instance, args...)
+  #                          ^
+  #                  method decides which object's method to use
   - - About
     - name: LICENSE
       info: |

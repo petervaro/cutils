@@ -4,9 +4,9 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.195 (20140707)                       ##
+##                       Version: 0.8.72.240 (20140708)                       ##
 ##                                                                            ##
-##                         File: doc/src/16_csll.yaml                         ##
+##                         File: doc/src/21_ccol.yaml                         ##
 ##                                                                            ##
 ##           Designed and written by Peter Varo. Copyright (c) 2014           ##
 ##             License agreement is provided in the LICENSE file              ##
@@ -15,8 +15,8 @@
 ######################################################################## INFO ##
 
 #------------------------------------------------------------------------------#
-PAGE: CSLL Single Linked List
-NAME: csll
+PAGE: CCOL Color Helper
+NAME: ccol
 
 #------------------------------------------------------------------------------#
 HEAD:
@@ -31,8 +31,7 @@ USER:
   - - About
     - name: Summary
       info: >
-            Implementation of a single linked list object type and its methods.
+            A single header-only set of color related tools: base type aliases,
+            conversion and mixing functions, name constants and IO.
             \\n\\n
             *Coming soon...*
-
-# TODO: implement csll: Single Linked List

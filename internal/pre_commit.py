@@ -1,10 +1,11 @@
+#!/usr/bin/env python3
 ## INFO ########################################################################
 ##                                                                            ##
 ##                                   cutils                                   ##
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.195 (20140707)                       ##
+##                       Version: 0.8.72.335 (20140710)                       ##
 ##                                                                            ##
 ##                        File: internal/pre_commit.py                        ##
 ##                                                                            ##
@@ -15,6 +16,7 @@
 ######################################################################## INFO ##
 
 from os import system
+from sys import exit as sys_exit
 
 # TODO: generate documentation to some better place, maybe /tmp ?
 #       after committed, change the branch copy the content and
@@ -23,7 +25,8 @@ from os import system
 
 # TODO: Make error messages and reports of cver/cdoc/ccom/clic similar!
 
-system('python3 cver.py')
-system('python3 cdoc.py doc/src ../../../temporary_stuffs/git_shit')
-system('python3 ccom.py .')
-system('python3 clic.py .') # modifying files => has to be the last one
+system('./cver.py')
+system('./ccom.py .')
+system('./clic.py .')
+system('./cdoc.py doc/src ../../../temporary_stuffs/git_shit')
+sys_exit("pre-commit: success\n")

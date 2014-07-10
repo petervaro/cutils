@@ -1,10 +1,11 @@
+#!/usr/bin/env python3
 ## INFO ########################################################################
 ##                                                                            ##
 ##                                   cutils                                   ##
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.212 (20140708)                       ##
+##                       Version: 0.8.72.331 (20140710)                       ##
 ##                                                                            ##
 ##                               File: cdoc.py                                ##
 ##                                                                            ##
@@ -136,8 +137,9 @@ MD_SYNTAX = re_compile(r"""
 # CSS
 STYLE = """
 /* FONT */
-@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,
-400italic,700italic|Source+Code+Pro:400,700);
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700);
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400italic,700italic);
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro:400,700);
 
 /* RESET: http://meyerweb.com/eric/tools/css/reset/ | v2.0b1 | 201101 */
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,
@@ -634,6 +636,13 @@ def _build(sources, filepath, gentoc, toc):
 
         # TODO: add FOOT key
 
+        # TODO: add TEXT key -- only with 'text' and 'code'
+        #       something like:
+        #       TEXT:
+        #         - text: normal text, nothing special
+        #         - code: |
+        #                 #incude <multline_code.h>
+
         # OPTIONAL: user defined
         try:
             userdefs = source['USER']
@@ -718,6 +727,9 @@ def document(infolder, outfolder, extension, loader, generate_toc=None):
     pages = OrderedDict()
     anonym = iter_count()
     # Load all pages
+    # FIXME: pre check files, because if a new file added,
+    #        the TOC won't be regenerated for the old files
+    #        also: what happens when the order changes?
     with check_Checker(infolder, file='.cdoc_cache') as checker:
         for file in os_listdir(infolder):
             if file.endswith(extension):
@@ -745,6 +757,8 @@ if __name__ == '__main__':
     print('- '*40)
     try:
         # TODO: add 'external CSS path' argument
+
+        # TODO: add -reset flags which will remove the cache files
         script, infolder, outfolder, *rest = sys_argv
         # Create documentation
         document(infolder=infolder,

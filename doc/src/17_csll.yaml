@@ -4,9 +4,9 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.195 (20140707)                       ##
+##                       Version: 0.8.72.240 (20140708)                       ##
 ##                                                                            ##
-##                         File: doc/src/18_cmap.yaml                         ##
+##                         File: doc/src/17_csll.yaml                         ##
 ##                                                                            ##
 ##           Designed and written by Peter Varo. Copyright (c) 2014           ##
 ##             License agreement is provided in the LICENSE file              ##
@@ -15,8 +15,8 @@
 ######################################################################## INFO ##
 
 #------------------------------------------------------------------------------#
-PAGE: CMAP HashMap
-NAME: cmap
+PAGE: CSLL Single Linked List
+NAME: csll
 
 #------------------------------------------------------------------------------#
 HEAD:
@@ -28,14 +28,11 @@ INFO:
 
 #------------------------------------------------------------------------------#
 USER:
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - FILE: const/cdar.yaml
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - About
     - name: Summary
       info: >
-            Associative list / Hash Table / Hash Map / Dictionary implementation.
+            Implementation of a single linked list object type and its methods.
             \\n\\n
             *Coming soon...*
 
-# TODO: Implement cmap: Hash Map
+# TODO: implement csll: Single Linked List

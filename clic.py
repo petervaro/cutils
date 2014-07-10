@@ -1,10 +1,11 @@
+#!/usr/bin/env python3
 ## INFO ########################################################################
 ##                                                                            ##
 ##                                   cutils                                   ##
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.204 (20140707)                       ##
+##                       Version: 0.8.72.331 (20140710)                       ##
 ##                                                                            ##
 ##                               File: clic.py                                ##
 ##                                                                            ##
@@ -40,12 +41,16 @@ from internal.comment import (LINE as comment_LINE,
 EXTENSIONS = ('.h', '.c', '.fs', '.vs', '.py', '.yaml',
               'make', 'makefile', 'MAKE', 'MAKEFILE',
               'todo', 'TODO', 'readme', 'README')
-EXCEPTIONS = ('.ccom_todo', '.cutils_filescache', '.cdoc_toc')
+EXCEPTIONS = ('.ccom_cache', '.ccom_todo',
+              '.cdoc_cache', '.cdoc_toc',
+              '.clic_cache' )
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 _FORMAT = {'CENTER': '^', 'LEFT':'<', 'RIGHT': '>'}
 _FILES = 'VERSION', 'LICENSE'
 _COMMENT = r"""
+# Capture shebang lines if any
+([#]!.*?)*
 # Capture opening block
 (?P<opening>
     ((?P<line>{})+|({}))
@@ -89,7 +94,7 @@ def _comment(header, filepath, pattern, align, width):
             # If there was a match
             if match:
                 opening, pad, closing = match.group('opening', 'pad', 'closing')
-                file.seek(0)
+                file.seek(match.start('opening'))
                 file.write(_OPENING.format(pad, width).format(opening))
                 # Substitute variables with values
                 for line in header.split('\n'):

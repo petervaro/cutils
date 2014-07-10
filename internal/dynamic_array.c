@@ -4,52 +4,15 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.231 (20140708)                       **
+**                       Version: 0.8.72.314 (20140710)                       **
 **                                                                            **
-**                             File: cdar/darv.c                              **
+**                       File: internal/dynamic_array.c                       **
 **                                                                            **
 **           Designed and written by Peter Varo. Copyright (c) 2014           **
 **             License agreement is provided in the LICENSE file              **
 **                 For more info visit: http://www.cutils.org                 **
 **                                                                            **
 ************************************************************************ INFO */
-
-/* DOC:
- *      -DCDAR_OPT -- most optimised; no exceptions; not bound checked;
- *       no flag   -- more optimised; no exceptions;     bound checked;
- *      -DCEXC_USE -- less optimised;    exceptions;     bound checked;
- *      requirement: "cexc.h"
- *
- *      -DCDAR_JEM -- allocation functions using jemalloc
- *      requirement: "jemalloc.h"
- */
-
-/*
-    DA_int dynamic array
-    SL_int single linked list
-    DL_int double linked list
-    HT_int hash table
- */
-
-#include <stdlib.h>   /* malloc(), realloc(), free() */
-#ifdef CDAR_JEM
-  #include <jemalloc/jemalloc.h>  /* malloc(), realloc(), free() */
-#endif
-
-#include <stdio.h>    /* fprintf(), stderr, size_t */
-#include <string.h>   /* memcpy(), strcpy(), strcat() */
-#include <stdbool.h>  /* bool, true, false */
-
-/* If 'optimised' or the 'exceptions are not available' */
-#if defined CDAR_OPT || !defined CEXC_USE
-  #define raise(msg, len)
-#else
-  #include "cexc.h"
-#endif
-
-/* TODO: rename types */
-/* TODO: update cdar.py with macros */
-/* TODO: add #ifdef NAMESPACE new -> cutils_new */
 
 /* TODO: add String to cdar
          DynamicArray_String: String
@@ -60,13 +23,13 @@
 
 /* TODO: implement: reverses count number of sub data starts at index
          void
-         darv_reversesub(DynamicArray *dynarr,
+         darv_reversesub(cutils_cdar_DynamicArray_void_ptr *dynarr,
                          size_t index,
                          size_t count) */
 
 /* TODO: consider if an iterator method is necessary or not
          IterObject
-         iter(DynamicArray *dynarr,
+         iter(cutils_cdar_DynamicArray_void_ptr *dynarr,
               size_t index);
          void *
          next(IterObject *iterator); */
@@ -113,8 +76,37 @@
                  free(temp);
              } while (0) */
 
+/* TODO: copy() => new(&darf2, len(darf1), raw(darf1)); */
 
-/*----------------------------------------------------------------------------
+/* TODO: #define at(dar_ptr, index, data_ptr) get(dar_ptr, index, 1, data_ptr)
+         #define pop(dar_ptr, data_ptr) pull(dar_ptr, len(dar_ptr) - 1, 1, data_ptr)
+         #define append(dar_ptr, data_ptr) push(data_ptr, len(dar_ptr) - 1, 1, data_ptr) */
+
+/* TODO: include only the needed types
+         #if !defined CDAR_char && !defined CDAR_signed_char && !defined CDAR_unsigned_char
+         #define CDAR_char
+         #define CDAR_signed_char
+         #define CDAR_unsigned_char
+         #endif */
+
+#define FILE_STARTS_HERE
+#include <stdlib.h>   /* malloc(), realloc(), free() */
+#ifdef CDAR_JEM
+  #include <jemalloc/jemalloc.h>  /* malloc(), realloc(), free() */
+#endif
+
+#include <stdio.h>    /* fprintf(), stderr, size_t */
+#include <string.h>   /* memcpy(), strcpy(), strcat() */
+#include <stdbool.h>  /* bool, true, false */
+
+/* If 'optimised' or the 'exceptions are not available' */
+#if defined CDAR_OPT || !defined CEXC_USE
+  #define raise(msg, len)
+#else
+  #include "cexc.h"
+#endif
+
+/*----------------------------------------------------------------------------*/
 /* Exception messages */
 #undef  CEXC_MSG_TYPE
 #define CEXC_MSG_TYPE "DynamicArray"
@@ -160,12 +152,12 @@ typedef struct
     size_t size;       /* Size of an item */
     void *data;        /* Pointer to the actual data */
 
-} DynamicArray;
+} cutils_cdar_DynamicArray_void_ptr;
 
 
 /*----------------------------------------------------------------------------*/
 static bool
-__darv_resize(DynamicArray *dynarr,
+__cdar_resize(cutils_cdar_DynamicArray_void_ptr *dynarr,
               size_t item_size,
               size_t item_count)
 {
@@ -187,10 +179,10 @@ __darv_resize(DynamicArray *dynarr,
 
 /*----------------------------------------------------------------------------*/
 bool
-dartg_new(DynamicArray **dynarr,
-          size_t count,
-          size_t item_size,
-          void *source)
+cutils_cdar_DynamicArray_void_ptr_new(cutils_cdar_DynamicArray_void_ptr **dynarr,
+                                      size_t count,
+                                      size_t item_size,
+                                      void *source)
 {
     /* Calculate allocation size based on item count */
     size_t alloc_size = count ? 2 * count : 1;
@@ -200,7 +192,7 @@ dartg_new(DynamicArray **dynarr,
     if (!data) goto Error_Array_Allocation_Failed;
 
     /* Allocate space for struct */
-    DynamicArray *_dynarr = malloc(sizeof(DynamicArray));
+    cutils_cdar_DynamicArray_void_ptr *_dynarr = malloc(sizeof(cutils_cdar_DynamicArray_void_ptr));
     if (!_dynarr) goto Error_Struct_Allocation_Failed;
 
     /* Fill struct with values */
@@ -236,7 +228,7 @@ dartg_new(DynamicArray **dynarr,
 
 /*----------------------------------------------------------------------------*/
 void
-darv_del(DynamicArray *dynarr)
+cutils_cdar_DynamicArray_void_ptr_del(cutils_cdar_DynamicArray_void_ptr *dynarr)
 {
 #ifndef CDAR_OPT
     /* If array initialised, free raw data too */
@@ -249,9 +241,9 @@ darv_del(DynamicArray *dynarr)
 
 /*----------------------------------------------------------------------------*/
 void *
-darv_data(DynamicArray *dynarr,
-          size_t *size,
-          size_t *count)
+cutils_cdar_DynamicArray_void_ptr_data(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                       size_t *size,
+                                       size_t *count)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
@@ -290,7 +282,7 @@ darv_data(DynamicArray *dynarr,
 
 /*----------------------------------------------------------------------------*/
 void *
-darv_raw(DynamicArray *dynarr)
+cutils_cdar_DynamicArray_void_ptr_raw(cutils_cdar_DynamicArray_void_ptr *dynarr)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
@@ -310,7 +302,7 @@ darv_raw(DynamicArray *dynarr)
 
 /*----------------------------------------------------------------------------*/
 size_t
-darv_len(DynamicArray *dynarr)
+cutils_cdar_DynamicArray_void_ptr_len(cutils_cdar_DynamicArray_void_ptr *dynarr)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
@@ -330,7 +322,7 @@ darv_len(DynamicArray *dynarr)
 
 /*----------------------------------------------------------------------------*/
 size_t
-darv_size(DynamicArray *dynarr)
+cutils_cdar_DynamicArray_void_ptr_size(cutils_cdar_DynamicArray_void_ptr *dynarr)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
@@ -350,7 +342,7 @@ darv_size(DynamicArray *dynarr)
 
 /*----------------------------------------------------------------------------*/
 void
-darv_clear(DynamicArray *dynarr)
+cutils_cdar_DynamicArray_void_ptr_clear(cutils_cdar_DynamicArray_void_ptr *dynarr)
 {
 #ifdef CDAR_OPT
     /* Not initialised */
@@ -370,8 +362,8 @@ darv_clear(DynamicArray *dynarr)
 
 /*----------------------------------------------------------------------------*/
 bool
-darv_resize(DynamicArray *dynarr,
-            size_t count)
+cutils_cdar_DynamicArray_void_ptr_resize(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                         size_t count)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
@@ -393,7 +385,7 @@ darv_resize(DynamicArray *dynarr,
         return true; /* Successfully truncated */
     }
     /* Make it bigger */
-    if (!__darv_resize(dynarr, dynarr->size, count))
+    if (!__cdar_resize(dynarr, dynarr->size, count))
     {
         #define EXCEPTION_MSG CEXC_MSG_REALLOC_FAIL("resize")
         raise(EXCEPTION_MSG, sizeof(EXCEPTION_MSG));
@@ -406,10 +398,10 @@ darv_resize(DynamicArray *dynarr,
 
 /*----------------------------------------------------------------------------*/
 bool
-darv_swap(DynamicArray *dynarr,
-          size_t index1,
-          size_t index2,
-          size_t count)
+cutils_cdar_DynamicArray_void_ptr_swap(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                       size_t index1,
+                                       size_t index2,
+                                       size_t count)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
@@ -507,7 +499,7 @@ darv_swap(DynamicArray *dynarr,
 
 /*----------------------------------------------------------------------------*/
 bool
-darv_reverse(DynamicArray *dynarr)
+cutils_cdar_DynamicArray_void_ptr_reverse(cutils_cdar_DynamicArray_void_ptr *dynarr)
 {
     size_t length;
 #ifndef CDAR_OPT
@@ -560,9 +552,9 @@ darv_reverse(DynamicArray *dynarr)
 
 /*----------------------------------------------------------------------------*/
 bool
-darv_append(DynamicArray *dynarr,
-            size_t count,
-            void *source)
+cutils_cdar_DynamicArray_void_ptr_append(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                         size_t count,
+                                         void *source)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
@@ -590,7 +582,7 @@ darv_append(DynamicArray *dynarr,
         /* CORE FUNCTIONALITY
            Resize array if necessary */
         size_t item_size = dynarr->size;
-        if (!__darv_resize(dynarr, item_size, count))
+        if (!__cdar_resize(dynarr, item_size, count))
         {
             #define EXCEPTION_MSG CEXC_MSG_REALLOC_FAIL("append")
             raise(EXCEPTION_MSG, sizeof(EXCEPTION_MSG));
@@ -610,10 +602,10 @@ darv_append(DynamicArray *dynarr,
 
 /*----------------------------------------------------------------------------*/
 bool
-darv_insert(DynamicArray *dynarr,
-            size_t index,
-            size_t count,
-            void *source)
+cutils_cdar_DynamicArray_void_ptr_push(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                      size_t index,
+                                      size_t count,
+                                      void *source)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
@@ -645,7 +637,7 @@ darv_insert(DynamicArray *dynarr,
     /* CORE FUNCTIONALITY
        Resize array if necessary */
     size_t item_size = dynarr->size;
-    if (!__darv_resize(dynarr, item_size, count))
+    if (!__cdar_resize(dynarr, item_size, count))
     {
         #define EXCEPTION_MSG CEXC_MSG_REALLOC_FAIL("insert")
         raise(EXCEPTION_MSG, sizeof(EXCEPTION_MSG));
@@ -683,9 +675,9 @@ darv_insert(DynamicArray *dynarr,
 
 /*----------------------------------------------------------------------------*/
 size_t
-darv_remove(DynamicArray *dynarr,
-            size_t index,
-            size_t count)
+cutils_cdar_DynamicArray_void_ptr_pull(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                       size_t index,
+                                       size_t count)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
@@ -748,10 +740,10 @@ darv_remove(DynamicArray *dynarr,
 
 /*----------------------------------------------------------------------------*/
 size_t
-darv_pop(DynamicArray *dynarr,
-         size_t index,
-         size_t count,
-         void *destination)
+cutils_cdar_DynamicArray_void_ptr_pop(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                      size_t index,
+                                      size_t count,
+                                      void *destination)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
@@ -822,10 +814,10 @@ darv_pop(DynamicArray *dynarr,
 
 /*----------------------------------------------------------------------------*/
 size_t
-darv_sub(DynamicArray *dynarr,
-         size_t index,
-         size_t count,
-         void *destination)
+cutils_cdar_DynamicArray_void_ptr_sub(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                      size_t index,
+                                      size_t count,
+                                      void *destination)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
@@ -885,8 +877,8 @@ darv_sub(DynamicArray *dynarr,
 
 /*----------------------------------------------------------------------------*/
 void
-darv_truncate(DynamicArray *dynarr,
-              size_t index)
+cutils_cdar_DynamicArray_void_ptr_truncate(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                           size_t index)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
@@ -915,10 +907,10 @@ darv_truncate(DynamicArray *dynarr,
 
 /*----------------------------------------------------------------------------*/
 bool
-darv_set(DynamicArray *dynarr,
-         size_t index,
-         size_t count,
-         void *source)
+cutils_cdar_DynamicArray_void_ptr_set(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                      size_t index,
+                                      size_t count,
+                                      void *source)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
@@ -970,8 +962,8 @@ darv_set(DynamicArray *dynarr,
 
 /*----------------------------------------------------------------------------*/
 void *
-darv_get(DynamicArray *dynarr,
-         size_t index)
+cutils_cdar_DynamicArray_void_ptr_get(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                      size_t index)
 {
 #ifndef CDAR_OPT
     if (!dynarr)
@@ -1004,9 +996,9 @@ darv_get(DynamicArray *dynarr,
 
 /*----------------------------------------------------------------------------*/
 bool
-darv_find(DynamicArray *dynarr,
-          const void *item,
-          size_t *index)
+cutils_cdar_DynamicArray_void_ptr_find(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                       const void *item,
+                                       size_t *index)
 {
 #ifndef CDAR_OPT
     if (!dynarr)
@@ -1055,9 +1047,9 @@ darv_find(DynamicArray *dynarr,
 
 /*----------------------------------------------------------------------------*/
 size_t
-darv_findall(DynamicArray *dynarr,
-             const void *item,
-             size_t *indices)
+cutils_cdar_DynamicArray_void_ptr_findall(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                          const void *item,
+                                          size_t *indices)
 {
 #ifndef CDAR_OPT
     if (!dynarr)
@@ -1098,8 +1090,8 @@ darv_findall(DynamicArray *dynarr,
 
 /*----------------------------------------------------------------------------*/
 void
-darv_sort(DynamicArray *dynarr,
-          int (*compare)(const void*, const void*))
+cutils_cdar_DynamicArray_void_ptr_sort(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                       int (*compare)(const void*, const void*))
 {
 #ifndef CDAR_OPT
     if (!dynarr)
@@ -1126,10 +1118,10 @@ darv_sort(DynamicArray *dynarr,
 
 /*----------------------------------------------------------------------------*/
 void
-darv_sortsub(DynamicArray *dynarr,
-             size_t index,
-             size_t count,
-             int (*compare)(const void *, const void*))
+cutils_cdar_DynamicArray_void_ptr_sortsub(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                          size_t index,
+                                          size_t count,
+                                          int (*compare)(const void *, const void*))
 {
 #ifndef CDAR_OPT
     if (!dynarr)

@@ -4,9 +4,9 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.195 (20140707)                       ##
+##                       Version: 0.8.72.251 (20140709)                       ##
 ##                                                                            ##
-##                         File: doc/src/14_cdar.yaml                         ##
+##                         File: doc/src/15_cdar.yaml                         ##
 ##                                                                            ##
 ##           Designed and written by Peter Varo. Copyright (c) 2014           ##
 ##             License agreement is provided in the LICENSE file              ##
@@ -37,6 +37,17 @@ USER:
     VARS:
       VAR_head: cdar
       VAR_func: append
+  - - Flags
+    - name: CDAR_JEM
+      info: >
+            Allocation functions using
+            [jemalloc](http://www.canonware.com/jemalloc/) (dependency)
+    - name: CDAR_OPT
+      info: 'Most optimised, no exceptions, not bound checked'
+    - name: CDAR_EXC
+      info: >
+            Less optimised, exceptions, bound checked, using [cexc.h](cexc.html)
+            (dependency)
 
 #------------------------------------------------------------------------------#
 TYPE:

@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.195 (20140707)                       ##
+##                       Version: 0.8.72.308 (20140710)                       ##
 ##                                                                            ##
 ##                          File: internal/table.py                           ##
 ##                                                                            ##
@@ -60,9 +60,24 @@ class Table:
                 del self._row[row][key]
 
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
     def setdefault(self, row, col, default=None):
         try:
             return self[row][col]
         except KeyError:
             self[row:col] = default
             return default
+
+    #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+    def rows(self):
+        return self._row.keys()
+
+    #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+    def columns(self):
+        return self._col.keys()
