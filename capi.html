@@ -1,0 +1,82 @@
+<html><!-- www.cutils.org | Peter Varo | 2014 --><head><link href="http://www.cutils.org/favicon.ico" rel="shortcut icon" type="image/x-icon"/><link href="http://www.cutils.org/favicon.ico" rel="icon" type="image/x-icon"/><title>CAPI Interface</title><meta charset="utf-8"/><link href="css/cdoc.css" rel="stylesheet" type="text/css"/></head><body><div id="column1"><div id="generic"><img src="img/cutils.svg"/><br/><h2><span>MODERN AND LIGHTWEIGHT C UTILITIES</span></h2><p><span>&mdash;</span></p><p><span>DESIGNED BY</span></p><p><span>PETER VARO &copy;2014</span></p><p><span>&mdash;</span></p><br/></div><div id="sidebar"><div><p class="label">Modules:</p></div><br/><a class="toc" href="index.html">CUTILS</a><a class="toc" href="c11.html">C11 Syntax Highlighter</a><a class="toc" href="cref.html">CREF Quick Reference</a><a class="toc" href="cenv.html">CENV Environment Generator</a><a class="toc" href="cdep.html">CDEP Dependeny Graph</a><a class="toc" href="ccom.html">CCOM Comment Scanner</a><a class="toc" href="cver.html">CVER Versioning</a><a class="toc" href="clic.html">CLIC License Comment Generator</a><a class="toc" href="cres.html">CRES External Resources Packer</a><a class="toc toc_current" href="#">CAPI Interface</a><a class="toc" href="carg.html">CARG Variadic Argument Macro</a><a class="toc" href="cbug.html">CBUG Debugging &amp; Logging</a><a class="toc" href="cexc.html">CEXC Exception Handling</a><a class="toc" href="cpro.html">CPRO Profiling</a><a class="toc" href="cutt.html">CUTT Unit Testing Tools</a><a class="toc" href="cdar.html">CDAR Dynamic Array</a><a class="toc" href="cstr.html">CSTR Strings</a><a class="toc" href="csll.html">CSLL Single Linked List</a><a class="toc" href="cdll.html">CDLL Double Linked List</a><a class="toc" href="cmap.html">CMAP HashMap</a><a class="toc" href="cfps.html">CFPS Frame Per Second</a><a class="toc" href="ccol.html">CCOL Color Helper</a><a class="toc" href="cdoc.html">CDOC Documenting Tool</a><a class="toc" href="call.html">CALL Include All</a><br/><div><p class="label">Usage:</p><br/><a class="toc" href="#user_Include_The_Interface">Include The Interface</a></div><br/></div></div><div id="column2"><div id="content"><h1><span>CAPI | Interface</span></h1><br/><p><span></span><code>capi</code><span> is the "interface" header of all other </span><code>cutils</code><span> headers. It
+provides the name-mangling option, also the short
+</span></p><br/><div><h2 class="title">Usage</h2><div class="entity" id="user_Include_The_Interface"><p class="name">Include The Interface</p><br/><p class="info"><span>One of the best features of </span><code>cutils</code><span> is it's modern interface
+approach, which makes it possible to use short function and macro
+names, also possible to overload these names, and let the compiler
+choose th eproper functions type-safely.
+</span><br/><span></span><br/><span>
+</span><code>capi</code><span> also prevents name-collison as it can add the </span><code>cutils_</code><span>
+prefix to all the types, macros, function-like macros and functions.
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>Without including </span><code>capi.h</code><span>:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cbug</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cstr</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cdar</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>csll</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+
+</span><span class="code_types">int</span><span> </span><span class="code_functions">main</span><span>(</span><span class="code_types">void</span><span>)
+{
+    </span><span class="code_functions">cutils_cbug_debug</span><span>(</span><span class="code_strings">"kill long token names!"</span><span>);
+    
+    cutils_cstr_String </span><span class="code_operators">*</span><span>string;
+    cutils_cdar_DynamicArray_unsigned_long_long </span><span class="code_operators">*</span><span>dynarr;
+    cutils_csll_SingleLinkedList_double </span><span class="code_operators">*</span><span>linlist;
+    
+    </span><span class="code_functions">cutils_cstr_String_new</span><span>(</span><span class="code_operators">&amp;</span><span>string, </span><span class="code_strings">"the interface of cutils rocks!"</span><span>);
+    </span><span class="code_functions">cutils_cdar_DynamicArray_unsigned_long_long_new</span><span>(</span><span class="code_operators">&amp;</span><span>dynarr);
+    </span><span class="code_functions">cutils_csll_SingleLinkedList_double_new</span><span>(</span><span class="code_operators">&amp;</span><span>linlist, </span><span class="code_numbers">2</span><span>, (</span><span class="code_types">double</span><span>[]){</span><span class="code_numbers">0.0</span><span>, </span><span class="code_numbers">1.0</span><span>});
+    
+    </span><span class="code_functions">cutils_cstr_String_del</span><span>(string);
+    </span><span class="code_functions">cutils_cdar_DynamicArray_unsigned_long_long_del</span><span>(dynarr);
+    </span><span class="code_functions">cutils_csll_SingleLinkedList_double_del</span><span>(linlist);
+    
+    </span><span class="code_keywords">return</span><span> </span><span class="code_numbers">0</span><span>;
+}
+</span></code></pre><br/><p class="info note"><span>With including </span><code>capi.h</code><span>:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cbug</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cstr</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cdar</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>csll</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>capi</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+
+</span><span class="code_types">int</span><span> </span><span class="code_functions">main</span><span>(</span><span class="code_types">void</span><span>)
+{
+    </span><span class="code_functions">debug</span><span>(</span><span class="code_strings">"kill long token names!"</span><span>);
+    
+    String </span><span class="code_operators">*</span><span>string;
+    DynamicArray_unsigned_long_long </span><span class="code_operators">*</span><span>dynarr;
+    SingleLinkedList_double </span><span class="code_operators">*</span><span>linlist;
+    
+    </span><span class="code_functions">new</span><span>(</span><span class="code_operators">&amp;</span><span>string, </span><span class="code_strings">"the interface of cutils rocks!"</span><span>);
+    </span><span class="code_functions">new</span><span>(</span><span class="code_operators">&amp;</span><span>dynarr);
+    </span><span class="code_functions">new</span><span>(</span><span class="code_operators">&amp;</span><span>linlist, </span><span class="code_numbers">2</span><span>, ((</span><span class="code_types">double</span><span>[]){</span><span class="code_numbers">0.0</span><span>, </span><span class="code_numbers">1.0</span><span>}));
+    
+    </span><span class="code_functions">del</span><span>(string);
+    </span><span class="code_functions">del</span><span>(dynarr);
+    </span><span class="code_functions">del</span><span>(linlist);
+    
+    </span><span class="code_keywords">return</span><span> </span><span class="code_numbers">0</span><span>;
+}
+</span></code></pre><br/><p class="info note"><span>With including </span><code>capi.h</code><span> and </span><code>CUTILS_NAMESPACE</code><span> "turned on":</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cbug</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cstr</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>cdar</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>csll</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+</span><span class="code_macros">#define</span><span> CUTILS_NAMESPACE
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>capi</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+
+</span><span class="code_types">int</span><span> </span><span class="code_functions">main</span><span>(</span><span class="code_types">void</span><span>)
+{
+    </span><span class="code_functions">cutils_debug</span><span>(</span><span class="code_strings">"kill long token names!"</span><span>);
+    
+    cutils_String </span><span class="code_operators">*</span><span>string;
+    cutils_DynamicArray_unsigned_long_long </span><span class="code_operators">*</span><span>dynarr;
+    cutils_SingleLinkedList_double </span><span class="code_operators">*</span><span>linlist;
+    
+    </span><span class="code_functions">cutils_new</span><span>(</span><span class="code_operators">&amp;</span><span>string, </span><span class="code_strings">"the interface of cutils rocks!"</span><span>);
+    </span><span class="code_functions">cutils_new</span><span>(</span><span class="code_operators">&amp;</span><span>dynarr);
+    </span><span class="code_functions">cutils_new</span><span>(</span><span class="code_operators">&amp;</span><span>linlist, </span><span class="code_numbers">2</span><span>, ((</span><span class="code_types">double</span><span>[]){</span><span class="code_numbers">0.0</span><span>, </span><span class="code_numbers">1.0</span><span>});
+    
+    </span><span class="code_functions">cutils_del</span><span>(string);
+    </span><span class="code_functions">cutils_del</span><span>(dynarr);
+    </span><span class="code_functions">cutils_del</span><span>(linlist);
+    
+    </span><span class="code_keywords">return</span><span> </span><span class="code_numbers">0</span><span>;
+}
+</span></code></pre><br/></div></div></div></body></html>
