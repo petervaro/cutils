@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.335 (20140710)                       ##
+##                       Version: 0.8.72.368 (20140711)                       ##
 ##                                                                            ##
 ##                                 File: TODO                                 ##
 ##                                                                            ##
@@ -18,15 +18,6 @@
 FIXME:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
-  - file: doc/src/05_ccom.yaml
-    line: 86
-    note: |
-          We need to use the String
-          "object" of cutils here
-          instead of this simple struct
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 2
   - file: cdoc.py
     line: 730
     note: |
@@ -35,32 +26,60 @@ FIXME:
           also: what happens when the order changes?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 3
+  # 2
   - file: clic.py
     line: 32
     note: |
           if modules cannot be found?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 4
+  # 3
   - file: clic.py
     line: 152
     note: |
           what if none of the files changed only INFO has been updated?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 5
+  # 4
   - file: clic.py
     line: 165
     note: |
           make it more generic than ./ -- what if ../../?
 
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 5
+  - file: doc/src/05_ccom.yaml
+    line: 86
+    note: |
+          We need to use the String
+          "object" of cutils here
+          instead of this simple struct
 
 
-#---------------------------- 44 POSTS IN 17 FILES ----------------------------#
+
+#---------------------------- 45 POSTS IN 18 FILES ----------------------------#
 TODO:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
+  - file: internal/check.py
+    line: 37
+    note: |
+          remove folder argument
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 2
+  - file: capi.h
+    line: 243
+    note: |
+          Figure out how to dispatch to a macro (for default values) inside
+          a _Generic macro dispatcher...
+          
+          #define new(...) cutils_carg_vargs(__VA_ARGS__)(4)(__VA_ARGS__, \
+              cutils_carg_zero, __cutils_generic_new3, __cutils_generic_new3, \
+              __cutils_generic_new1)(__VA_ARGS__)  
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 3
   - file: cbug.h
     line: 20
     note: |
@@ -68,14 +87,102 @@ TODO:
           debugexc(func, msg, len) -> calls raise() or ccraise() 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 2
+  # 4
+  - file: ccom.py
+    line: 69
+    note: |
+          consider: can <space> be anything?
+          Like this example:
+          some line of code # tag: starts here
+                            #      another line goes here
+                            #      and the third here..
+          the code goes on...
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 5
+  - file: ccom.py
+    line: 157
+    note: |
+          Make hidden files OS independent, probably using
+          https://docs.python.org/3.4/library/tempfile.html ?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 6
+  - file: cdoc.py
+    line: 43
+    note: |
+          add yaml and bs4 dependencies to documentation
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 7
+  - file: cdoc.py
+    line: 68
+    note: |
+          REGEX fix func5 <- number should not be matched
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 8
+  - file: cdoc.py
+    line: 496
+    note: |
+          support formatted TODO import
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 9
+  - file: cdoc.py
+    line: 556
+    note: |
+          add `members` support in TYPE
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 10
+  - file: cdoc.py
+    line: 637
+    note: |
+          add FOOT key
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 11
+  - file: cdoc.py
+    line: 639
+    note: |
+          add TEXT key -- only with 'text' and 'code'
+          something like:
+          TEXT:
+            - text: normal text, nothing special
+            - code: |
+                    #incude <multline_code.h>
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 12
+  - file: cdoc.py
+    line: 717
+    note: |
+          collect 'reserved' names
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 13
+  - file: cdoc.py
+    line: 759
+    note: |
+          add 'external CSS path' argument
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 14
+  - file: cdoc.py
+    line: 761
+    note: |
+          add -reset flags which will remove the cache files
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 15
   - file: cenv.py
     line: 26
     note: |
           Add cdep, ccom, cver and clic support to makefile
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 3
+  # 16
   - file: cexc.h
     line: 145
     note: |
@@ -84,7 +191,7 @@ TODO:
                     `if (catch())` would have done) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 4
+  # 17
   - file: cfps.h
     line: 22
     note: |
@@ -94,63 +201,57 @@ TODO:
           a getter function which can also implement the printing functionality 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 5
-  - file: doc/src/17_csll.yaml
-    line: 38
+  # 18
+  - file: cref.c
+    line: 24
     note: |
-          implement csll: Single Linked List
+          renmae this: cref.c => cref.h 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 6
-  - file: doc/src/19_cmap.yaml
-    line: 41
+  # 19
+  - file: cref.c
+    line: 347
     note: |
-          Implement cmap: Hash Map
+          %ju and %lf
+          http://www.mekong.net/tech/printf.htm
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 7
-  - file: doc/src/22_cdoc.yaml
-    line: 79
+  # 20
+  - file: cver.py
+    line: 63
     note: |
-          update dependencies: PyYaml && BeautifulSoup 4
+          ask for folder or file input
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 8
-  - file: doc/src/23_call.yaml
-    line: 25
-    note: |
-          write about defining flags and CUTILS_NAMESPACE before call.h
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 9
+  # 21
   - file: doc/src/00_cutils.yaml
     line: 39
     note: |
           consider changing `clic` -> `ccom` and `ccom` -> `ctag`
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 10
+  # 22
   - file: doc/src/00_cutils.yaml
     line: 41
     note: |
           create a proper makefile
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 11
+  # 23
   - file: doc/src/00_cutils.yaml
     line: 48
     note: |
           create call - which will include all the header files available
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 12
+  # 24
   - file: doc/src/00_cutils.yaml
     line: 51
     note: |
           add EXEC to cdoc to add "interactive" python snippets to code
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 13
+  # 25
   - file: doc/src/00_cutils.yaml
     line: 59
     note: |
@@ -175,268 +276,7 @@ TODO:
                      method decides which object's method to use
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 14
-  - file: capi.h
-    line: 243
-    note: |
-          Figure out how to dispatch to a macro (for default values) inside
-          a _Generic macro dispatcher...
-          
-          #define new(...) cutils_carg_vargs(__VA_ARGS__)(4)(__VA_ARGS__, \
-              cutils_carg_zero, __cutils_generic_new3, __cutils_generic_new3, \
-              __cutils_generic_new1)(__VA_ARGS__)  
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 15
-  - file: cref.c
-    line: 24
-    note: |
-          renmae this: cref.c => cref.h 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 16
-  - file: cref.c
-    line: 347
-    note: |
-          %ju and %lf
-          http://www.mekong.net/tech/printf.htm
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 17
-  - file: internal/dynamic_array.c
-    line: 17
-    note: |
-          add String to cdar
-          DynamicArray_String: String
-          DynamicArray_string: char * 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 18
-  - file: internal/dynamic_array.c
-    line: 21
-    note: |
-          add DynamicArray to cdar
-          DynamicArray_DynamicArray: nested arrays 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 19
-  - file: internal/dynamic_array.c
-    line: 24
-    note: |
-          implement: reverses count number of sub data starts at index
-          void
-          darv_reversesub(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                          size_t index,
-                          size_t count) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 20
-  - file: internal/dynamic_array.c
-    line: 30
-    note: |
-          consider if an iterator method is necessary or not
-          IterObject
-          iter(cutils_cdar_DynamicArray_void_ptr *dynarr,
-               size_t index);
-          void *
-          next(IterObject *iterator); 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 21
-  - file: internal/dynamic_array.c
-    line: 37
-    note: |
-          Implement `copy`
-          #define copy(dar_ptr_src, dar_ptr_dst)
-              do {
-                  if (dar_ptr_dst) del(dar_ptr_src);
-                  new(dar_ptr_dst, len(dar_ptr_src), raw(dar_ptr_src));
-              } while (0) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 22
-  - file: internal/dynamic_array.c
-    line: 44
-    note: |
-          Implement `swapto`
-          #define swapto(dar_ptr_src, dar_ptr_dst, index_src, index_dst, count) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 23
-  - file: internal/dynamic_array.c
-    line: 47
-    note: |
-          Implement `appendto`
-          #define appendto(dar_ptr_dst, dar_ptr_src)
-              do {
-                  if (!dar_ptr_src) break;
-                  append(dar_ptr_dst, len(dar_ptr_src), raw(dar_ptr_src));
-              } while (0) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 24
-  - file: internal/dynamic_array.c
-    line: 55
-    note: |
-          Implement `insertto`
-          #define insertto(dar_ptr_dst, index, dar_ptr_src)
-              do {
-                  if (!dar_ptr_src) break;
-                  insert(dar_ptr_dst, index, len(dar_ptr_src), raw(dar_ptr_src));
-              } while (0) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 25
-  - file: internal/dynamic_array.c
-    line: 62
-    note: |
-          Implement `setto`
-          #define setto(dar_ptr_dst, index, dar_ptr_dst)
-              do {
-                  if (!dar_ptr_dst) break;
-                  set(dar_ptr_dst, index, len(dar_ptr_dst), raw(dar_ptr_dst));
-              } while (0) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 26
-  - file: internal/dynamic_array.c
-    line: 69
-    note: |
-          Implement `popto`
-          #define popto(dar_ptr_dst, index, count, dar_ptr_src)
-              do {
-                  void *temp = malloc((size(dar_ptr_dst) / len(dar_ptr_dst)) * count);
-                  if (!temp) break;
-                  pop(dar_ptr_src, index, count, temp);
-                  append(dar_ptr_dst, count, temp);
-                  free(temp);
-              } while (0) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 27
-  - file: internal/dynamic_array.c
-    line: 79
-    note: |
-          copy() => new(&darf2, len(darf1), raw(darf1)); 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 28
-  - file: internal/dynamic_array.c
-    line: 81
-    note: |
-          #define at(dar_ptr, index, data_ptr) get(dar_ptr, index, 1, data_ptr)
-          #define pop(dar_ptr, data_ptr) pull(dar_ptr, len(dar_ptr) - 1, 1, data_ptr)
-          #define append(dar_ptr, data_ptr) push(data_ptr, len(dar_ptr) - 1, 1, data_ptr) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 29
-  - file: internal/dynamic_array.c
-    line: 85
-    note: |
-          include only the needed types
-          #if !defined CDAR_char && !defined CDAR_signed_char && !defined CDAR_unsigned_char
-          #define CDAR_char
-          #define CDAR_signed_char
-          #define CDAR_unsigned_char
-          #endif 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 30
-  - file: ccom.py
-    line: 69
-    note: |
-          consider: can <space> be anything?
-          Like this example:
-          some line of code # tag: starts here
-                            #      another line goes here
-                            #      and the third here..
-          the code goes on...
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 31
-  - file: ccom.py
-    line: 157
-    note: |
-          Make hidden files OS independent, probably using
-          https://docs.python.org/3.4/library/tempfile.html ?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 32
-  - file: cdoc.py
-    line: 43
-    note: |
-          add yaml and bs4 dependencies to documentation
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 33
-  - file: cdoc.py
-    line: 68
-    note: |
-          REGEX fix func5 <- number should not be matched
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 34
-  - file: cdoc.py
-    line: 496
-    note: |
-          support formatted TODO import
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 35
-  - file: cdoc.py
-    line: 556
-    note: |
-          add `members` support in TYPE
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 36
-  - file: cdoc.py
-    line: 637
-    note: |
-          add FOOT key
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 37
-  - file: cdoc.py
-    line: 639
-    note: |
-          add TEXT key -- only with 'text' and 'code'
-          something like:
-          TEXT:
-            - text: normal text, nothing special
-            - code: |
-                    #incude <multline_code.h>
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 38
-  - file: cdoc.py
-    line: 717
-    note: |
-          collect 'reserved' names
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 39
-  - file: cdoc.py
-    line: 759
-    note: |
-          add 'external CSS path' argument
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 40
-  - file: cdoc.py
-    line: 761
-    note: |
-          add -reset flags which will remove the cache files
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 41
-  - file: cver.py
-    line: 63
-    note: |
-          ask for folder or file input
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 42
   - file: doc/src/16_cstr.yaml
     line: 42
     note: |
@@ -452,7 +292,174 @@ TODO:
                   printf(str,  12);
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 27
+  - file: doc/src/17_csll.yaml
+    line: 38
+    note: |
+          implement csll: Single Linked List
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 28
+  - file: doc/src/19_cmap.yaml
+    line: 41
+    note: |
+          Implement cmap: Hash Map
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 29
+  - file: doc/src/22_cdoc.yaml
+    line: 79
+    note: |
+          update dependencies: PyYaml && BeautifulSoup 4
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 30
+  - file: doc/src/23_call.yaml
+    line: 25
+    note: |
+          write about defining flags and CUTILS_NAMESPACE before call.h
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 31
+  - file: internal/dynamic_array.c
+    line: 17
+    note: |
+          add String to cdar
+          DynamicArray_String: String
+          DynamicArray_string: char * 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 32
+  - file: internal/dynamic_array.c
+    line: 21
+    note: |
+          add DynamicArray to cdar
+          DynamicArray_DynamicArray: nested arrays 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 33
+  - file: internal/dynamic_array.c
+    line: 24
+    note: |
+          implement: reverses count number of sub data starts at index
+          void
+          darv_reversesub(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                          size_t index,
+                          size_t count) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 34
+  - file: internal/dynamic_array.c
+    line: 30
+    note: |
+          consider if an iterator method is necessary or not
+          IterObject
+          iter(cutils_cdar_DynamicArray_void_ptr *dynarr,
+               size_t index);
+          void *
+          next(IterObject *iterator); 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 35
+  - file: internal/dynamic_array.c
+    line: 37
+    note: |
+          Implement `copy`
+          #define copy(dar_ptr_src, dar_ptr_dst)
+              do {
+                  if (dar_ptr_dst) del(dar_ptr_src);
+                  new(dar_ptr_dst, len(dar_ptr_src), raw(dar_ptr_src));
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 36
+  - file: internal/dynamic_array.c
+    line: 44
+    note: |
+          Implement `swapto`
+          #define swapto(dar_ptr_src, dar_ptr_dst, index_src, index_dst, count) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 37
+  - file: internal/dynamic_array.c
+    line: 47
+    note: |
+          Implement `appendto`
+          #define appendto(dar_ptr_dst, dar_ptr_src)
+              do {
+                  if (!dar_ptr_src) break;
+                  append(dar_ptr_dst, len(dar_ptr_src), raw(dar_ptr_src));
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 38
+  - file: internal/dynamic_array.c
+    line: 55
+    note: |
+          Implement `insertto`
+          #define insertto(dar_ptr_dst, index, dar_ptr_src)
+              do {
+                  if (!dar_ptr_src) break;
+                  insert(dar_ptr_dst, index, len(dar_ptr_src), raw(dar_ptr_src));
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 39
+  - file: internal/dynamic_array.c
+    line: 62
+    note: |
+          Implement `setto`
+          #define setto(dar_ptr_dst, index, dar_ptr_dst)
+              do {
+                  if (!dar_ptr_dst) break;
+                  set(dar_ptr_dst, index, len(dar_ptr_dst), raw(dar_ptr_dst));
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 40
+  - file: internal/dynamic_array.c
+    line: 69
+    note: |
+          Implement `popto`
+          #define popto(dar_ptr_dst, index, count, dar_ptr_src)
+              do {
+                  void *temp = malloc((size(dar_ptr_dst) / len(dar_ptr_dst)) * count);
+                  if (!temp) break;
+                  pop(dar_ptr_src, index, count, temp);
+                  append(dar_ptr_dst, count, temp);
+                  free(temp);
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 41
+  - file: internal/dynamic_array.c
+    line: 79
+    note: |
+          copy() => new(&darf2, len(darf1), raw(darf1)); 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 42
+  - file: internal/dynamic_array.c
+    line: 81
+    note: |
+          #define at(dar_ptr, index, data_ptr) get(dar_ptr, index, 1, data_ptr)
+          #define pop(dar_ptr, data_ptr) pull(dar_ptr, len(dar_ptr) - 1, 1, data_ptr)
+          #define append(dar_ptr, data_ptr) push(data_ptr, len(dar_ptr) - 1, 1, data_ptr) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 43
+  - file: internal/dynamic_array.c
+    line: 85
+    note: |
+          include only the needed types
+          #if !defined CDAR_char && !defined CDAR_signed_char && !defined CDAR_unsigned_char
+          #define CDAR_char
+          #define CDAR_signed_char
+          #define CDAR_unsigned_char
+          #endif 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 44
   - file: internal/pre_commit.py
     line: 21
     note: |
@@ -462,7 +469,7 @@ TODO:
           back to master branch
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 44
+  # 45
   - file: internal/pre_commit.py
     line: 26
     note: |
@@ -492,21 +499,13 @@ HACK:
 NOTE:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
-  - file: doc/src/05_ccom.yaml
-    line: 82
-    note: |
-          length of the char
-          array stored in string 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 2
   - file: doc/src/00_cutils.yaml
     line: 17
     note: |
           The Dark Knight 67 Crane Warns...
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 3
+  # 2
   - file: doc/src/00_cutils.yaml
     line: 43
     note: |
@@ -515,16 +514,13 @@ NOTE:
                   3) CMAP
                   4) C11
 
-
-
-#----------------------------- 1 POSTS IN 1 FILES -----------------------------#
-ALERT:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 1
-  - file: internal/dynamic_array.h
-    line: 17
+  # 3
+  - file: doc/src/05_ccom.yaml
+    line: 82
     note: |
-          DON NOT ADD GUARD TO THIS FILE !!! 
+          length of the char
+          array stored in string 
 
 
 
@@ -536,5 +532,16 @@ QUESTION:
     line: 26
     note: |
           Can't this be like just: cutils_cdar_void_ptr_(new|del|data|...) ???
+
+
+
+#----------------------------- 1 POSTS IN 1 FILES -----------------------------#
+ALERT:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 1
+  - file: internal/dynamic_array.h
+    line: 17
+    note: |
+          DON NOT ADD GUARD TO THIS FILE !!! 
 
 

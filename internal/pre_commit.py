@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.335 (20140710)                       ##
+##                       Version: 0.8.72.366 (20140711)                       ##
 ##                                                                            ##
 ##                        File: internal/pre_commit.py                        ##
 ##                                                                            ##
@@ -26,7 +26,7 @@ from sys import exit as sys_exit
 # TODO: Make error messages and reports of cver/cdoc/ccom/clic similar!
 
 system('./cver.py')
+system('./cdoc.py doc/src ../../../temporary_stuffs/cutils')
 system('./ccom.py .')
 system('./clic.py .')
-system('./cdoc.py doc/src ../../../temporary_stuffs/git_shit')
 sys_exit("pre-commit: success\n")

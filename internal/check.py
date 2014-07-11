@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.234 (20140708)                       ##
+##                       Version: 0.8.72.359 (20140711)                       ##
 ##                                                                            ##
 ##                          File: internal/check.py                           ##
 ##                                                                            ##
@@ -14,6 +14,12 @@
 ##                                                                            ##
 ######################################################################## INFO ##
 
+try:
+    from pyhashxx import Hashxx as Hash
+except ImportError:
+    # https://code.google.com/p/xxhash/
+    print("CUTILS: run 'pip3 install pyhashxx' for faster file checking")
+    from hashlib import sha1 as Hash
 from os.path import (getmtime as os_path_getmtime,
                      join as os_path_join,
                      isfile as os_path_isfile,
@@ -25,7 +31,10 @@ from pickle import (dump as pickle_dump,
 #------------------------------------------------------------------------------#
 class Checker:
 
+    BLOCK_SIZE = 65536
+
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+    # TODO: remove folder argument
     def __init__(self, folder, file, reset=False):
         self.file = os_path_join(folder, file)
         self.cache = cache = {}
@@ -53,16 +62,34 @@ class Checker:
                 pickle_dump(self.cache, file, pickle_HIGHEST_PROTOCOL)
 
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+    def _hash(self, filepath, block_size):
+        checksum = Hash()
+        with open(filepath, 'rb') as file:
+            buffer = file.read(block_size)
+            while buffer:
+                checksum.update(buffer)
+                buffer = file.read(block_size)
+        return checksum.digest()
+
+    #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
     def ischanged(self, filepath):
         # Get local references
         cache = self.cache
         self.last = last = os_path_abspath(filepath)
-        mtime = os_path_getmtime(last)
+        checksum = self._hash(last, self.BLOCK_SIZE)
+
+        # 1) Generate HASH
+        # 2) Copy cache files and check.py and VERSION
+        # 3) Discard all changes
+        # 4) Paste back files
+        # 5) Run hash again
+        # pip3 install pyhashxx
+
         # If file didn't change
-        if cache.get(last, -1.0) == mtime:
+        if cache.get(last, -1.0) == checksum:
             return False
         # If file changed
-        cache[last] = mtime
+        cache[last] = checksum
         return True
 
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
@@ -73,4 +100,4 @@ class Checker:
         last  = self.last
         cache = self.cache
         if cache.get(last, None):
-            cache[last] = os_path_getmtime(last)
+            cache[last] = self._hash(last, self.BLOCK_SIZE)

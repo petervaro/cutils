@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.310 (20140710)                       ##
+##                       Version: 0.8.72.365 (20140711)                       ##
 ##                                                                            ##
 ##                      File: internal/dynamic_array.py                       ##
 ##                                                                            ##

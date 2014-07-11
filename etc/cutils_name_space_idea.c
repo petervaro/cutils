@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.258 (20140709)                       **
+**                       Version: 0.8.72.365 (20140711)                       **
 **                                                                            **
 **                     File: etc/cutils_name_space_idea.c                     **
 **                                                                            **

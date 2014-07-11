@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.331 (20140710)                       ##
+##                       Version: 0.8.72.365 (20140711)                       ##
 ##                                                                            ##
 ##                               File: clic.py                                ##
 ##                                                                            ##
