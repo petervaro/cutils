@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.72.459 (20140713)                       ##
 ##                                                                            ##
 ##                         File: doc/src/22_cdoc.yaml                         ##
 ##                                                                            ##
@@ -76,8 +76,42 @@ INFO:
 #------------------------------------------------------------------------------#
 USER:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # TODO: update dependencies: PyYaml && BeautifulSoup 4
-  - FILE: const/python.yaml
+  - - Dependencies
+    - FILE: const/python.yaml
+    - FILE: const/pyhash.yaml
+      VARS:
+        VAR_module: cdoc
+    - name: pyyaml
+      info: >
+            `cdoc` uses `pyyaml` heavily to process all the doc files written in
+            `YAML`. Of course, if one is using `cdoc` as a
+            [Python module](#func_cdoc_document) and not as a Command Line Tool,
+            and one may use other markup languages, such as `JSON` for example,
+            then `pyaml` won't be necessary to have.
+            \\n\\n
+            It is highly recommended to use `libYAML` as the backend of
+            `pyyaml`, although `cdoc` can work properly without it (but it will
+            be way slower).
+      examples:
+        CALL: ''
+      '':
+        - - Install pyyaml
+          - \\OFFpip3 install `pyyaml`
+    - name: beautifulsoup4
+      info: >
+            `cdoc` uses `beautifulsoup4` to build and maintain the generated
+            `HTML` content.
+            \\n\\n
+            It is highly recommended to use `lxml` as the backend of
+            `beautifulsoup4`, although `cdoc` can work properly without it (but
+            it will be way slower).
+      examples:
+        CALL: ''
+      '':
+        - - Install `beautifulsoup4`
+          - \\OFFpip3 install beautifulsoup4
+        - - Install `lxml`
+          - \\OFFpip3 install lxml
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - usage
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #

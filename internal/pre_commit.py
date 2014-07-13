@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.366 (20140711)                       ##
+##                       Version: 0.8.72.453 (20140713)                       ##
 ##                                                                            ##
 ##                        File: internal/pre_commit.py                        ##
 ##                                                                            ##
@@ -29,4 +29,4 @@ system('./cver.py')
 system('./cdoc.py doc/src ../../../temporary_stuffs/cutils')
 system('./ccom.py .')
 system('./clic.py .')
-sys_exit("pre-commit: success\n")
+sys_exit('pre-commit: success\n')

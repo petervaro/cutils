@@ -1,0 +1,13 @@
+name: pyhashxx
+info: |
+      It is an optional but highly recommended dependency. Under the hood
+      `VAR_module` is hashing the files, to detect if a file has been changed or
+      not. Because `pyhashxx` is the fastest hashing algorithm, it will speed up
+      the checking process. By default the fallback mechanism is `SHA1` hashing
+      which is way slower.
+
+examples:
+  CALL: ''
+'':
+  - - '`pyhashxx` is available to install through `pip`'
+    - \\OFFpip3 install pyhashxx

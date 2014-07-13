@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.72.397 (20140712)                       ##
 ##                                                                            ##
 ##                         File: doc/src/03_cenv.yaml                         ##
 ##                                                                            ##
@@ -37,7 +37,8 @@ INFO:
 #------------------------------------------------------------------------------#
 USER:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - FILE: const/python.yaml
+  - - Dependencies
+    - FILE: const/python.yaml
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - usage
     - name: Command Line Tool

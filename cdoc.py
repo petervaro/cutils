@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.72.457 (20140713)                       ##
 ##                                                                            ##
 ##                               File: cdoc.py                                ##
 ##                                                                            ##
@@ -40,26 +40,30 @@ from pickle import (dump as pickle_dump,
                     HIGHEST_PROTOCOL as pickle_HIGHEST_PROTOCOL)
 
 # Import third party modules
-# TODO: add yaml and bs4 dependencies to documentation
-from yaml import load as yaml_load
-try:
-    from yaml import CLoader as yaml_Loader
-except ImportError:
-    from yaml import yaml_Loader
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, FeatureNotFound
+if __name__ == '__main__':
+    from yaml import load as yaml_load
+    try:
+        from yaml import CLoader as yaml_Loader
+    except ImportError:
+        from yaml import yaml_Loader
 
 # Import cutils modules
 from internal.check import Checker as check_Checker
+from internal.table import Dict2D as table_Dict2D
 
 #------------------------------------------------------------------------------#
 # Module level constants
-SOUP = BeautifulSoup('<html><!-- www.cutils.org | Peter Varo | 2014 -->'
-                     '<head><link rel="shortcut icon" href="http://www.'
-                     'cutils.org/favicon.ico" type="image/x-icon"><link rel'
-                     '="icon" href="http://www.cutils.org/favicon.ico" type'
-                     '="image/x-icon"><title></title><meta charset="UTF-8">'
-                     '<link href="css/cdoc.css" rel="stylesheet" type="text/'
-                     'css"></head><body></body></html>', 'lxml')
+INIT = ('<html><!-- www.cutils.org | Peter Varo | 2014 --><head><link rel="'
+        'shortcut icon" href="http://www.cutils.org/favicon.ico" type="image/'
+        'x-icon"><link rel="icon" href="http://www.cutils.org/favicon.ico" type'
+        '="image/x-icon"><title></title><meta charset="UTF-8"><link href="css/'
+        'cdoc.css" rel="stylesheet" type="text/css"></head><body></body></html>')
+# If lxml installed
+try:
+    SOUP = BeautifulSoup(INIT, 'lxml')
+except FeatureNotFound:
+    SOUP = BeautifulSoup(INIT)
 
 # C tokens in order
 C_TOKENS = ('comments', 'strings', 'macros', 'numbers', 'operators',
@@ -235,9 +239,14 @@ new = _append_new_tag_wrapper(SOUP.new_tag)
 
 #------------------------------------------------------------------------------#
 # Open and load file and replace child object in parent with the new content
-def _replace(parent, keyindex, child, path, loader):
+def _replace(parent, keyindex, child, path, loader, depends):
     try:
-        with open(os_path_join(path, child['FILE'])) as file:
+        # FIXME: if external file changed -> change the whole file
+        #        check for all special features and find out how
+        #        to store them properly in the cache files
+        filepath = os_path_join(path, child['FILE'])
+        depends.append(filepath)
+        with open(filepath, encoding='utf-8') as file:
             content = file.read()
             # Replace variables with values if there is any
             for key, value in child.get('VARS', {}).items():
@@ -250,15 +259,15 @@ def _replace(parent, keyindex, child, path, loader):
 
 #------------------------------------------------------------------------------#
 # Recursive external file import
-def _import(source, path, loader):
+def _import(source, path, loader, depends):
     if isinstance(source, dict):
         for key, value in source.items():
-            _replace(source, key, value, path, loader)
-            _import(source[key], path, loader)
+            _replace(source, key, value, path, loader, depends)
+            _import(source[key], path, loader, depends)
     elif isinstance(source, list):
         for index, item in enumerate(source):
-            _replace(source, index, item, path, loader)
-            _import(source[index], path, loader)
+            _replace(source, index, item, path, loader, depends)
+            _import(source[index], path, loader, depends)
     return source
 
 
@@ -483,11 +492,11 @@ def _html_format(parent, source, path):
 #------------------------------------------------------------------------------#
 # Index formatter -- TOC generator
 def _indx_format(sidebar, selfname, sources):
-    for pagename, filepath in sources.items():
+    for (pagename, filepath), (filename, depends) in sources.items():
         if pagename == selfname:
             new(sidebar, 'a', href='#', class_='toc toc_current', string=pagename)
             continue
-        new(sidebar, 'a', href=filepath, class_='toc', string=pagename)
+        new(sidebar, 'a', href=filename, class_='toc', string=pagename)
 
 
 #------------------------------------------------------------------------------#
@@ -587,8 +596,8 @@ def _type_format(sidebar, content, source):
 
 
 #------------------------------------------------------------------------------#
-def _build(sources, filepath, gentoc, toc):
-    for pagename in sources:
+def _build(sources, outfolder, gentoc, toc):
+    for pagename, source in sources.items():
         # Clear soup and add en empty, new body
         SOUP.body.decompose()
         new(SOUP.html, 'body')
@@ -596,8 +605,7 @@ def _build(sources, filepath, gentoc, toc):
         # Set title
         SOUP.html.head.title.string = pagename
         # Get essentail values
-        source = sources[pagename]
-        filename = toc[pagename]
+        filename, depends = toc[pagename]
         # Constants
         SECTIONS = 6
         # Build basic structure
@@ -610,19 +618,19 @@ def _build(sources, filepath, gentoc, toc):
 
         # OPTIONAL: custom header section
         try:
-            _html_format(generic, source['HEAD'], filepath)
+            _html_format(generic, source['HEAD'], outfolder)
             new(generic, 'br')
         except KeyError:
             SECTIONS -= 1
         # OPTIONAL: custom menu in sidebar
         try:
-            _html_format(sidebar, source['MENU'], filepath)
+            _html_format(sidebar, source['MENU'], outfolder)
             new(sidebar, 'br')
         except KeyError:
             SECTIONS -= 1
         # OPTIONAL: custom abstract and introduction
         try:
-            _html_format(content, source['INFO'], filepath)
+            _html_format(content, source['INFO'], outfolder)
             new(content, 'br')
         except KeyError:
             SECTIONS -= 1
@@ -692,14 +700,14 @@ def _build(sources, filepath, gentoc, toc):
 
         # Create HTML file
         if SECTIONS:
-            output = os_path_join(filepath, filename)
+            output = os_path_join(outfolder, filename)
             with open(output, 'w', encoding='utf-8') as file:
                 file.write(SOUP.decode(formatter='html'))
                 print('CDOC: {!r} processed'.format(output))
             continue
         print('CDOC: !!! WARNING !!! in {!r} no data provided'.format(pagename))
     # Create folder if not exists to css
-    stylepath = os_path_join(filepath, 'css')
+    stylepath = os_path_join(outfolder, 'css')
     try:
         os_makedirs(stylepath)
     except OSError as e:
@@ -722,25 +730,30 @@ def document(infolder, outfolder, extension, loader, generate_toc=None):
         with open(TOC, 'rb') as file:
             toc = pickle_load(file)
     except (FileNotFoundError, EOFError):
-        toc = OrderedDict()
+        toc = table_Dict2D()
 
     pages = OrderedDict()
     anonym = iter_count()
+    EMPTY = ((),)*2
     # Load all pages
     # FIXME: pre check files, because if a new file added,
     #        the TOC won't be regenerated for the old files
     #        also: what happens when the order changes?
-    with check_Checker(infolder, file='.cdoc_cache') as checker:
+    with check_Checker(infolder, file='.cdoc_cache', lazy_update=True) as checker:
         for file in os_listdir(infolder):
             if file.endswith(extension):
                 filepath = os_path_join(infolder, file)
-                if checker.ischanged(filepath):
+                # If the file or any dependencies
+                # of the file have been changed
+                if (checker.ischanged(filepath) or
+                    any(map(checker.ischanged, toc.get(filepath, EMPTY)[1]))):
                     with open(filepath, encoding='utf-8') as f:
-                        pagedata = _import(loader(f.read()), infolder, loader)
+                        depends = []
+                        pagedata = _import(loader(f.read()), infolder, loader, depends)
                         pagename = pagedata.get('PAGE', 'Document {}'.format(next(anonym)))
                         filename = pagedata.get('NAME', os_path_splitext(file)[0]) + '.html'
                         pages[pagename] = pagedata
-                        toc[pagename] = filename
+                        toc.setdefault(pagename, filepath, (filename, depends))
 
     # Write back TOC object
     with open(TOC, 'wb') as file:

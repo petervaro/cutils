@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.72.450 (20140713)                       ##
 ##                                                                            ##
 ##                         File: doc/src/07_clic.yaml                         ##
 ##                                                                            ##
@@ -54,7 +54,11 @@ INFO:
 #------------------------------------------------------------------------------#
 USER:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - FILE: const/python.yaml
+  - - Dependencies
+    - FILE: const/python.yaml
+    - FILE: const/pyhash.yaml
+      VARS:
+        VAR_module: clic
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - usage
     - name: Command Line Tool

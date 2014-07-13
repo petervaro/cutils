@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.368 (20140711)                       ##
+##                       Version: 0.8.72.463 (20140713)                       ##
 ##                                                                            ##
 ##                                 File: TODO                                 ##
 ##                                                                            ##
@@ -14,60 +14,62 @@
 ##                                                                            ##
 ######################################################################## INFO ##
 
-#----------------------------- 5 POSTS IN 3 FILES -----------------------------#
+#----------------------------- 6 POSTS IN 3 FILES -----------------------------#
 FIXME:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
-  - file: cdoc.py
-    line: 730
-    note: |
-          pre check files, because if a new file added,
-          the TOC won't be regenerated for the old files
-          also: what happens when the order changes?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 2
   - file: clic.py
     line: 32
     note: |
           if modules cannot be found?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 3
+  # 2
   - file: clic.py
     line: 152
     note: |
           what if none of the files changed only INFO has been updated?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 4
+  # 3
   - file: clic.py
     line: 165
     note: |
           make it more generic than ./ -- what if ../../?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 5
+  # 4
   - file: doc/src/05_ccom.yaml
-    line: 86
+    line: 90
     note: |
           We need to use the String
           "object" of cutils here
           instead of this simple struct
 
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 5
+  - file: cdoc.py
+    line: 244
+    note: |
+          if external file changed -> change the whole file
+          check for all special features and find out how
+          to store them properly in the cache files
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 6
+  - file: cdoc.py
+    line: 739
+    note: |
+          pre check files, because if a new file added,
+          the TOC won't be regenerated for the old files
+          also: what happens when the order changes?
 
 
-#---------------------------- 45 POSTS IN 18 FILES ----------------------------#
+
+#---------------------------- 42 POSTS IN 16 FILES ----------------------------#
 TODO:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
-  - file: internal/check.py
-    line: 37
-    note: |
-          remove folder argument
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 2
   - file: capi.h
     line: 243
     note: |
@@ -79,7 +81,7 @@ TODO:
               __cutils_generic_new1)(__VA_ARGS__)  
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 3
+  # 2
   - file: cbug.h
     line: 20
     note: |
@@ -87,7 +89,7 @@ TODO:
           debugexc(func, msg, len) -> calls raise() or ccraise() 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 4
+  # 3
   - file: ccom.py
     line: 69
     note: |
@@ -99,7 +101,7 @@ TODO:
           the code goes on...
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 5
+  # 4
   - file: ccom.py
     line: 157
     note: |
@@ -107,82 +109,14 @@ TODO:
           https://docs.python.org/3.4/library/tempfile.html ?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 6
-  - file: cdoc.py
-    line: 43
-    note: |
-          add yaml and bs4 dependencies to documentation
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 7
-  - file: cdoc.py
-    line: 68
-    note: |
-          REGEX fix func5 <- number should not be matched
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 8
-  - file: cdoc.py
-    line: 496
-    note: |
-          support formatted TODO import
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 9
-  - file: cdoc.py
-    line: 556
-    note: |
-          add `members` support in TYPE
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 10
-  - file: cdoc.py
-    line: 637
-    note: |
-          add FOOT key
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 11
-  - file: cdoc.py
-    line: 639
-    note: |
-          add TEXT key -- only with 'text' and 'code'
-          something like:
-          TEXT:
-            - text: normal text, nothing special
-            - code: |
-                    #incude <multline_code.h>
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 12
-  - file: cdoc.py
-    line: 717
-    note: |
-          collect 'reserved' names
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 13
-  - file: cdoc.py
-    line: 759
-    note: |
-          add 'external CSS path' argument
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 14
-  - file: cdoc.py
-    line: 761
-    note: |
-          add -reset flags which will remove the cache files
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 15
+  # 5
   - file: cenv.py
     line: 26
     note: |
           Add cdep, ccom, cver and clic support to makefile
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 16
+  # 6
   - file: cexc.h
     line: 145
     note: |
@@ -191,7 +125,7 @@ TODO:
                     `if (catch())` would have done) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 17
+  # 7
   - file: cfps.h
     line: 22
     note: |
@@ -201,14 +135,14 @@ TODO:
           a getter function which can also implement the printing functionality 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 18
+  # 8
   - file: cref.c
     line: 24
     note: |
           renmae this: cref.c => cref.h 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 19
+  # 9
   - file: cref.c
     line: 347
     note: |
@@ -216,42 +150,42 @@ TODO:
           http://www.mekong.net/tech/printf.htm
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 20
+  # 10
   - file: cver.py
     line: 63
     note: |
           ask for folder or file input
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 21
+  # 11
   - file: doc/src/00_cutils.yaml
     line: 39
     note: |
           consider changing `clic` -> `ccom` and `ccom` -> `ctag`
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 22
+  # 12
   - file: doc/src/00_cutils.yaml
     line: 41
     note: |
           create a proper makefile
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 23
+  # 13
   - file: doc/src/00_cutils.yaml
     line: 48
     note: |
           create call - which will include all the header files available
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 24
+  # 14
   - file: doc/src/00_cutils.yaml
     line: 51
     note: |
           add EXEC to cdoc to add "interactive" python snippets to code
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 25
+  # 15
   - file: doc/src/00_cutils.yaml
     line: 59
     note: |
@@ -276,7 +210,7 @@ TODO:
                      method decides which object's method to use
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 26
+  # 16
   - file: doc/src/16_cstr.yaml
     line: 42
     note: |
@@ -292,35 +226,28 @@ TODO:
                   printf(str,  12);
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 27
+  # 17
   - file: doc/src/17_csll.yaml
     line: 38
     note: |
           implement csll: Single Linked List
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 28
+  # 18
   - file: doc/src/19_cmap.yaml
     line: 41
     note: |
           Implement cmap: Hash Map
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 29
-  - file: doc/src/22_cdoc.yaml
-    line: 79
-    note: |
-          update dependencies: PyYaml && BeautifulSoup 4
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 30
+  # 19
   - file: doc/src/23_call.yaml
     line: 25
     note: |
           write about defining flags and CUTILS_NAMESPACE before call.h
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 31
+  # 20
   - file: internal/dynamic_array.c
     line: 17
     note: |
@@ -329,7 +256,7 @@ TODO:
           DynamicArray_string: char * 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 32
+  # 21
   - file: internal/dynamic_array.c
     line: 21
     note: |
@@ -337,7 +264,7 @@ TODO:
           DynamicArray_DynamicArray: nested arrays 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 33
+  # 22
   - file: internal/dynamic_array.c
     line: 24
     note: |
@@ -348,7 +275,7 @@ TODO:
                           size_t count) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 34
+  # 23
   - file: internal/dynamic_array.c
     line: 30
     note: |
@@ -360,7 +287,7 @@ TODO:
           next(IterObject *iterator); 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 35
+  # 24
   - file: internal/dynamic_array.c
     line: 37
     note: |
@@ -372,7 +299,7 @@ TODO:
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 36
+  # 25
   - file: internal/dynamic_array.c
     line: 44
     note: |
@@ -380,7 +307,7 @@ TODO:
           #define swapto(dar_ptr_src, dar_ptr_dst, index_src, index_dst, count) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 37
+  # 26
   - file: internal/dynamic_array.c
     line: 47
     note: |
@@ -392,7 +319,7 @@ TODO:
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 38
+  # 27
   - file: internal/dynamic_array.c
     line: 55
     note: |
@@ -404,7 +331,7 @@ TODO:
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 39
+  # 28
   - file: internal/dynamic_array.c
     line: 62
     note: |
@@ -416,7 +343,7 @@ TODO:
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 40
+  # 29
   - file: internal/dynamic_array.c
     line: 69
     note: |
@@ -431,14 +358,14 @@ TODO:
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 41
+  # 30
   - file: internal/dynamic_array.c
     line: 79
     note: |
           copy() => new(&darf2, len(darf1), raw(darf1)); 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 42
+  # 31
   - file: internal/dynamic_array.c
     line: 81
     note: |
@@ -447,7 +374,7 @@ TODO:
           #define append(dar_ptr, data_ptr) push(data_ptr, len(dar_ptr) - 1, 1, data_ptr) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 43
+  # 32
   - file: internal/dynamic_array.c
     line: 85
     note: |
@@ -459,7 +386,7 @@ TODO:
           #endif 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 44
+  # 33
   - file: internal/pre_commit.py
     line: 21
     note: |
@@ -469,11 +396,72 @@ TODO:
           back to master branch
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 45
+  # 34
   - file: internal/pre_commit.py
     line: 26
     note: |
           Make error messages and reports of cver/cdoc/ccom/clic similar!
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 35
+  - file: cdoc.py
+    line: 72
+    note: |
+          REGEX fix func5 <- number should not be matched
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 36
+  - file: cdoc.py
+    line: 505
+    note: |
+          support formatted TODO import
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 37
+  - file: cdoc.py
+    line: 565
+    note: |
+          add `members` support in TYPE
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 38
+  - file: cdoc.py
+    line: 645
+    note: |
+          add FOOT key
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 39
+  - file: cdoc.py
+    line: 647
+    note: |
+          add TEXT key -- only with 'text' and 'code'
+          something like:
+          TEXT:
+            - text: normal text, nothing special
+            - code: |
+                    #incude <multline_code.h>
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 40
+  - file: cdoc.py
+    line: 725
+    note: |
+          collect 'reserved' names
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 41
+  - file: cdoc.py
+    line: 772
+    note: |
+          add 'external CSS path' argument
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 42
+  - file: cdoc.py
+    line: 774
+    note: |
+          add -reset flags which will remove the cache files
 
 
 
@@ -495,7 +483,7 @@ HACK:
 
 
 
-#----------------------------- 3 POSTS IN 2 FILES -----------------------------#
+#----------------------------- 4 POSTS IN 3 FILES -----------------------------#
 NOTE:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
@@ -516,8 +504,15 @@ NOTE:
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 3
+  - file: internal/hash/xxhash.c
+    line: 141
+    note: |
+          although _rotl exists for minGW (GCC under windows), performance seems poor
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 4
   - file: doc/src/05_ccom.yaml
-    line: 82
+    line: 86
     note: |
           length of the char
           array stored in string 
