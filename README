@@ -1,28 +1,51 @@
-<p align="center">
-  <a href="http://www.cutils.org">
-    <img alt="cutils: C Utilities"
-         src="http://www.cutils.org/img/cutils.svg"
-         title="cutils logo"/>
-  </a>
-</p>
 
-<h2>About</h2>
+                                                         .;l;                   
+                                                  ..    .kWMo                   
+                                                .OWN;    .XMo                   
+                                                 ;lc.    .KMo                   
+                                        :,               .KMo                   
+          .:ccldxl. .cld,    'clo:  .,oKWOcccc. .;oO,    .KMo     ,lc:oo,       
+        ,Ok;.  .:Oc  lWMc    .:NMd  .,OMMx,,,,  'OMW,    .KMo   .kN:   cO.      
+       lWx           'NMc     .KMd    xMMc       cMW,    .KMo   .XWd.   .       
+      .XM:           'NMc     .KMd    xMMc       cMW,    .KMo    ,OWWOl.        
+      .NMx           'NMc     .0Md    xMMc       cMW,    .KMo      .:xNWd       
+       lWMO,     .c. .XMk     ,NMx    dMMd       cMW,    .XMd   x:    ;WN'      
+        ,xXWXOkkxo.   cXW0dolclXMXo:. ,0WWklc; .:OWWx:..;dNW0c' lXx:,;k0:       
+           .,,,.        ',,'.  ,,.      .,,'.   ......  .......  .',,'.         
 
-<p align="justify">
-<b>cutils</b> is a set of very simple but powerful tools to make one's life a little easier while one is programming in C. I created the tools mostly for use in my personal projects, however I hope/believe many will find it just as useful as I do.
-<br /><br />
-For detailed information and documentation visit: <b><a href="http://www.cutils.org">www.cutils.org</a></b>
-</p>
 
-<h2>License</h2>
 
-<p align="justify">
-Copyright &copy; 2014 <b>Peter Varo</b>
-<br /><br />
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-<br /><br />
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-<br /><br />
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-</p>
+ABOUT
+-----
+
+cutils is a set of very simple but powerful tools to make one's life a little
+easier while one is programming in C. I created the tools mostly for use in my
+personal projects, however I hope/believe many will find it just as useful as I
+do.
+
+For detailed information and documentation visit:
+
+    http://www.cutils.org
+
+
+LICENSE
+-------
+
+Copyright &copy; 2014 Peter Varo
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
