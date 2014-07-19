@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.459 (20140713)                       ##
+##                       Version: 0.8.72.465 (20140713)                       ##
 ##                                                                            ##
 ##                         File: doc/src/22_cdoc.yaml                         ##
 ##                                                                            ##
@@ -95,8 +95,8 @@ USER:
       examples:
         CALL: ''
       '':
-        - - Install pyyaml
-          - \\OFFpip3 install `pyyaml`
+        - - Install `pyyaml`
+          - \\OFFpip3 install pyyaml
     - name: beautifulsoup4
       info: >
             `cdoc` uses `beautifulsoup4` to build and maintain the generated

@@ -19,8 +19,10 @@
         through the `-D` flag of the compiler, like this
       - \\OFFcc -std=c11 -Wall -DCUTILS_NAMESPACE -c -o filename.o
 
-    - - Or one can define this variable before the inclusion of a header file
+    - - >
+        Or one can define this variable before the inclusion of the API header
+        file
       - |
-        #define CUTILS_NAMESPACE
         #include <cutils/VAR_head.h>
-        #undef CUTILS_NAMESPACE
+        #define CUTILS_NAMESPACE
+        #include <cutils/capi.h>

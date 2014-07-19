@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.365 (20140711)                       **
+**                       Version: 0.8.72.580 (20140719)                       **
 **                                                                            **
 **                                File: cdar.h                                **
 **                                                                            **
@@ -26,8 +26,8 @@ typedef struct {} cutils_cdar_DynamicArray_void_ptr;
 /*----------------------------------------------------------------------------*/
 bool
 cutils_cdar_DynamicArray_void_ptr_new(cutils_cdar_DynamicArray_void_ptr **dynarr,
-                                      size_t count,
                                       size_t item_size,
+                                      size_t count,
                                       void *source);
 /*----------------------------------------------------------------------------*/
 void
@@ -123,7 +123,18 @@ void
 cutils_cdar_DynamicArray_void_ptr_sortsub(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                           size_t index,
                                           size_t count,
-                                          int (*compare)(const void *, const void*));
+                                          int (*compare)(const void*, const void*));
+/*----------------------------------------------------------------------------*/
+char *
+cutils_cdar_DynamicArray_void_ptr_format(const void *item,
+                                         char **buffer,
+                                         size_t *buffer_size);
+/*----------------------------------------------------------------------------*/
+void
+cutils_cdar_DynamicArray_void_ptr_print(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                        FILE *stream,
+                                        const char *name,
+                                        char *(*format)(const void*, char**, size_t*));
 
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_char;
@@ -138,6 +149,7 @@ extern size_t cutils_cdar_DynamicArray_char_sub(cutils_cdar_DynamicArray_char*,s
 extern char cutils_cdar_DynamicArray_char_get(cutils_cdar_DynamicArray_char*,size_t);
 extern bool cutils_cdar_DynamicArray_char_find(cutils_cdar_DynamicArray_char*,const char*,size_t*);
 extern size_t cutils_cdar_DynamicArray_char_findall(cutils_cdar_DynamicArray_char*,const char*,size_t*);
+extern char* cutils_cdar_DynamicArray_char_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_char_del)(cutils_cdar_DynamicArray_char*);
 extern size_t(*cutils_cdar_DynamicArray_char_len)(cutils_cdar_DynamicArray_char*);
 extern size_t(*cutils_cdar_DynamicArray_char_size)(cutils_cdar_DynamicArray_char*);
@@ -147,6 +159,7 @@ extern bool(*cutils_cdar_DynamicArray_char_reverse)(cutils_cdar_DynamicArray_cha
 extern size_t(*cutils_cdar_DynamicArray_char_pull)(cutils_cdar_DynamicArray_char*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_char_truncate)(cutils_cdar_DynamicArray_char*,size_t);
 extern void(*cutils_cdar_DynamicArray_char_clear)(cutils_cdar_DynamicArray_char*);
+extern void(*cutils_cdar_DynamicArray_char_print)(cutils_cdar_DynamicArray_char*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_signed_char;
 extern bool cutils_cdar_DynamicArray_signed_char_new(cutils_cdar_DynamicArray_signed_char**,size_t,signed char*);
@@ -160,6 +173,7 @@ extern size_t cutils_cdar_DynamicArray_signed_char_sub(cutils_cdar_DynamicArray_
 extern signed char cutils_cdar_DynamicArray_signed_char_get(cutils_cdar_DynamicArray_signed_char*,size_t);
 extern bool cutils_cdar_DynamicArray_signed_char_find(cutils_cdar_DynamicArray_signed_char*,const signed char*,size_t*);
 extern size_t cutils_cdar_DynamicArray_signed_char_findall(cutils_cdar_DynamicArray_signed_char*,const signed char*,size_t*);
+extern char* cutils_cdar_DynamicArray_signed_char_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_signed_char_del)(cutils_cdar_DynamicArray_signed_char*);
 extern size_t(*cutils_cdar_DynamicArray_signed_char_len)(cutils_cdar_DynamicArray_signed_char*);
 extern size_t(*cutils_cdar_DynamicArray_signed_char_size)(cutils_cdar_DynamicArray_signed_char*);
@@ -169,6 +183,7 @@ extern bool(*cutils_cdar_DynamicArray_signed_char_reverse)(cutils_cdar_DynamicAr
 extern size_t(*cutils_cdar_DynamicArray_signed_char_pull)(cutils_cdar_DynamicArray_signed_char*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_signed_char_truncate)(cutils_cdar_DynamicArray_signed_char*,size_t);
 extern void(*cutils_cdar_DynamicArray_signed_char_clear)(cutils_cdar_DynamicArray_signed_char*);
+extern void(*cutils_cdar_DynamicArray_signed_char_print)(cutils_cdar_DynamicArray_signed_char*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_unsigned_char;
 extern bool cutils_cdar_DynamicArray_unsigned_char_new(cutils_cdar_DynamicArray_unsigned_char**,size_t,unsigned char*);
@@ -182,6 +197,7 @@ extern size_t cutils_cdar_DynamicArray_unsigned_char_sub(cutils_cdar_DynamicArra
 extern unsigned char cutils_cdar_DynamicArray_unsigned_char_get(cutils_cdar_DynamicArray_unsigned_char*,size_t);
 extern bool cutils_cdar_DynamicArray_unsigned_char_find(cutils_cdar_DynamicArray_unsigned_char*,const unsigned char*,size_t*);
 extern size_t cutils_cdar_DynamicArray_unsigned_char_findall(cutils_cdar_DynamicArray_unsigned_char*,const unsigned char*,size_t*);
+extern char* cutils_cdar_DynamicArray_unsigned_char_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_unsigned_char_del)(cutils_cdar_DynamicArray_unsigned_char*);
 extern size_t(*cutils_cdar_DynamicArray_unsigned_char_len)(cutils_cdar_DynamicArray_unsigned_char*);
 extern size_t(*cutils_cdar_DynamicArray_unsigned_char_size)(cutils_cdar_DynamicArray_unsigned_char*);
@@ -191,6 +207,7 @@ extern bool(*cutils_cdar_DynamicArray_unsigned_char_reverse)(cutils_cdar_Dynamic
 extern size_t(*cutils_cdar_DynamicArray_unsigned_char_pull)(cutils_cdar_DynamicArray_unsigned_char*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_unsigned_char_truncate)(cutils_cdar_DynamicArray_unsigned_char*,size_t);
 extern void(*cutils_cdar_DynamicArray_unsigned_char_clear)(cutils_cdar_DynamicArray_unsigned_char*);
+extern void(*cutils_cdar_DynamicArray_unsigned_char_print)(cutils_cdar_DynamicArray_unsigned_char*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_char_ptr;
 extern bool cutils_cdar_DynamicArray_char_ptr_new(cutils_cdar_DynamicArray_char_ptr**,size_t,char**);
@@ -204,6 +221,7 @@ extern size_t cutils_cdar_DynamicArray_char_ptr_sub(cutils_cdar_DynamicArray_cha
 extern char* cutils_cdar_DynamicArray_char_ptr_get(cutils_cdar_DynamicArray_char_ptr*,size_t);
 extern bool cutils_cdar_DynamicArray_char_ptr_find(cutils_cdar_DynamicArray_char_ptr*,const char**,size_t*);
 extern size_t cutils_cdar_DynamicArray_char_ptr_findall(cutils_cdar_DynamicArray_char_ptr*,const char**,size_t*);
+extern char* cutils_cdar_DynamicArray_char_ptr_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_char_ptr_del)(cutils_cdar_DynamicArray_char_ptr*);
 extern size_t(*cutils_cdar_DynamicArray_char_ptr_len)(cutils_cdar_DynamicArray_char_ptr*);
 extern size_t(*cutils_cdar_DynamicArray_char_ptr_size)(cutils_cdar_DynamicArray_char_ptr*);
@@ -213,6 +231,7 @@ extern bool(*cutils_cdar_DynamicArray_char_ptr_reverse)(cutils_cdar_DynamicArray
 extern size_t(*cutils_cdar_DynamicArray_char_ptr_pull)(cutils_cdar_DynamicArray_char_ptr*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_char_ptr_truncate)(cutils_cdar_DynamicArray_char_ptr*,size_t);
 extern void(*cutils_cdar_DynamicArray_char_ptr_clear)(cutils_cdar_DynamicArray_char_ptr*);
+extern void(*cutils_cdar_DynamicArray_char_ptr_print)(cutils_cdar_DynamicArray_char_ptr*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_short;
 extern bool cutils_cdar_DynamicArray_short_new(cutils_cdar_DynamicArray_short**,size_t,short*);
@@ -226,6 +245,7 @@ extern size_t cutils_cdar_DynamicArray_short_sub(cutils_cdar_DynamicArray_short*
 extern short cutils_cdar_DynamicArray_short_get(cutils_cdar_DynamicArray_short*,size_t);
 extern bool cutils_cdar_DynamicArray_short_find(cutils_cdar_DynamicArray_short*,const short*,size_t*);
 extern size_t cutils_cdar_DynamicArray_short_findall(cutils_cdar_DynamicArray_short*,const short*,size_t*);
+extern char* cutils_cdar_DynamicArray_short_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_short_del)(cutils_cdar_DynamicArray_short*);
 extern size_t(*cutils_cdar_DynamicArray_short_len)(cutils_cdar_DynamicArray_short*);
 extern size_t(*cutils_cdar_DynamicArray_short_size)(cutils_cdar_DynamicArray_short*);
@@ -235,6 +255,7 @@ extern bool(*cutils_cdar_DynamicArray_short_reverse)(cutils_cdar_DynamicArray_sh
 extern size_t(*cutils_cdar_DynamicArray_short_pull)(cutils_cdar_DynamicArray_short*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_short_truncate)(cutils_cdar_DynamicArray_short*,size_t);
 extern void(*cutils_cdar_DynamicArray_short_clear)(cutils_cdar_DynamicArray_short*);
+extern void(*cutils_cdar_DynamicArray_short_print)(cutils_cdar_DynamicArray_short*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_unsigned_short;
 extern bool cutils_cdar_DynamicArray_unsigned_short_new(cutils_cdar_DynamicArray_unsigned_short**,size_t,unsigned short*);
@@ -248,6 +269,7 @@ extern size_t cutils_cdar_DynamicArray_unsigned_short_sub(cutils_cdar_DynamicArr
 extern unsigned short cutils_cdar_DynamicArray_unsigned_short_get(cutils_cdar_DynamicArray_unsigned_short*,size_t);
 extern bool cutils_cdar_DynamicArray_unsigned_short_find(cutils_cdar_DynamicArray_unsigned_short*,const unsigned short*,size_t*);
 extern size_t cutils_cdar_DynamicArray_unsigned_short_findall(cutils_cdar_DynamicArray_unsigned_short*,const unsigned short*,size_t*);
+extern char* cutils_cdar_DynamicArray_unsigned_short_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_unsigned_short_del)(cutils_cdar_DynamicArray_unsigned_short*);
 extern size_t(*cutils_cdar_DynamicArray_unsigned_short_len)(cutils_cdar_DynamicArray_unsigned_short*);
 extern size_t(*cutils_cdar_DynamicArray_unsigned_short_size)(cutils_cdar_DynamicArray_unsigned_short*);
@@ -257,6 +279,7 @@ extern bool(*cutils_cdar_DynamicArray_unsigned_short_reverse)(cutils_cdar_Dynami
 extern size_t(*cutils_cdar_DynamicArray_unsigned_short_pull)(cutils_cdar_DynamicArray_unsigned_short*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_unsigned_short_truncate)(cutils_cdar_DynamicArray_unsigned_short*,size_t);
 extern void(*cutils_cdar_DynamicArray_unsigned_short_clear)(cutils_cdar_DynamicArray_unsigned_short*);
+extern void(*cutils_cdar_DynamicArray_unsigned_short_print)(cutils_cdar_DynamicArray_unsigned_short*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_int;
 extern bool cutils_cdar_DynamicArray_int_new(cutils_cdar_DynamicArray_int**,size_t,int*);
@@ -270,6 +293,7 @@ extern size_t cutils_cdar_DynamicArray_int_sub(cutils_cdar_DynamicArray_int*,siz
 extern int cutils_cdar_DynamicArray_int_get(cutils_cdar_DynamicArray_int*,size_t);
 extern bool cutils_cdar_DynamicArray_int_find(cutils_cdar_DynamicArray_int*,const int*,size_t*);
 extern size_t cutils_cdar_DynamicArray_int_findall(cutils_cdar_DynamicArray_int*,const int*,size_t*);
+extern char* cutils_cdar_DynamicArray_int_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_int_del)(cutils_cdar_DynamicArray_int*);
 extern size_t(*cutils_cdar_DynamicArray_int_len)(cutils_cdar_DynamicArray_int*);
 extern size_t(*cutils_cdar_DynamicArray_int_size)(cutils_cdar_DynamicArray_int*);
@@ -279,6 +303,7 @@ extern bool(*cutils_cdar_DynamicArray_int_reverse)(cutils_cdar_DynamicArray_int*
 extern size_t(*cutils_cdar_DynamicArray_int_pull)(cutils_cdar_DynamicArray_int*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_int_truncate)(cutils_cdar_DynamicArray_int*,size_t);
 extern void(*cutils_cdar_DynamicArray_int_clear)(cutils_cdar_DynamicArray_int*);
+extern void(*cutils_cdar_DynamicArray_int_print)(cutils_cdar_DynamicArray_int*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_unsigned_int;
 extern bool cutils_cdar_DynamicArray_unsigned_int_new(cutils_cdar_DynamicArray_unsigned_int**,size_t,unsigned int*);
@@ -292,6 +317,7 @@ extern size_t cutils_cdar_DynamicArray_unsigned_int_sub(cutils_cdar_DynamicArray
 extern unsigned int cutils_cdar_DynamicArray_unsigned_int_get(cutils_cdar_DynamicArray_unsigned_int*,size_t);
 extern bool cutils_cdar_DynamicArray_unsigned_int_find(cutils_cdar_DynamicArray_unsigned_int*,const unsigned int*,size_t*);
 extern size_t cutils_cdar_DynamicArray_unsigned_int_findall(cutils_cdar_DynamicArray_unsigned_int*,const unsigned int*,size_t*);
+extern char* cutils_cdar_DynamicArray_unsigned_int_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_unsigned_int_del)(cutils_cdar_DynamicArray_unsigned_int*);
 extern size_t(*cutils_cdar_DynamicArray_unsigned_int_len)(cutils_cdar_DynamicArray_unsigned_int*);
 extern size_t(*cutils_cdar_DynamicArray_unsigned_int_size)(cutils_cdar_DynamicArray_unsigned_int*);
@@ -301,6 +327,7 @@ extern bool(*cutils_cdar_DynamicArray_unsigned_int_reverse)(cutils_cdar_DynamicA
 extern size_t(*cutils_cdar_DynamicArray_unsigned_int_pull)(cutils_cdar_DynamicArray_unsigned_int*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_unsigned_int_truncate)(cutils_cdar_DynamicArray_unsigned_int*,size_t);
 extern void(*cutils_cdar_DynamicArray_unsigned_int_clear)(cutils_cdar_DynamicArray_unsigned_int*);
+extern void(*cutils_cdar_DynamicArray_unsigned_int_print)(cutils_cdar_DynamicArray_unsigned_int*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_long;
 extern bool cutils_cdar_DynamicArray_long_new(cutils_cdar_DynamicArray_long**,size_t,long*);
@@ -314,6 +341,7 @@ extern size_t cutils_cdar_DynamicArray_long_sub(cutils_cdar_DynamicArray_long*,s
 extern long cutils_cdar_DynamicArray_long_get(cutils_cdar_DynamicArray_long*,size_t);
 extern bool cutils_cdar_DynamicArray_long_find(cutils_cdar_DynamicArray_long*,const long*,size_t*);
 extern size_t cutils_cdar_DynamicArray_long_findall(cutils_cdar_DynamicArray_long*,const long*,size_t*);
+extern char* cutils_cdar_DynamicArray_long_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_long_del)(cutils_cdar_DynamicArray_long*);
 extern size_t(*cutils_cdar_DynamicArray_long_len)(cutils_cdar_DynamicArray_long*);
 extern size_t(*cutils_cdar_DynamicArray_long_size)(cutils_cdar_DynamicArray_long*);
@@ -323,6 +351,7 @@ extern bool(*cutils_cdar_DynamicArray_long_reverse)(cutils_cdar_DynamicArray_lon
 extern size_t(*cutils_cdar_DynamicArray_long_pull)(cutils_cdar_DynamicArray_long*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_long_truncate)(cutils_cdar_DynamicArray_long*,size_t);
 extern void(*cutils_cdar_DynamicArray_long_clear)(cutils_cdar_DynamicArray_long*);
+extern void(*cutils_cdar_DynamicArray_long_print)(cutils_cdar_DynamicArray_long*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_unsigned_long;
 extern bool cutils_cdar_DynamicArray_unsigned_long_new(cutils_cdar_DynamicArray_unsigned_long**,size_t,unsigned long*);
@@ -336,6 +365,7 @@ extern size_t cutils_cdar_DynamicArray_unsigned_long_sub(cutils_cdar_DynamicArra
 extern unsigned long cutils_cdar_DynamicArray_unsigned_long_get(cutils_cdar_DynamicArray_unsigned_long*,size_t);
 extern bool cutils_cdar_DynamicArray_unsigned_long_find(cutils_cdar_DynamicArray_unsigned_long*,const unsigned long*,size_t*);
 extern size_t cutils_cdar_DynamicArray_unsigned_long_findall(cutils_cdar_DynamicArray_unsigned_long*,const unsigned long*,size_t*);
+extern char* cutils_cdar_DynamicArray_unsigned_long_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_unsigned_long_del)(cutils_cdar_DynamicArray_unsigned_long*);
 extern size_t(*cutils_cdar_DynamicArray_unsigned_long_len)(cutils_cdar_DynamicArray_unsigned_long*);
 extern size_t(*cutils_cdar_DynamicArray_unsigned_long_size)(cutils_cdar_DynamicArray_unsigned_long*);
@@ -345,6 +375,7 @@ extern bool(*cutils_cdar_DynamicArray_unsigned_long_reverse)(cutils_cdar_Dynamic
 extern size_t(*cutils_cdar_DynamicArray_unsigned_long_pull)(cutils_cdar_DynamicArray_unsigned_long*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_unsigned_long_truncate)(cutils_cdar_DynamicArray_unsigned_long*,size_t);
 extern void(*cutils_cdar_DynamicArray_unsigned_long_clear)(cutils_cdar_DynamicArray_unsigned_long*);
+extern void(*cutils_cdar_DynamicArray_unsigned_long_print)(cutils_cdar_DynamicArray_unsigned_long*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_long_long;
 extern bool cutils_cdar_DynamicArray_long_long_new(cutils_cdar_DynamicArray_long_long**,size_t,long long*);
@@ -358,6 +389,7 @@ extern size_t cutils_cdar_DynamicArray_long_long_sub(cutils_cdar_DynamicArray_lo
 extern long long cutils_cdar_DynamicArray_long_long_get(cutils_cdar_DynamicArray_long_long*,size_t);
 extern bool cutils_cdar_DynamicArray_long_long_find(cutils_cdar_DynamicArray_long_long*,const long long*,size_t*);
 extern size_t cutils_cdar_DynamicArray_long_long_findall(cutils_cdar_DynamicArray_long_long*,const long long*,size_t*);
+extern char* cutils_cdar_DynamicArray_long_long_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_long_long_del)(cutils_cdar_DynamicArray_long_long*);
 extern size_t(*cutils_cdar_DynamicArray_long_long_len)(cutils_cdar_DynamicArray_long_long*);
 extern size_t(*cutils_cdar_DynamicArray_long_long_size)(cutils_cdar_DynamicArray_long_long*);
@@ -367,6 +399,7 @@ extern bool(*cutils_cdar_DynamicArray_long_long_reverse)(cutils_cdar_DynamicArra
 extern size_t(*cutils_cdar_DynamicArray_long_long_pull)(cutils_cdar_DynamicArray_long_long*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_long_long_truncate)(cutils_cdar_DynamicArray_long_long*,size_t);
 extern void(*cutils_cdar_DynamicArray_long_long_clear)(cutils_cdar_DynamicArray_long_long*);
+extern void(*cutils_cdar_DynamicArray_long_long_print)(cutils_cdar_DynamicArray_long_long*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_unsigned_long_long;
 extern bool cutils_cdar_DynamicArray_unsigned_long_long_new(cutils_cdar_DynamicArray_unsigned_long_long**,size_t,unsigned long long*);
@@ -380,6 +413,7 @@ extern size_t cutils_cdar_DynamicArray_unsigned_long_long_sub(cutils_cdar_Dynami
 extern unsigned long long cutils_cdar_DynamicArray_unsigned_long_long_get(cutils_cdar_DynamicArray_unsigned_long_long*,size_t);
 extern bool cutils_cdar_DynamicArray_unsigned_long_long_find(cutils_cdar_DynamicArray_unsigned_long_long*,const unsigned long long*,size_t*);
 extern size_t cutils_cdar_DynamicArray_unsigned_long_long_findall(cutils_cdar_DynamicArray_unsigned_long_long*,const unsigned long long*,size_t*);
+extern char* cutils_cdar_DynamicArray_unsigned_long_long_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_unsigned_long_long_del)(cutils_cdar_DynamicArray_unsigned_long_long*);
 extern size_t(*cutils_cdar_DynamicArray_unsigned_long_long_len)(cutils_cdar_DynamicArray_unsigned_long_long*);
 extern size_t(*cutils_cdar_DynamicArray_unsigned_long_long_size)(cutils_cdar_DynamicArray_unsigned_long_long*);
@@ -389,6 +423,7 @@ extern bool(*cutils_cdar_DynamicArray_unsigned_long_long_reverse)(cutils_cdar_Dy
 extern size_t(*cutils_cdar_DynamicArray_unsigned_long_long_pull)(cutils_cdar_DynamicArray_unsigned_long_long*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_unsigned_long_long_truncate)(cutils_cdar_DynamicArray_unsigned_long_long*,size_t);
 extern void(*cutils_cdar_DynamicArray_unsigned_long_long_clear)(cutils_cdar_DynamicArray_unsigned_long_long*);
+extern void(*cutils_cdar_DynamicArray_unsigned_long_long_print)(cutils_cdar_DynamicArray_unsigned_long_long*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_float;
 extern bool cutils_cdar_DynamicArray_float_new(cutils_cdar_DynamicArray_float**,size_t,float*);
@@ -402,6 +437,7 @@ extern size_t cutils_cdar_DynamicArray_float_sub(cutils_cdar_DynamicArray_float*
 extern float cutils_cdar_DynamicArray_float_get(cutils_cdar_DynamicArray_float*,size_t);
 extern bool cutils_cdar_DynamicArray_float_find(cutils_cdar_DynamicArray_float*,const float*,size_t*);
 extern size_t cutils_cdar_DynamicArray_float_findall(cutils_cdar_DynamicArray_float*,const float*,size_t*);
+extern char* cutils_cdar_DynamicArray_float_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_float_del)(cutils_cdar_DynamicArray_float*);
 extern size_t(*cutils_cdar_DynamicArray_float_len)(cutils_cdar_DynamicArray_float*);
 extern size_t(*cutils_cdar_DynamicArray_float_size)(cutils_cdar_DynamicArray_float*);
@@ -411,6 +447,7 @@ extern bool(*cutils_cdar_DynamicArray_float_reverse)(cutils_cdar_DynamicArray_fl
 extern size_t(*cutils_cdar_DynamicArray_float_pull)(cutils_cdar_DynamicArray_float*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_float_truncate)(cutils_cdar_DynamicArray_float*,size_t);
 extern void(*cutils_cdar_DynamicArray_float_clear)(cutils_cdar_DynamicArray_float*);
+extern void(*cutils_cdar_DynamicArray_float_print)(cutils_cdar_DynamicArray_float*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_double;
 extern bool cutils_cdar_DynamicArray_double_new(cutils_cdar_DynamicArray_double**,size_t,double*);
@@ -424,6 +461,7 @@ extern size_t cutils_cdar_DynamicArray_double_sub(cutils_cdar_DynamicArray_doubl
 extern double cutils_cdar_DynamicArray_double_get(cutils_cdar_DynamicArray_double*,size_t);
 extern bool cutils_cdar_DynamicArray_double_find(cutils_cdar_DynamicArray_double*,const double*,size_t*);
 extern size_t cutils_cdar_DynamicArray_double_findall(cutils_cdar_DynamicArray_double*,const double*,size_t*);
+extern char* cutils_cdar_DynamicArray_double_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_double_del)(cutils_cdar_DynamicArray_double*);
 extern size_t(*cutils_cdar_DynamicArray_double_len)(cutils_cdar_DynamicArray_double*);
 extern size_t(*cutils_cdar_DynamicArray_double_size)(cutils_cdar_DynamicArray_double*);
@@ -433,6 +471,7 @@ extern bool(*cutils_cdar_DynamicArray_double_reverse)(cutils_cdar_DynamicArray_d
 extern size_t(*cutils_cdar_DynamicArray_double_pull)(cutils_cdar_DynamicArray_double*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_double_truncate)(cutils_cdar_DynamicArray_double*,size_t);
 extern void(*cutils_cdar_DynamicArray_double_clear)(cutils_cdar_DynamicArray_double*);
+extern void(*cutils_cdar_DynamicArray_double_print)(cutils_cdar_DynamicArray_double*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_long_double;
 extern bool cutils_cdar_DynamicArray_long_double_new(cutils_cdar_DynamicArray_long_double**,size_t,long double*);
@@ -446,6 +485,7 @@ extern size_t cutils_cdar_DynamicArray_long_double_sub(cutils_cdar_DynamicArray_
 extern long double cutils_cdar_DynamicArray_long_double_get(cutils_cdar_DynamicArray_long_double*,size_t);
 extern bool cutils_cdar_DynamicArray_long_double_find(cutils_cdar_DynamicArray_long_double*,const long double*,size_t*);
 extern size_t cutils_cdar_DynamicArray_long_double_findall(cutils_cdar_DynamicArray_long_double*,const long double*,size_t*);
+extern char* cutils_cdar_DynamicArray_long_double_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_long_double_del)(cutils_cdar_DynamicArray_long_double*);
 extern size_t(*cutils_cdar_DynamicArray_long_double_len)(cutils_cdar_DynamicArray_long_double*);
 extern size_t(*cutils_cdar_DynamicArray_long_double_size)(cutils_cdar_DynamicArray_long_double*);
@@ -455,6 +495,7 @@ extern bool(*cutils_cdar_DynamicArray_long_double_reverse)(cutils_cdar_DynamicAr
 extern size_t(*cutils_cdar_DynamicArray_long_double_pull)(cutils_cdar_DynamicArray_long_double*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_long_double_truncate)(cutils_cdar_DynamicArray_long_double*,size_t);
 extern void(*cutils_cdar_DynamicArray_long_double_clear)(cutils_cdar_DynamicArray_long_double*);
+extern void(*cutils_cdar_DynamicArray_long_double_print)(cutils_cdar_DynamicArray_long_double*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_bool;
 extern bool cutils_cdar_DynamicArray_bool_new(cutils_cdar_DynamicArray_bool**,size_t,bool*);
@@ -468,6 +509,7 @@ extern size_t cutils_cdar_DynamicArray_bool_sub(cutils_cdar_DynamicArray_bool*,s
 extern bool cutils_cdar_DynamicArray_bool_get(cutils_cdar_DynamicArray_bool*,size_t);
 extern bool cutils_cdar_DynamicArray_bool_find(cutils_cdar_DynamicArray_bool*,const bool*,size_t*);
 extern size_t cutils_cdar_DynamicArray_bool_findall(cutils_cdar_DynamicArray_bool*,const bool*,size_t*);
+extern char* cutils_cdar_DynamicArray_bool_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_bool_del)(cutils_cdar_DynamicArray_bool*);
 extern size_t(*cutils_cdar_DynamicArray_bool_len)(cutils_cdar_DynamicArray_bool*);
 extern size_t(*cutils_cdar_DynamicArray_bool_size)(cutils_cdar_DynamicArray_bool*);
@@ -477,6 +519,7 @@ extern bool(*cutils_cdar_DynamicArray_bool_reverse)(cutils_cdar_DynamicArray_boo
 extern size_t(*cutils_cdar_DynamicArray_bool_pull)(cutils_cdar_DynamicArray_bool*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_bool_truncate)(cutils_cdar_DynamicArray_bool*,size_t);
 extern void(*cutils_cdar_DynamicArray_bool_clear)(cutils_cdar_DynamicArray_bool*);
+extern void(*cutils_cdar_DynamicArray_bool_print)(cutils_cdar_DynamicArray_bool*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_size_t;
 extern bool cutils_cdar_DynamicArray_size_t_new(cutils_cdar_DynamicArray_size_t**,size_t,size_t*);
@@ -490,6 +533,7 @@ extern size_t cutils_cdar_DynamicArray_size_t_sub(cutils_cdar_DynamicArray_size_
 extern size_t cutils_cdar_DynamicArray_size_t_get(cutils_cdar_DynamicArray_size_t*,size_t);
 extern bool cutils_cdar_DynamicArray_size_t_find(cutils_cdar_DynamicArray_size_t*,const size_t*,size_t*);
 extern size_t cutils_cdar_DynamicArray_size_t_findall(cutils_cdar_DynamicArray_size_t*,const size_t*,size_t*);
+extern char* cutils_cdar_DynamicArray_size_t_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_size_t_del)(cutils_cdar_DynamicArray_size_t*);
 extern size_t(*cutils_cdar_DynamicArray_size_t_len)(cutils_cdar_DynamicArray_size_t*);
 extern size_t(*cutils_cdar_DynamicArray_size_t_size)(cutils_cdar_DynamicArray_size_t*);
@@ -499,6 +543,7 @@ extern bool(*cutils_cdar_DynamicArray_size_t_reverse)(cutils_cdar_DynamicArray_s
 extern size_t(*cutils_cdar_DynamicArray_size_t_pull)(cutils_cdar_DynamicArray_size_t*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_size_t_truncate)(cutils_cdar_DynamicArray_size_t*,size_t);
 extern void(*cutils_cdar_DynamicArray_size_t_clear)(cutils_cdar_DynamicArray_size_t*);
+extern void(*cutils_cdar_DynamicArray_size_t_print)(cutils_cdar_DynamicArray_size_t*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_ptrdiff_t;
 extern bool cutils_cdar_DynamicArray_ptrdiff_t_new(cutils_cdar_DynamicArray_ptrdiff_t**,size_t,ptrdiff_t*);
@@ -512,6 +557,7 @@ extern size_t cutils_cdar_DynamicArray_ptrdiff_t_sub(cutils_cdar_DynamicArray_pt
 extern ptrdiff_t cutils_cdar_DynamicArray_ptrdiff_t_get(cutils_cdar_DynamicArray_ptrdiff_t*,size_t);
 extern bool cutils_cdar_DynamicArray_ptrdiff_t_find(cutils_cdar_DynamicArray_ptrdiff_t*,const ptrdiff_t*,size_t*);
 extern size_t cutils_cdar_DynamicArray_ptrdiff_t_findall(cutils_cdar_DynamicArray_ptrdiff_t*,const ptrdiff_t*,size_t*);
+extern char* cutils_cdar_DynamicArray_ptrdiff_t_format(const void*,char**,size_t*);
 extern void(*cutils_cdar_DynamicArray_ptrdiff_t_del)(cutils_cdar_DynamicArray_ptrdiff_t*);
 extern size_t(*cutils_cdar_DynamicArray_ptrdiff_t_len)(cutils_cdar_DynamicArray_ptrdiff_t*);
 extern size_t(*cutils_cdar_DynamicArray_ptrdiff_t_size)(cutils_cdar_DynamicArray_ptrdiff_t*);
@@ -521,4 +567,5 @@ extern bool(*cutils_cdar_DynamicArray_ptrdiff_t_reverse)(cutils_cdar_DynamicArra
 extern size_t(*cutils_cdar_DynamicArray_ptrdiff_t_pull)(cutils_cdar_DynamicArray_ptrdiff_t*,size_t,size_t);
 extern void(*cutils_cdar_DynamicArray_ptrdiff_t_truncate)(cutils_cdar_DynamicArray_ptrdiff_t*,size_t);
 extern void(*cutils_cdar_DynamicArray_ptrdiff_t_clear)(cutils_cdar_DynamicArray_ptrdiff_t*);
+extern void(*cutils_cdar_DynamicArray_ptrdiff_t_print)(cutils_cdar_DynamicArray_ptrdiff_t*,FILE*,const char*,char*(*)(const void*,char**,size_t*));
 #endif /* _C_DYNAMIC_ARRAY_H_2427147457128005_ */

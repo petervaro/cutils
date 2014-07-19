@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.72.466 (20140713)                       ##
 ##                                                                            ##
 ##                        File: doc/src/00_cutils.yaml                        ##
 ##                                                                            ##
@@ -31,10 +31,11 @@ INFO:
   - - br
   - - p
     - string: |
-              `cutils` is a set of very simple but powerful tools to make one's
-              life a little easier while one is programming in C. I created the
-              tools mostly for use in my personal projects, however I hope /
-              believe many will find it just as useful as I do.
+              `cutils` *(C Utilities)* is a collection of simple, modern and
+              truly powerful tools to make one's life a little easier when
+              programming in C. The utilities were created mostly to fulfill the
+              personal needs of the author, however he hopes and believes many
+              will find the tools just as useful and essential as he does.
 
 # TODO: consider changing `clic` -> `ccom` and `ccom` -> `ctag`
 

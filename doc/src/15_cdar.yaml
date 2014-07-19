@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.72.571 (20140719)                       ##
 ##                                                                            ##
 ##                         File: doc/src/15_cdar.yaml                         ##
 ##                                                                            ##
@@ -136,6 +136,11 @@ TYPE:
 
 #------------------------------------------------------------------------------#
 FUNC:
+  # TODO: 4 options to new()
+  #       new(obj)
+  #       new(obj_void_ptr, item_size)
+  #       new(obj, item_count, items)
+  #       new(obj_void_ptr, item_size, item_count, items)
   - func: new
     vargs:
       - - - DynamicArray_type **

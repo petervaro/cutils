@@ -1,37 +1,111 @@
 
-                                                         .;l;                   
-                                                  ..    .kWMo                   
-                                                .OWN;    .XMo                   
-                                                 ;lc.    .KMo                   
-                                        :,               .KMo                   
-          .:ccldxl. .cld,    'clo:  .,oKWOcccc. .;oO,    .KMo     ,lc:oo,       
-        ,Ok;.  .:Oc  lWMc    .:NMd  .,OMMx,,,,  'OMW,    .KMo   .kN:   cO.      
-       lWx           'NMc     .KMd    xMMc       cMW,    .KMo   .XWd.   .       
-      .XM:           'NMc     .KMd    xMMc       cMW,    .KMo    ,OWWOl.        
-      .NMx           'NMc     .0Md    xMMc       cMW,    .KMo      .:xNWd       
-       lWMO,     .c. .XMk     ,NMx    dMMd       cMW,    .XMd   x:    ;WN'      
-        ,xXWXOkkxo.   cXW0dolclXMXo:. ,0WWklc; .:OWWx:..;dNW0c' lXx:,;k0:       
-           .,,,.        ',,'.  ,,.      .,,'.   ......  .......  .',,'.         
+                                                            .;oO0.
+                                                            cXMM0.
+                                                  .xKKo      ;WM0
+                                                  .KMMO.     ,WM0
+                                                    ""       ,WM0
+                                        ;;                   ,WM0
+     .';ccc:,.  ...,:.     ...,:.    .:OWO.....     ;lc      ,WM0       .,:cc:,.
+  .oOXl;":l0WK. ,kWMN'     :kWMM:   :kWMMXkkkkk'  cXMMk      ,WM0     .kXo;":oXk
+ lN0.       l:   .KMN'       0MM;    .KMMd         oMMx      ,WM0     kM0     'd
+oWX.             .0MN'       OMM;    .KMMd         :MMx      ,WM0     xMWk,
+NMk              .KMN'       OMM;    .KMMd         :MMx      ,WM0     .lXMMXx;
+MMK.             .KMN'       OMM;    .KMMd         cMMx      ,WM0        ;dKMMK;
+0MMk.            .KMW'       OMM;    .KMMd         cMMx      ,WM0    ,.     :XMN
+'KMMKc.     ,x:   OMMx      :XMMc     0MMK.        cMMk      ,WM0.   x0.     dMX
+ .l0WMWK0OOOd'    '0WMXxddolcKMMXdl.  :KWMXxooc. ;l0WWNoc. ,cOWWNxc. ;XXo;,,oKk'
+    'ldkxo:'        :dkkd:"  TOl:'     ':dkxo'   'P"'''"P' 'P"'''"P'  .cdkkdc.
+
 
 
 
 ABOUT
------
+=====
 
-cutils is a set of very simple but powerful tools to make one's life a little
-easier while one is programming in C. I created the tools mostly for use in my
-personal projects, however I hope/believe many will find it just as useful as I
-do.
+cutils (C Utilities) is a collection of simple, modern and truly powerful tools
+to make one's life a little easier when programming in C. The utilities were
+created mostly to fulfill the personal needs of the author, however he hopes and
+believes many will find the tools just as useful and essential as he does.
 
 For detailed information and documentation visit:
 
     http://www.cutils.org
 
 
-LICENSE
--------
+CONTRIBUTOR'S NOTE
+==================
 
-Copyright &copy; 2014 Peter Varo
+cutils uses very strict naming conventions, so, if you want to contribute to it,
+you have to follow these rules. In my personal experience, the conventions
+described below truly makes the code cleanewr, easier to read, to understand, to
+modify later on and make it maintainable on the long run.
+
+
+Public variable and function/method names:
+
+    all_lowercase_letters_separated_by_underscores
+
+    eg.:
+
+        /* inline variable name */
+        bool error_flag = false;
+
+        /* method name of object in global namespace */
+        cutils_cdar_DynamicArray_void_ptr_new()
+          ^       ^          ^             ^
+          |       |          |             |
+        project  module    object        method
+         name     name      name          name
+
+
+Private variable and function/method names:
+
+    _all_lowercase_letters_separated_by_underscores_started_with_underscore
+
+    eg.: int _counter;
+
+
+Constants (macros enums):
+
+    FULL_UPPERCASE_LETTERS_SEPARATED_BY_UNDERSCORE
+
+    eg.:
+
+        /* inline and public constants */
+        #define CUTILS_NAMESPACE
+
+        /* guard macro variables */
+        _C_APPLICATION_PROGRAMMING_INTERFACE_H_27277619327951796_
+        ^                   ^                ^        ^         ^
+        |                   |                |        |         |
+       leading          full name        extension  random   trailing
+      underscore      of the module                 number  underscore
+
+
+Labels:
+
+    Words_Started_With_Capital_Letters_Separated_By_Underscore
+
+    eg.: goto Error_Window_Initialisation_Failed;
+
+
+Objects:
+
+    WordsStartedWithCapitalLettersAndNotSeparated
+
+    eg.: typedef struct {} MyObject;
+
+        DynamicArray_unsigned_long_long
+             ^               ^
+             |               |
+         base type        related
+                        standard type
+
+
+LICENSE
+=======
+
+Copyright (C) 2014 Peter Varo
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

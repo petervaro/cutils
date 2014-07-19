@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.365 (20140711)                       **
+**                       Version: 0.8.72.556 (20140718)                       **
 **                                                                            **
 **                                File: cutt.h                                **
 **                                                                            **
@@ -38,8 +38,8 @@ typedef struct
 
 /*----------------------------------------------------------------------------*/
 static inline void
-cutils_cutt_new(cutils_cutt_Tester **tester,
-                size_t count)
+cutils_cutt_Tester_new(cutils_cutt_Tester **tester,
+                       size_t count)
 {
     cutils_cutt_Tester *_tester = malloc(sizeof(cutils_cutt_Tester) +
                                          count*sizeof(char *));
@@ -55,14 +55,14 @@ cutils_cutt_new(cutils_cutt_Tester **tester,
 
 /*----------------------------------------------------------------------------*/
 static inline void
-cutils_cutt_del(cutils_cutt_Tester *tester)
+cutils_cutt_Tester_del(cutils_cutt_Tester *tester)
 {
     free(tester);
 }
 
 
 /*----------------------------------------------------------------------------*/
-#define cutils_cutt_try(tester, expression)                                    \
+#define cutils_cutt_Tester_try(tester, expression)                             \
     do {                                                                       \
         if (!(expression))                                                     \
             tester->info[tester->fail++] = "CUTT: in file: '" __FILE__         \
@@ -72,7 +72,7 @@ cutils_cutt_del(cutils_cutt_Tester *tester)
 
 
 /*----------------------------------------------------------------------------*/
-#define cutils_cutt_report(tester)                                             \
+#define cutils_cutt_Tester_report(tester)                                      \
     do {                                                                       \
         size_t fail = tester->fail, size = tester->size;                       \
         if (fail)                                                              \

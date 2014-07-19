@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.72.523 (20140714)                       ##
 ##                                                                            ##
 ##                               File: ccom.py                                ##
 ##                                                                            ##
@@ -45,7 +45,7 @@ from internal.comment import (LINE as comment_LINE,
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 # Special tags to look for
 WORDS = r'fixme', r'todo', r'bug', r'hack', r'note', r'xxx'
-MARKS = {r'!'*3: 'alert', r'?'*3: 'question'}
+MARKS = OrderedDict([(r'!'*3, 'alert'), (r'?'*3, 'question')])
 # Extension of files to look in
 EXTENSIONS = '.h', '.c', '.py', '.fs', '.vs', '.yaml'
 EXCEPTIONS = ('.ccom_cache', '.ccom_todo',

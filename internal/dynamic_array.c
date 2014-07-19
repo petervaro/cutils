@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.365 (20140711)                       **
+**                       Version: 0.8.72.580 (20140719)                       **
 **                                                                            **
 **                       File: internal/dynamic_array.c                       **
 **                                                                            **
@@ -13,6 +13,14 @@
 **                 For more info visit: http://www.cutils.org                 **
 **                                                                            **
 ************************************************************************ INFO */
+
+/* TODO: Generic formatting printer, place this to cdar.c && cdar.h
+         void
+         __cutils_custom_print(cutils_cdar_DynamicArray_void_ptr *d,
+                               char *(*f)(const void*, char**, size_t*))
+         {
+             cutils_cdar_DynamicArray_void_ptr_print(d, stdout, "DynamicArray_void_ptr", f);
+         } */
 
 /* TODO: add String to cdar
          DynamicArray_String: String
@@ -95,7 +103,7 @@
   #include <jemalloc/jemalloc.h>  /* malloc(), realloc(), free() */
 #endif
 
-#include <stdio.h>    /* fprintf(), stderr, size_t */
+#include <stdio.h>    /* fprintf(), snprintf(), stderr, size_t */
 #include <string.h>   /* memcpy(), strcpy(), strcat() */
 #include <stdbool.h>  /* bool, true, false */
 
@@ -180,8 +188,8 @@ __cdar_resize(cutils_cdar_DynamicArray_void_ptr *dynarr,
 /*----------------------------------------------------------------------------*/
 bool
 cutils_cdar_DynamicArray_void_ptr_new(cutils_cdar_DynamicArray_void_ptr **dynarr,
-                                      size_t count,
                                       size_t item_size,
+                                      size_t count,
                                       void *source)
 {
     /* Calculate allocation size based on item count */
@@ -1121,7 +1129,7 @@ void
 cutils_cdar_DynamicArray_void_ptr_sortsub(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                           size_t index,
                                           size_t count,
-                                          int (*compare)(const void *, const void*))
+                                          int (*compare)(const void*, const void*))
 {
 #ifndef CDAR_OPT
     if (!dynarr)
@@ -1155,4 +1163,56 @@ cutils_cdar_DynamicArray_void_ptr_sortsub(cutils_cdar_DynamicArray_void_ptr *dyn
         count = dynarr->used - index;
     /* Cast data & search */
     qsort((char *)dynarr->data + dynarr->size * index, count, dynarr->size, compare);
+}
+
+
+/*----------------------------------------------------------------------------*/
+char *
+cutils_cdar_DynamicArray_void_ptr_format(const void *item,
+                                         char **buffer,
+                                         size_t *buffer_size)
+{
+    /* buffer_size could be used to realloc buffer if
+       it is too small to contain the the formatted item */
+    snprintf(*buffer, *buffer_size, "<pointer to %p>", item);
+    return *buffer;
+}
+
+
+/*----------------------------------------------------------------------------*/
+void
+cutils_cdar_DynamicArray_void_ptr_print(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                        FILE *stream,
+                                        const char *name,
+                                        char *(*format)(const void*, char**, size_t*))
+{
+    /* If array is empty */
+    if (!dynarr->used)
+        fprintf(stream, "%s{}\n", name);
+    /* If array is filled */
+    else
+    {
+        fprintf(stream, "%s{", name);
+        size_t buffer_size = 128;
+        char *buffer = malloc(buffer_size);
+        if (!buffer)
+        {
+            #define EXCEPTION_MSG CEXC_MSG_ALLOC_FAIL("print")
+            raise(EXCEPTION_MSG, sizeof(EXCEPTION_MSG));
+            #undef EXCEPTION_MSG
+            fprintf(stream, "...}\n");
+            return;
+        }
+        char *data = (char *)dynarr->data;
+        size_t size = dynarr->size;
+        /* Print first item */
+        fprintf(stream, "%s", format(data, &buffer, &buffer_size));
+        /* Print all remaining items, with leading comma */
+        for (size_t i=1; i<dynarr->used; i++)
+        {
+            fprintf(stream, ", %s", format(data + size*i, &buffer, &buffer_size));
+        }
+        free(buffer);
+        fprintf(stream, "}\n");
+    }
 }

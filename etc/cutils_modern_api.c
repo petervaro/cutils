@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.365 (20140711)                       **
+**                       Version: 0.8.72.552 (20140718)                       **
 **                                                                            **
 **                       File: etc/cutils_modern_api.c                        **
 **                                                                            **
@@ -65,6 +65,35 @@ function(10, 12, 50);
 
 /* THIS IS NOT WORKING... */
 #define pointer(x) _Generic((x), int: (do {printf("%d\n", i);} while(0)))
+
+/* Use something like this instead ??? */
+static void _f_i_i(int a,   int b)   {printf("a:int,   b:int\n");}
+static void _f_i_f(int a,   float b) {printf("a:int,   b:float\n");}
+static void _f_f_i(float a, int b)   {printf("a:float, b:int\n");}
+static void _f_f_f(float a, float b) {printf("a:float, b:float\n");}
+
+#define f(a, b) _Generic((a),                         \
+    int:   _Generic((b), int: _f_i_i, float: _f_i_f), \
+    float: _Generic((b), int: _f_f_i, float: _f_f_f))(a, b)
+
+int main(void)
+{
+    f(1,   2);
+    f(1,   2.f);
+    f(1.f, 2);
+    f(1.f, 2.f);
+    return 0;
+}
+
+/* HACK: the re-casting of the pointers is a dirty but useful hack which is
+         needed to set the assignment-expression to a function call instead of
+         the function name itself. If re-casting is not added, the code will
+         also work, however the compiler will generate 2 warnings.
+         more info: http://stackoverflow.com/questions/24743520 */
+#define func(o, ...) _Generic((o),                 \
+        char : func_char((char)o, ## __VA_ARGS__), \
+        bool : func_bool((bool)o, ## __VA_ARGS__), \
+        float: func_float((float)o, ## __VA_ARGS__))
 
 /* 1) DESIGN   | the API first
    2) HACK     | the solution to see if working

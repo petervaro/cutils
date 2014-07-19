@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.365 (20140711)                       **
+**                       Version: 0.8.72.580 (20140719)                       **
 **                                                                            **
 **                                File: capi.h                                **
 **                                                                            **
@@ -17,7 +17,24 @@
 #ifndef _C_APPLICATION_PROGRAMMING_INTERFACE_H_27277619327951796_
 #define _C_APPLICATION_PROGRAMMING_INTERFACE_H_27277619327951796_
 
+#include <stdio.h>  /* stdout */
 #include "carg.h"
+
+/*----------------------------------------------------------------------------*/
+/* TODO: Figure out how to dispatch to a macro (for default values) inside
+         a _Generic macro dispatcher...
+
+         #define new(...) cutils_carg_vargs(__VA_ARGS__)(4)(__VA_ARGS__, \
+             cutils_carg_zero, __cutils_generic_new3, __cutils_generic_new3, \
+             __cutils_generic_new1)(__VA_ARGS__)  */
+
+/* Functions and methods called with default values */
+#undef __cutils_empty_new
+#undef __cutils_vargs_new
+#define __cutils_empty_new(object) __cutils_generic_new(object, 0, NULL)
+#define __cutils_vargs_new(...) cutils_carg_vargs(__VA_ARGS__)(5)(__VA_ARGS__, \
+    __cutils_empty_new, __cutils_generic_new, __cutils_generic_new, \
+    __cutils_generic_new, __cutils_empty_new)(__VA_ARGS__)
 
 /*----------------------------------------------------------------------------*/
 #ifndef CUTILS_NAMESPACE /* use bare token names */
@@ -42,8 +59,9 @@
 #undef pull
 #undef truncate
 #undef clear
+#undef print
 
-#define new(...) __cutils_generic_new(__VA_ARGS__)
+#define new(...) __cutils_vargs_new(__VA_ARGS__)
 #define data(...) __cutils_generic_data(__VA_ARGS__)
 #define raw(...) __cutils_generic_raw(__VA_ARGS__)
 #define append(...) __cutils_generic_append(__VA_ARGS__)
@@ -63,6 +81,7 @@
 #define pull(...) __cutils_generic_pull(__VA_ARGS__)
 #define truncate(...) __cutils_generic_truncate(__VA_ARGS__)
 #define clear(...) __cutils_generic_clear(__VA_ARGS__)
+#define print(...) __cutils_generic_print(__VA_ARGS__)
 
 #ifdef _C_ARGUMENTS_H_19836769466709525_
   #undef zero
@@ -109,14 +128,16 @@
   typedef cutils_cutt_Tester Tester;
   #undef try
   #undef report
-  #define try(...) cutils_cutt_try(__VA_ARGS__)
-  #define report(...) cutils_cutt_report(__VA_ARGS__)
+  #define try(...) cutils_cutt_Tester_try(__VA_ARGS__)
+  #define report(...) cutils_cutt_Tester_report(__VA_ARGS__)
 #else
   /* HACK: Define type to make _Generic() work */
   typedef struct {} cutils_cutt_Tester;
 #endif /* _C_UNIT_TEST_TOOLS_H_3818217702141947_ */
 
 #ifdef _C_DYNAMIC_ARRAY_H_2427147457128005_
+  /* TODO: consider to use #define instead of typedefs */
+  typedef cutils_cdar_DynamicArray_void_ptr DynamicArray_void_ptr;
   typedef cutils_cdar_DynamicArray_char DynamicArray_char;
   typedef cutils_cdar_DynamicArray_signed_char DynamicArray_signed_char;
   typedef cutils_cdar_DynamicArray_unsigned_char DynamicArray_unsigned_char;
@@ -135,9 +156,27 @@
   typedef cutils_cdar_DynamicArray_bool DynamicArray_bool;
   typedef cutils_cdar_DynamicArray_size_t DynamicArray_size_t;
   typedef cutils_cdar_DynamicArray_ptrdiff_t DynamicArray_ptrdiff_t;
-  typedef cutils_cdar_DynamicArray_void_ptr DynamicArray_void_ptr;
 #else
-  #error "Where the hell is CDAR?"
+  /* Pseudo type aliases */
+  typedef struct {} cutils_cdar_DynamicArray_void_ptr;
+  typedef struct {} cutils_cdar_DynamicArray_char;
+  typedef struct {} cutils_cdar_DynamicArray_signed_char;
+  typedef struct {} cutils_cdar_DynamicArray_unsigned_char;
+  typedef struct {} cutils_cdar_DynamicArray_char_ptr;
+  typedef struct {} cutils_cdar_DynamicArray_short;
+  typedef struct {} cutils_cdar_DynamicArray_unsigned_short;
+  typedef struct {} cutils_cdar_DynamicArray_int;
+  typedef struct {} cutils_cdar_DynamicArray_unsigned_int;
+  typedef struct {} cutils_cdar_DynamicArray_long;
+  typedef struct {} cutils_cdar_DynamicArray_unsigned_long;
+  typedef struct {} cutils_cdar_DynamicArray_long_long;
+  typedef struct {} cutils_cdar_DynamicArray_unsigned_long_long;
+  typedef struct {} cutils_cdar_DynamicArray_float;
+  typedef struct {} cutils_cdar_DynamicArray_double;
+  typedef struct {} cutils_cdar_DynamicArray_long_double;
+  typedef struct {} cutils_cdar_DynamicArray_bool;
+  typedef struct {} cutils_cdar_DynamicArray_size_t;
+  typedef struct {} cutils_cdar_DynamicArray_ptrdiff_t;
 #endif /* _C_DYNAMIC_ARRAY_H_2427147457128005_ */
 
 /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
@@ -163,8 +202,9 @@
 #undef cutils_pull
 #undef cutils_truncate
 #undef cutils_clear
+#undef cutils_print
 
-#define cutils_new(...) __cutils_generic_new(__VA_ARGS__)
+#define cutils_new(...) __cutils_vargs_new(__VA_ARGS__)
 #define cutils_data(...) __cutils_generic_data(__VA_ARGS__)
 #define cutils_raw(...) __cutils_generic_raw(__VA_ARGS__)
 #define cutils_append(...) __cutils_generic_append(__VA_ARGS__)
@@ -184,6 +224,7 @@
 #define cutils_pull(...) __cutils_generic_pull(__VA_ARGS__)
 #define cutils_truncate(...) __cutils_generic_truncate(__VA_ARGS__)
 #define cutils_clear(...) __cutils_generic_clear(__VA_ARGS__)
+#define cutils_print(...) __cutils_generic_print(__VA_ARGS__)
 
 #ifdef _C_ARGUMENTS_H_19836769466709525_
   #undef cutils_zero
@@ -230,26 +271,67 @@
   typedef cutils_cutt_Tester cutils_Tester;
   #undef cutils_try
   #undef cutils_report
-  #define cutils_try(...) cutils_cutt_try(__VA_ARGS__)
-  #define cutils_report(...) cutils_cutt_report(__VA_ARGS__)
+  #define cutils_try(...) cutils_cutt_Tester_try(__VA_ARGS__)
+  #define cutils_report(...) cutils_cutt_Tester_report(__VA_ARGS__)
 #else
   /* HACK: Define type to make _Generic() work */
   typedef struct {} cutils_cutt_Tester;
 #endif /* _C_UNIT_TEST_TOOLS_H_3818217702141947_ */
 
+#ifdef _C_DYNAMIC_ARRAY_H_2427147457128005_
+  typedef cutils_cdar_DynamicArray_void_ptr cutils_DynamicArray_void_ptr;
+  typedef cutils_cdar_DynamicArray_char cutils_DynamicArray_char;
+  typedef cutils_cdar_DynamicArray_signed_char cutils_DynamicArray_signed_char;
+  typedef cutils_cdar_DynamicArray_unsigned_char cutils_DynamicArray_unsigned_char;
+  typedef cutils_cdar_DynamicArray_char_ptr cutils_DynamicArray_char_ptr;
+  typedef cutils_cdar_DynamicArray_short cutils_DynamicArray_short;
+  typedef cutils_cdar_DynamicArray_unsigned_short cutils_DynamicArray_unsigned_short;
+  typedef cutils_cdar_DynamicArray_int cutils_DynamicArray_int;
+  typedef cutils_cdar_DynamicArray_unsigned_int cutils_DynamicArray_unsigned_int;
+  typedef cutils_cdar_DynamicArray_long cutils_DynamicArray_long;
+  typedef cutils_cdar_DynamicArray_unsigned_long cutils_DynamicArray_unsigned_long;
+  typedef cutils_cdar_DynamicArray_long_long cutils_DynamicArray_long_long;
+  typedef cutils_cdar_DynamicArray_unsigned_long_long cutils_DynamicArray_unsigned_long_long;
+  typedef cutils_cdar_DynamicArray_float cutils_DynamicArray_float;
+  typedef cutils_cdar_DynamicArray_double cutils_DynamicArray_double;
+  typedef cutils_cdar_DynamicArray_long_double cutils_DynamicArray_long_double;
+  typedef cutils_cdar_DynamicArray_bool cutils_DynamicArray_bool;
+  typedef cutils_cdar_DynamicArray_size_t cutils_DynamicArray_size_t;
+  typedef cutils_cdar_DynamicArray_ptrdiff_t cutils_DynamicArray_ptrdiff_t;
+#else
+  /* Pseudo type aliases */
+  typedef struct {} cutils_cdar_DynamicArray_void_ptr;
+  typedef struct {} cutils_cdar_DynamicArray_char;
+  typedef struct {} cutils_cdar_DynamicArray_signed_char;
+  typedef struct {} cutils_cdar_DynamicArray_unsigned_char;
+  typedef struct {} cutils_cdar_DynamicArray_char_ptr;
+  typedef struct {} cutils_cdar_DynamicArray_short;
+  typedef struct {} cutils_cdar_DynamicArray_unsigned_short;
+  typedef struct {} cutils_cdar_DynamicArray_int;
+  typedef struct {} cutils_cdar_DynamicArray_unsigned_int;
+  typedef struct {} cutils_cdar_DynamicArray_long;
+  typedef struct {} cutils_cdar_DynamicArray_unsigned_long;
+  typedef struct {} cutils_cdar_DynamicArray_long_long;
+  typedef struct {} cutils_cdar_DynamicArray_unsigned_long_long;
+  typedef struct {} cutils_cdar_DynamicArray_float;
+  typedef struct {} cutils_cdar_DynamicArray_double;
+  typedef struct {} cutils_cdar_DynamicArray_long_double;
+  typedef struct {} cutils_cdar_DynamicArray_bool;
+  typedef struct {} cutils_cdar_DynamicArray_size_t;
+  typedef struct {} cutils_cdar_DynamicArray_ptrdiff_t;
+#endif /* _C_DYNAMIC_ARRAY_H_2427147457128005_ */
+
 #endif /* CUTILS_NAMESPACE */
 
-/*----------------------------------------------------------------------------*/
-/* TODO: Figure out how to dispatch to a macro (for default values) inside
-         a _Generic macro dispatcher...
-
-         #define new(...) cutils_carg_vargs(__VA_ARGS__)(4)(__VA_ARGS__, \
-             cutils_carg_zero, __cutils_generic_new3, __cutils_generic_new3, \
-             __cutils_generic_new1)(__VA_ARGS__)  */
 
 /*----------------------------------------------------------------------------*/
+/* !!! D O N ' T   R E M O V E   T H E   N E X T   C O M M E N T !!! */
+/* AUTOMATICALLY GENERATED GENERICS MACROS */
+
+
 #undef __cutils_generic_new
 #define __cutils_generic_new(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr**:cutils_cdar_DynamicArray_void_ptr_new,\
     cutils_cdar_DynamicArray_char**:cutils_cdar_DynamicArray_char_new,\
     cutils_cdar_DynamicArray_signed_char**:cutils_cdar_DynamicArray_signed_char_new,\
     cutils_cdar_DynamicArray_unsigned_char**:cutils_cdar_DynamicArray_unsigned_char_new,\
@@ -268,12 +350,12 @@
     cutils_cdar_DynamicArray_bool**:cutils_cdar_DynamicArray_bool_new,\
     cutils_cdar_DynamicArray_size_t**:cutils_cdar_DynamicArray_size_t_new,\
     cutils_cdar_DynamicArray_ptrdiff_t**:cutils_cdar_DynamicArray_ptrdiff_t_new,\
-    cutils_cdar_DynamicArray_void_ptr**:cutils_cdar_DynamicArray_void_ptr_new,\
-    cutils_cutt_Tester**: cutils_cutt_new)\
-    (object, ## __VA_ARGS__)
+    cutils_cutt_Tester**:cutils_cutt_Tester_new)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_data
 #define __cutils_generic_data(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_data,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_data,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_data,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_data,\
@@ -291,12 +373,12 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_data,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_data,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_data,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_data,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_data)\
-    (object, ## __VA_ARGS__)
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_data)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_raw
 #define __cutils_generic_raw(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_raw,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_raw,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_raw,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_raw,\
@@ -314,12 +396,12 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_raw,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_raw,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_raw,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_raw,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_raw)\
-    (object, ## __VA_ARGS__)
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_raw)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_append
 #define __cutils_generic_append(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_append,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_append,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_append,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_append,\
@@ -337,12 +419,12 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_append,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_append,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_append,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_append,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_append)\
-    (object, ## __VA_ARGS__)
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_append)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_push
 #define __cutils_generic_push(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_push,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_push,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_push,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_push,\
@@ -360,12 +442,12 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_push,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_push,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_push,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_push,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_push)\
-    (object, ## __VA_ARGS__)
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_push)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_set
 #define __cutils_generic_set(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_set,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_set,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_set,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_set,\
@@ -383,12 +465,12 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_set,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_set,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_set,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_set,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_set)\
-    (object, ## __VA_ARGS__)
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_set)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_pop
 #define __cutils_generic_pop(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_pop,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_pop,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_pop,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_pop,\
@@ -406,12 +488,12 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_pop,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_pop,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_pop,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_pop,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_pop)\
-    (object, ## __VA_ARGS__)
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_pop)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_sub
 #define __cutils_generic_sub(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_sub,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_sub,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_sub,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_sub,\
@@ -429,12 +511,12 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_sub,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_sub,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_sub,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_sub,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_sub)\
-    (object, ## __VA_ARGS__)
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_sub)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_get
 #define __cutils_generic_get(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_get,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_get,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_get,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_get,\
@@ -452,12 +534,12 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_get,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_get,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_get,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_get,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_get)\
-    (object, ## __VA_ARGS__)
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_get)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_find
 #define __cutils_generic_find(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_find,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_find,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_find,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_find,\
@@ -475,12 +557,12 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_find,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_find,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_find,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_find,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_find)\
-    (object, ## __VA_ARGS__)
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_find)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_findall
 #define __cutils_generic_findall(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_findall,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_findall,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_findall,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_findall,\
@@ -498,12 +580,12 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_findall,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_findall,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_findall,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_findall,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_findall)\
-    (object, ## __VA_ARGS__)
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_findall)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_del
 #define __cutils_generic_del(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_del,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_del,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_del,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_del,\
@@ -522,12 +604,12 @@
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_del,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_del,\
     cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_del,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_del,\
-    cutils_cutt_Tester*: cutils_cutt_del)\
-    (object, ## __VA_ARGS__)
+    cutils_cutt_Tester*:cutils_cutt_Tester_del)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_len
 #define __cutils_generic_len(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_len,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_len,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_len,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_len,\
@@ -545,12 +627,12 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_len,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_len,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_len,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_len,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_len)\
-    (object, ## __VA_ARGS__)
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_len)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_size
 #define __cutils_generic_size(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_size,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_size,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_size,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_size,\
@@ -568,12 +650,12 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_size,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_size,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_size,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_size,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_size)\
-    (object, ## __VA_ARGS__)
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_size)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_resize
 #define __cutils_generic_resize(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_resize,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_resize,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_resize,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_resize,\
@@ -591,12 +673,12 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_resize,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_resize,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_resize,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_resize,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_resize)\
-    (object, ## __VA_ARGS__)
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_resize)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_swap
 #define __cutils_generic_swap(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_swap,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_swap,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_swap,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_swap,\
@@ -614,12 +696,12 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_swap,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_swap,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_swap,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_swap,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_swap)\
-    (object, ## __VA_ARGS__)
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_swap)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_reverse
 #define __cutils_generic_reverse(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_reverse,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_reverse,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_reverse,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_reverse,\
@@ -637,12 +719,12 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_reverse,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_reverse,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_reverse,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_reverse,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_reverse)\
-    (object, ## __VA_ARGS__)
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_reverse)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_pull
 #define __cutils_generic_pull(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_pull,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_pull,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_pull,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_pull,\
@@ -660,12 +742,12 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_pull,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_pull,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_pull,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_pull,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_pull)\
-    (object, ## __VA_ARGS__)
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_pull)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_truncate
 #define __cutils_generic_truncate(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_truncate,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_truncate,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_truncate,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_truncate,\
@@ -683,12 +765,12 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_truncate,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_truncate,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_truncate,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_truncate,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_truncate)\
-    (object, ## __VA_ARGS__)
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_truncate)\
+    (object,##__VA_ARGS__)
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_clear
 #define __cutils_generic_clear(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_clear,\
     cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_clear,\
     cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_clear,\
     cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_clear,\
@@ -706,8 +788,66 @@
     cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_clear,\
     cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_clear,\
     cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_clear,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_clear,\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_clear)\
-    (object, ## __VA_ARGS__)
-
-#endif /* _C_APPLICATION_PROGRAMMING_INTERFACE_H_27277619327951796_ */
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_clear)\
+    (object,##__VA_ARGS__)
+/*----------------------------------------------------------------------------*/
+#undef __cutils_generic_print
+#define __cutils_generic_print(object, ...) _Generic((object),\
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_print(\
+        (cutils_cdar_DynamicArray_void_ptr*)object,stdout,"DynamicArray_void_ptr",\
+        cutils_cdar_DynamicArray_void_ptr_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_print(\
+        (cutils_cdar_DynamicArray_char*)object,stdout,"DynamicArray_char",\
+        cutils_cdar_DynamicArray_char_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_print(\
+        (cutils_cdar_DynamicArray_signed_char*)object,stdout,"DynamicArray_signed_char",\
+        cutils_cdar_DynamicArray_signed_char_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_print(\
+        (cutils_cdar_DynamicArray_unsigned_char*)object,stdout,"DynamicArray_unsigned_char",\
+        cutils_cdar_DynamicArray_unsigned_char_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_char_ptr*:cutils_cdar_DynamicArray_char_ptr_print(\
+        (cutils_cdar_DynamicArray_char_ptr*)object,stdout,"DynamicArray_char_ptr",\
+        cutils_cdar_DynamicArray_char_ptr_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_short*:cutils_cdar_DynamicArray_short_print(\
+        (cutils_cdar_DynamicArray_short*)object,stdout,"DynamicArray_short",\
+        cutils_cdar_DynamicArray_short_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_unsigned_short*:cutils_cdar_DynamicArray_unsigned_short_print(\
+        (cutils_cdar_DynamicArray_unsigned_short*)object,stdout,"DynamicArray_unsigned_short",\
+        cutils_cdar_DynamicArray_unsigned_short_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_int*:cutils_cdar_DynamicArray_int_print(\
+        (cutils_cdar_DynamicArray_int*)object,stdout,"DynamicArray_int",\
+        cutils_cdar_DynamicArray_int_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_unsigned_int*:cutils_cdar_DynamicArray_unsigned_int_print(\
+        (cutils_cdar_DynamicArray_unsigned_int*)object,stdout,"DynamicArray_unsigned_int",\
+        cutils_cdar_DynamicArray_unsigned_int_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_long*:cutils_cdar_DynamicArray_long_print(\
+        (cutils_cdar_DynamicArray_long*)object,stdout,"DynamicArray_long",\
+        cutils_cdar_DynamicArray_long_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_unsigned_long*:cutils_cdar_DynamicArray_unsigned_long_print(\
+        (cutils_cdar_DynamicArray_unsigned_long*)object,stdout,"DynamicArray_unsigned_long",\
+        cutils_cdar_DynamicArray_unsigned_long_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_long_long*:cutils_cdar_DynamicArray_long_long_print(\
+        (cutils_cdar_DynamicArray_long_long*)object,stdout,"DynamicArray_long_long",\
+        cutils_cdar_DynamicArray_long_long_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_unsigned_long_long*:cutils_cdar_DynamicArray_unsigned_long_long_print(\
+        (cutils_cdar_DynamicArray_unsigned_long_long*)object,stdout,"DynamicArray_unsigned_long_long",\
+        cutils_cdar_DynamicArray_unsigned_long_long_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_float*:cutils_cdar_DynamicArray_float_print(\
+        (cutils_cdar_DynamicArray_float*)object,stdout,"DynamicArray_float",\
+        cutils_cdar_DynamicArray_float_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_double*:cutils_cdar_DynamicArray_double_print(\
+        (cutils_cdar_DynamicArray_double*)object,stdout,"DynamicArray_double",\
+        cutils_cdar_DynamicArray_double_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_print(\
+        (cutils_cdar_DynamicArray_long_double*)object,stdout,"DynamicArray_long_double",\
+        cutils_cdar_DynamicArray_long_double_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_print(\
+        (cutils_cdar_DynamicArray_bool*)object,stdout,"DynamicArray_bool",\
+        cutils_cdar_DynamicArray_bool_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_print(\
+        (cutils_cdar_DynamicArray_size_t*)object,stdout,"DynamicArray_size_t",\
+        cutils_cdar_DynamicArray_size_t_format,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_print(\
+        (cutils_cdar_DynamicArray_ptrdiff_t*)object,stdout,"DynamicArray_ptrdiff_t",\
+        cutils_cdar_DynamicArray_ptrdiff_t_format,##__VA_ARGS__))
+#endif /* guard */

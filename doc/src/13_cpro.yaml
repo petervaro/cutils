@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.72.541 (20140716)                       ##
 ##                                                                            ##
 ##                         File: doc/src/13_cpro.yaml                         ##
 ##                                                                            ##
@@ -29,10 +29,8 @@ INFO:
   - - br
   - - p
     - string: |
-              A very lightweight debugging/logging single header-only utility,
-              contains a single function-like macro which can print its
-              invocation place, a custom message or a formatted message with
-              values to the standard error output.
+              A very lightweight profiling header-only utility, contains a
+              single function-like macro which time-profiles a function.
 
 #------------------------------------------------------------------------------#
 USER:
@@ -58,13 +56,16 @@ FUNC:
         - ...
 
     info: |
-          `profile` is a function-like macto, which calls `function`, `cycles`
-          number of times and measures the time it takes to run, and writes
-          the average time to `time`. If the `function` takes arguments, it can
-          also be provided after the `function` argument.
+          `profile` is a function-like macro, which calls the argument
+          `function`, for `cycles` number of times and measures the time it
+          takes to run, and writes the duration to `time`. If the function takes
+          any arguments, it can also be provided after the `function` argument.
 
     examples:
-      - - ...
+      - - >
+          In the following example `profile` will measure the duration of
+          running `myfunction` (takes a single `unsigned long long` integer) for
+          hundred million times
         - |
           #include <stdio.h>        /* printf() */
           #include <cutils/cpro.h>  /* profile() */

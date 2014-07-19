@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.365 (20140711)                       **
+**                       Version: 0.8.72.552 (20140718)                       **
 **                                                                            **
 **                       File: internal/dynamic_array.h                       **
 **                                                                            **
@@ -25,8 +25,8 @@ typedef struct {} cutils_cdar_DynamicArray_void_ptr;
 /*----------------------------------------------------------------------------*/
 bool
 cutils_cdar_DynamicArray_void_ptr_new(cutils_cdar_DynamicArray_void_ptr **dynarr,
-                                      size_t count,
                                       size_t item_size,
+                                      size_t count,
                                       void *source);
 /*----------------------------------------------------------------------------*/
 void
@@ -122,4 +122,15 @@ void
 cutils_cdar_DynamicArray_void_ptr_sortsub(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                           size_t index,
                                           size_t count,
-                                          int (*compare)(const void *, const void*));
+                                          int (*compare)(const void*, const void*));
+/*----------------------------------------------------------------------------*/
+char *
+cutils_cdar_DynamicArray_void_ptr_format(const void *item,
+                                         char **buffer,
+                                         size_t *buffer_size);
+/*----------------------------------------------------------------------------*/
+void
+cutils_cdar_DynamicArray_void_ptr_print(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                        FILE *stream,
+                                        const char *name,
+                                        char *(*format)(const void*, char**, size_t*));

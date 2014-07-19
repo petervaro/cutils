@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.72.577 (20140719)                       ##
 ##                                                                            ##
 ##                      File: internal/dynamic_array.py                       ##
 ##                                                                            ##
@@ -15,16 +15,15 @@
 ######################################################################## INFO ##
 
 # Import Python modules
-from os.path import (dirname as os_path_dirname,
-                     join as os_path_join)
+from os.path import join as os_path_join
 
 # Import cutils modules
-from generator import args, methods
+from generator import fp, args, methods, VARGS
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 GUARD = 'DYNAMIC_ARRAY'
 # ??? Can't this be like just: cutils_cdar_void_ptr_(new|del|data|...) ???
-PROTO = 'cutils_cdar_DynamicArray_void_ptr'
+PROTO = 'void_ptr'
 ARRAY = 'cutils_cdar_DynamicArray'
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
@@ -46,130 +45,148 @@ TYPES = (('char'              , 'c'  ),
          ('bool'              , 'd'  ),
          ('size_t'            , 'zu' ),
          ('ptrdiff_t'         , 'td' ))
-         # ('void*'             , 'p'  ))
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+ARG1_T = '{0}_{1}*'
+ARG1_N = 'd'
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+_RETURN = 'return {0}_{4}_{6}({7.names});'
 WRAPPERS = (
     # new
     ('bool', 'new',
-     args(('{0}_{1}**', 'd', 'size_t', 'c', '{2}*', 'a')),
-     'return {3}_{5}(d,c,sizeof({2}),a);'),
+     args(ARG1_T + '*', ARG1_N, 'size_t', 'c', '{2}*', 'a'),
+     'return {0}_{4}_{6}(d,sizeof({2}),c,a);'),
 
     # data
     ('{2}*', 'data',
-     args(('{0}_{1}*', 'd', 'size_t*', 's', 'size_t*', 'c')),
-     'return {3}_{5}({6.names});'),
+     args(ARG1_T, ARG1_N, 'size_t*', 's', 'size_t*', 'c'),
+     _RETURN),
 
     # raw
     ('{2}*', 'raw',
-     args(('{0}_{1}*', 'd')),
-     'return ({2}*){3}_{5}({6.names});'),
+     args(ARG1_T, ARG1_N),
+     'return ({2}*){0}_{4}_{6}({7.names});'),
 
     # append
     ('bool', 'append',
-     args(('{0}_{1}*', 'd', 'size_t', 'c', '{2}*', 'a')),
-     'return {3}_{5}({6.names});'),
+     args(ARG1_T, ARG1_N, 'size_t', 'c', '{2}*', 'a'),
+     _RETURN),
 
     # push
     ('bool', 'push',
-     args(('{0}_{1}*', 'd', 'size_t', 'i', 'size_t', 'c', '{2}*', 'a')),
-     'return {3}_{5}({6.names});'),
+     args(ARG1_T, ARG1_N, 'size_t', 'i', 'size_t', 'c', '{2}*', 'a'),
+     _RETURN),
 
     # set
     ('bool', 'set',
-     args(('{0}_{1}*', 'd', 'size_t', 'i', 'size_t', 'c', '{2}*', 's')),
-     'return {3}_{5}({6.names});'),
+     args(ARG1_T, ARG1_N, 'size_t', 'i', 'size_t', 'c', '{2}*', 's'),
+     _RETURN),
 
     # pop
     ('size_t', 'pop',
-     args(('{0}_{1}*', 'd', 'size_t', 'i', 'size_t', 'c', '{2}*', 'a')),
-     'return {3}_{5}({6.names});'),
+     args(ARG1_T, ARG1_N, 'size_t', 'i', 'size_t', 'c', '{2}*', 'a'),
+     _RETURN),
 
     # sub
     ('size_t', 'sub',
-     args(('{0}_{1}*', 'd', 'size_t', 'i', 'size_t', 'c', '{2}*', 'a')),
-     'return {3}_{5}({6.names});'),
+     args(ARG1_T, ARG1_N, 'size_t', 'i', 'size_t', 'c', '{2}*', 'a'),
+     _RETURN),
 
     # get
     ('{2}', 'get',
-     args(('{0}_{1}*', 'd', 'size_t', 'i')),
-     'return *({2}*){3}_{5}({6.names});'),
+     args(ARG1_T, ARG1_N, 'size_t', 'i'),
+     'return *({2}*){0}_{4}_{6}({7.names});'),
 
     # find
     ('bool', 'find',
-     args(('{0}_{1}*', 'd', 'const {2}*', 'p', 'size_t*', 'i')),
-     'return {3}_{5}({6.names});'),
+     args(ARG1_T, ARG1_N, 'const {2}*', 'p', 'size_t*', 'i'),
+     _RETURN),
 
     # findall
     ('size_t', 'findall',
-     args(('{0}_{1}*', 'd', 'const {2}*', 'p', 'size_t*', 'i')),
-     'return {3}_{5}({6.names});'),
+     args(ARG1_T, ARG1_N, 'const {2}*', 'p', 'size_t*', 'i'),
+     _RETURN),
 
-    # # print
-    # ('void', 'print',args(('{0}_{1}*', 'd')),
-    #  'return {3}_{5}(d);'),
+    # format
+    # TODO: how make it inline?
+    ('char*', 'format',
+     args('const void*', 'i', 'char**', 'b', 'size_t*', 's'),
+     {'bool': 'snprintf(*b,*s,"%s",(*({2}*)i)?"true":"false");return *b;',
+      'char': 'snprintf(*b,*s,"\'%{3}\'",*({2}*)i);return *b;',
+      'char*': 'snprintf(*b,*s,"\\"%{3}\\"",*({2}*)i);return *b;',
+      'default': 'snprintf(*b,*s,"%{3}",*({2}*)i);return *b;'},
+      NotImplemented)
 )
 
+
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+_FUNCTION = '{0}_{4}_{6}'
 POINTERS = (
     # del
     ('void', 'del',
-     args(('{0}_{1}*', 'd')),
-     '{3}_{5}'),
+     args(ARG1_T, ARG1_N),
+     _FUNCTION),
 
     # len
     ('size_t', 'len',
-     args(('{0}_{1}*', 'd')),
-     '{3}_{5}'),
+     args(ARG1_T, ARG1_N),
+     _FUNCTION),
 
     # size
     ('size_t', 'size',
-     args(('{0}_{1}*', 'd')),
-     '{3}_{5}'),
+     args(ARG1_T, ARG1_N),
+     _FUNCTION),
 
     # resize
     ('bool', 'resize',
-     args(('{0}_{1}*', 'd', 'size_t', 's')),
-     '{3}_{5}'),
+     args(ARG1_T, ARG1_N, 'size_t', 's'),
+     _FUNCTION),
 
     # swap
     ('bool', 'swap',
-     args(('{0}_{1}*', 'd', 'size_t', 'i1', 'size_t', 'i2', 'size_t', 'c')),
-     '{3}_{5}'),
+     args(ARG1_T, ARG1_N, 'size_t', 'i1', 'size_t', 'i2', 'size_t', 'c'),
+     _FUNCTION),
 
     # reverse
     ('bool', 'reverse',
-     args(('{0}_{1}*', 'd')),
-     '{3}_{5}'),
+     args(ARG1_T, ARG1_N),
+     _FUNCTION),
 
     # pull
     ('size_t', 'pull',
-     args(('{0}_{1}*', 'd', 'size_t', 'i', 'size_t', 'c')),
-     '{3}_{5}'),
+     args(ARG1_T, ARG1_N, 'size_t', 'i', 'size_t', 'c'),
+     _FUNCTION),
 
     # truncate
     ('void', 'truncate',
-     args(('{0}_{1}*', 'd', 'size_t', 'i')),
-     '{3}_{5}'),
+     args(ARG1_T, ARG1_N, 'size_t', 'i'),
+     _FUNCTION),
 
     # clear
     ('void', 'clear',
-     args(('{0}_{1}*', 'd')),
-     '{3}_{5}'),
+     args(ARG1_T, ARG1_N),
+     _FUNCTION),
+
+    # print
+    # TODO: how make it inline?
+    ('void', 'print',
+     args(ARG1_T, ARG1_N, 'FILE*', 's', 'const char*', 'n',
+          fp('char*', 'f', 'const void*', 'char**', 'size_t*')),
+     _FUNCTION,
+    # singles: 0:object_type_name
+    # doubles: 0:base_name, 1:sub_type_name, 2:func_name
+     '{0}:{{0}}_{{1}}_{{2}}(\\\n'
+     '        ({0})object,stdout,"DynamicArray_{{1}}",\\\n'
+     '        {{0}}_{{1}}_format,##__VA_ARGS__)')
 )
 
-#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-PRINTERS = (
-)
-"""
-void dar{1}_print(DynamicArray{1}*d){{dartg_print(d,{0},"{1}","%{2}");}}
-"""
 
 #------------------------------------------------------------------------------#
-if __name__ == '__main__':
-    folder = os_path_dirname(os_path_dirname(__file__))
+def generate(folder, macros_dict):
     methods(types=TYPES,
             guard=GUARD,
+            sub_typed=True,
             base_name=ARRAY,
             prototype=PROTO,
             wrappers=WRAPPERS,
@@ -178,5 +195,5 @@ if __name__ == '__main__':
             proto_source='dynamic_array.c',
             output_header=os_path_join(folder, 'cdar.h'),
             output_source=os_path_join(folder, 'cdar.c'),
-            includes=('<stddef.h>   /* ptrdiff_t */',))
-            # ,print_generic=True)
+            includes=('<stddef.h>   /* ptrdiff_t */',),
+            macros_dict=macros_dict)
