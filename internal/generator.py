@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.580 (20140719)                       ##
+##                       Version: 0.8.80.068 (20140721)                       ##
 ##                                                                            ##
 ##                        File: internal/generator.py                         ##
 ##                                                                            ##
@@ -146,6 +146,7 @@ def methods(types, base_name, sub_typed=False, guard=None,
     # For each standard type generate type specific functions
     for name, fmt in types:
         # Format with word-like only characters
+        # FIXME: strip whitespaces
         word = name.replace(' ', '_').replace('*', '_ptr')
         # Add base types
         headers = ['typedef struct {{}} {}_{};'.format(base_name, word)]

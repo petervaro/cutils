@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.466 (20140713)                       ##
+##                       Version: 0.8.80.170 (20140722)                       ##
 ##                                                                            ##
 ##                        File: doc/src/00_cutils.yaml                        ##
 ##                                                                            ##
@@ -37,14 +37,15 @@ INFO:
               personal needs of the author, however he hopes and believes many
               will find the tools just as useful and essential as he does.
 
+# NOTE: "The best way to predict the future is to invent it." -- Alan Kay
+
 # TODO: consider changing `clic` -> `ccom` and `ccom` -> `ctag`
 
 # TODO: create a proper makefile
 
-# NOTE: Timing: 1) CDAR
-#               2) CSLL
-#               3) CMAP
-#               4) C11
+# NOTE: Timing: 1) CSLL
+#               2) CMAP
+#               3) C11
 
 # TODO: create call - which will include all the header files available
 

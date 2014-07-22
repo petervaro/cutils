@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.365 (20140711)                       **
+**                       Version: 0.8.80.110 (20140721)                       **
 **                                                                            **
 **                                File: cref.c                                **
 **                                                                            **
@@ -344,7 +344,7 @@ char *format =
 "%g or %G"      /* same as f or e, E depending exponent */
 "\n";
 
-// TODO: %ju and %lf
+// TODO: %ju and %lf and %td and %hd and %hu
 //       http://www.mekong.net/tech/printf.htm
 
 // Closes the stream. All buffers are flushed

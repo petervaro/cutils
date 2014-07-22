@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.457 (20140713)                       ##
+##                       Version: 0.8.80.158 (20140722)                       ##
 ##                                                                            ##
 ##                               File: cdoc.py                                ##
 ##                                                                            ##
@@ -127,6 +127,9 @@ MD_TOKENS = OrderedDict([
 ])
 
 # Mini Markdown syntax
+# FIXME: replace newline only if newline character is
+#        the first token in that line or it is after
+#        a similar token (prevent: \\\n)
 MD_SYNTAX = re_compile(r"""
     (?P<img>!\[(?P<img_txt>.+?)\]\((?P<img_src>.+?)\s+(?P<quote>"|')(?P<img_title>.+?)(?P=quote)\))|
     (?P<a>\[(?P<a_txt>.+?)\]\((?P<a_ref>.+?)\))|
@@ -585,13 +588,14 @@ def _type_format(sidebar, content, source):
         new(type, 'span', class_='arg_paren', string=' >')
     except KeyError:
         pass
-    # Add info about the type
-    new(type, 'br')
-    p = new(type, 'p', class_='info')
+    # If there is info about the type
     try:
-        _str(p, source['info'])
+        information = source['info']
+        new(type, 'br')
+        p = new(type, 'p', class_='info')
+        _str(p, information)
     except KeyError:
-        raise MissingDictValue('summary', name, 'type', 'info') from None
+        pass
     new(type, 'br')
 
 

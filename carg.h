@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.365 (20140711)                       **
+**                       Version: 0.8.80.107 (20140721)                       **
 **                                                                            **
 **                                File: carg.h                                **
 **                                                                            **
@@ -43,6 +43,54 @@
 #undef __vargs14
 #undef __vargs15
 #undef __vargs16
+#undef __vargs17
+#undef __vargs18
+#undef __vargs19
+#undef __vargs20
+#undef __vargs21
+#undef __vargs22
+#undef __vargs23
+#undef __vargs24
+#undef __vargs25
+#undef __vargs26
+#undef __vargs27
+#undef __vargs28
+#undef __vargs29
+#undef __vargs30
+#undef __vargs31
+#undef __vargs32
+#undef __vargs33
+#undef __vargs34
+#undef __vargs35
+#undef __vargs36
+#undef __vargs37
+#undef __vargs38
+#undef __vargs39
+#undef __vargs40
+#undef __vargs41
+#undef __vargs42
+#undef __vargs43
+#undef __vargs44
+#undef __vargs45
+#undef __vargs46
+#undef __vargs47
+#undef __vargs48
+#undef __vargs49
+#undef __vargs50
+#undef __vargs51
+#undef __vargs52
+#undef __vargs53
+#undef __vargs54
+#undef __vargs55
+#undef __vargs56
+#undef __vargs57
+#undef __vargs58
+#undef __vargs59
+#undef __vargs60
+#undef __vargs61
+#undef __vargs62
+#undef __vargs63
+#undef __vargs64
 #undef __state0
 #undef __state1
 #undef cutils_carg_vargs

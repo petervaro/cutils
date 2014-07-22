@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.577 (20140719)                       ##
+##                       Version: 0.8.80.153 (20140721)                       ##
 ##                                                                            ##
 ##                      File: internal/dynamic_array.py                       ##
 ##                                                                            ##
@@ -22,7 +22,6 @@ from generator import fp, args, methods, VARGS
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 GUARD = 'DYNAMIC_ARRAY'
-# ??? Can't this be like just: cutils_cdar_void_ptr_(new|del|data|...) ???
 PROTO = 'void_ptr'
 ARRAY = 'cutils_cdar_DynamicArray'
 
@@ -100,23 +99,56 @@ WRAPPERS = (
 
     # find
     ('bool', 'find',
-     args(ARG1_T, ARG1_N, 'const {2}*', 'p', 'size_t*', 'i'),
-     _RETURN),
+    # FIXME: try to make both find and findall type-safe
+    #        by replacing the const void* to type specific pointer
+    #        the main problem is, cannot pass
+    #        bool(*)(const type*,...) --> bool(*)(const void*,...)
+     args(ARG1_T, ARG1_N, fp('bool', 'f', 'const void*', 'const void*', 'size_t'),
+          'const void*', 'p', 'size_t*', 'i'),
+     _RETURN,
+    # singles: 0:object_type_name
+    # doubles: 0:base_name, 1:sub_type_name, 2:func_name
+     '{0}:{{0}}_{{1}}_{{2}}(\\\n'
+     '        ({0})object,\\\n'
+     '        {{0}}_{{1}}_compare,##__VA_ARGS__)'),
 
     # findall
     ('size_t', 'findall',
-     args(ARG1_T, ARG1_N, 'const {2}*', 'p', 'size_t*', 'i'),
-     _RETURN),
+     args(ARG1_T, ARG1_N, fp('bool', 'f', 'const void*', 'const void*', 'size_t'),
+          'const void*', 'p', 'size_t*', 'i'),
+     _RETURN,
+    # singles: 0:object_type_name
+    # doubles: 0:base_name, 1:sub_type_name, 2:func_name
+     '{0}:{{0}}_{{1}}_{{2}}(\\\n'
+     '        ({0})object,\\\n'
+     '        {{0}}_{{1}}_compare,##__VA_ARGS__)'),
 
     # format
-    # TODO: how make it inline?
+    # TODO: is there a way to make this inline?
     ('char*', 'format',
+    # TODO: change this const void* --> const {2}* ?
      args('const void*', 'i', 'char**', 'b', 'size_t*', 's'),
+    # TODO: add all suffixes of numbers (eg.: unsigned long long 1ull)
+    #       and update the examples of the documentation
      {'bool': 'snprintf(*b,*s,"%s",(*({2}*)i)?"true":"false");return *b;',
-      'char': 'snprintf(*b,*s,"\'%{3}\'",*({2}*)i);return *b;',
-      'char*': 'snprintf(*b,*s,"\\"%{3}\\"",*({2}*)i);return *b;',
+      'char': 'cutils_fmtc_repr(*b,*s,({2}*)i,1);return *b;',
+      'char*': 'char *c=*({2}*)i;size_t l=strlen(c);\n'
+               'if(*s<l*2+3){{char *n=realloc(*b,l*2+3);if(!n){{strncpy(*b,\n'
+               '"<ERROR: INTERNAL REALLOCATION FAILED>",*s);return *b;}}\n'
+               '*s=l*2+3;*b=n;}}cutils_fmtc_repr(*b,*s,c,l);return *b;',
       'default': 'snprintf(*b,*s,"%{3}",*({2}*)i);return *b;'},
-      NotImplemented)
+     NotImplemented),
+
+    # compare
+    # TODO: is there a way to make this inline?
+    ('bool', 'compare',
+     args('const void*', 'p1', 'const void*', 'p2', 'size_t', 's'),
+     {'float': 'return cutils_fcmp_float_compare(*(float*)p1,*(float*)p2);',
+      'double': 'return cutils_fcmp_double_compare(*(double*)p1,*(double*)p2);',
+      'long double': 'return cutils_fcmp_long_double_compare('
+                     '*(long double*)p1,*(long double*)p2);',
+      'default': 'return !memcmp(p1, p2, s);'},
+     NotImplemented),
 )
 
 
@@ -169,7 +201,7 @@ POINTERS = (
      _FUNCTION),
 
     # print
-    # TODO: how make it inline?
+    # TODO: is there a way to make this inline?
     ('void', 'print',
      args(ARG1_T, ARG1_N, 'FILE*', 's', 'const char*', 'n',
           fp('char*', 'f', 'const void*', 'char**', 'size_t*')),
@@ -195,5 +227,8 @@ def generate(folder, macros_dict):
             proto_source='dynamic_array.c',
             output_header=os_path_join(folder, 'cdar.h'),
             output_source=os_path_join(folder, 'cdar.c'),
-            includes=('<stddef.h>   /* ptrdiff_t */',),
+            includes=('<stddef.h>                /* ptrdiff_t */',
+                      '<string.h>                /* strlen(), strncpy() */',
+                      '"cutils/internal/fmtc.h"  /* cutils_fmtc_repr */',
+                      '"cutils/internal/fcmp.h"  /* cutils_fcmp_compare */'),
             macros_dict=macros_dict)

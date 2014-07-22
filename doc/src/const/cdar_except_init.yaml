@@ -1,0 +1,7 @@
+- array is not initialised
+- >
+  Function cannot operate on `NULL` pointer. Note: this exception only
+  occurs when the passed pointer is pointing to `NULL`, otherwise if the
+  pointer is pointing to some memory garbage it will be considered as a
+  perfectly legal argument. (However in that case probably a
+  `SEGMENTATION FAULT` error will be generated.)

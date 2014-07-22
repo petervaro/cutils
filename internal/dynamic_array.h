@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.552 (20140718)                       **
+**                       Version: 0.8.80.144 (20140721)                       **
 **                                                                            **
 **                       File: internal/dynamic_array.h                       **
 **                                                                            **
@@ -23,114 +23,121 @@
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_cdar_DynamicArray_void_ptr;
 /*----------------------------------------------------------------------------*/
-bool
+extern bool
 cutils_cdar_DynamicArray_void_ptr_new(cutils_cdar_DynamicArray_void_ptr **dynarr,
                                       size_t item_size,
                                       size_t count,
                                       void *source);
 /*----------------------------------------------------------------------------*/
-void
+extern void
 cutils_cdar_DynamicArray_void_ptr_del(cutils_cdar_DynamicArray_void_ptr *dynarr);
 /*----------------------------------------------------------------------------*/
-void *
+extern void *
 cutils_cdar_DynamicArray_void_ptr_data(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                        size_t *size,
                                        size_t *count);
 /*----------------------------------------------------------------------------*/
-void *
+extern void *
 cutils_cdar_DynamicArray_void_ptr_raw(cutils_cdar_DynamicArray_void_ptr *dynarr);
 /*----------------------------------------------------------------------------*/
-size_t
+extern size_t
 cutils_cdar_DynamicArray_void_ptr_len(cutils_cdar_DynamicArray_void_ptr *dynarr);
 /*----------------------------------------------------------------------------*/
-size_t
+extern size_t
 cutils_cdar_DynamicArray_void_ptr_size(cutils_cdar_DynamicArray_void_ptr *dynarr);
 /*----------------------------------------------------------------------------*/
-void
+extern void
 cutils_cdar_DynamicArray_void_ptr_clear(cutils_cdar_DynamicArray_void_ptr *dynarr);
 /*----------------------------------------------------------------------------*/
-bool
+extern bool
 cutils_cdar_DynamicArray_void_ptr_resize(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                          size_t count);
 /*----------------------------------------------------------------------------*/
-bool
+extern bool
 cutils_cdar_DynamicArray_void_ptr_swap(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                        size_t index1,
                                        size_t index2,
                                        size_t count);
 /*----------------------------------------------------------------------------*/
-bool
+extern bool
 cutils_cdar_DynamicArray_void_ptr_reverse(cutils_cdar_DynamicArray_void_ptr *dynarr);
 /*----------------------------------------------------------------------------*/
-bool
+extern bool
 cutils_cdar_DynamicArray_void_ptr_append(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                          size_t count,
                                          void *source);
 /*----------------------------------------------------------------------------*/
-bool
+extern bool
 cutils_cdar_DynamicArray_void_ptr_push(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                       size_t index,
                                       size_t count,
                                       void *source);
 /*----------------------------------------------------------------------------*/
-size_t
+extern size_t
 cutils_cdar_DynamicArray_void_ptr_pull(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                        size_t index,
                                        size_t count);
 /*----------------------------------------------------------------------------*/
-size_t
+extern size_t
 cutils_cdar_DynamicArray_void_ptr_pop(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                       size_t index,
                                       size_t count,
                                       void *destination);
 /*----------------------------------------------------------------------------*/
-size_t
+extern size_t
 cutils_cdar_DynamicArray_void_ptr_sub(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                       size_t index,
                                       size_t count,
                                       void *destination);
 /*----------------------------------------------------------------------------*/
-void
+extern void
 cutils_cdar_DynamicArray_void_ptr_truncate(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                            size_t index);
 /*----------------------------------------------------------------------------*/
-bool
+extern bool
 cutils_cdar_DynamicArray_void_ptr_set(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                       size_t index,
                                       size_t count,
                                       void *source);
 /*----------------------------------------------------------------------------*/
-void *
+extern void *
 cutils_cdar_DynamicArray_void_ptr_get(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                       size_t index);
 /*----------------------------------------------------------------------------*/
 bool
 cutils_cdar_DynamicArray_void_ptr_find(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                       bool (*compare)(const void*, const void*, size_t),
                                        const void *item,
                                        size_t *index);
 /*----------------------------------------------------------------------------*/
 size_t
 cutils_cdar_DynamicArray_void_ptr_findall(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                          bool (*compare)(const void*, const void*, size_t),
                                           const void *item,
                                           size_t *indices);
 /*----------------------------------------------------------------------------*/
-void
+extern void
 cutils_cdar_DynamicArray_void_ptr_sort(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                        int (*compare)(const void*, const void*));
 /*----------------------------------------------------------------------------*/
-void
+extern void
 cutils_cdar_DynamicArray_void_ptr_sortsub(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                           size_t index,
                                           size_t count,
                                           int (*compare)(const void*, const void*));
 /*----------------------------------------------------------------------------*/
-char *
+extern char *
 cutils_cdar_DynamicArray_void_ptr_format(const void *item,
                                          char **buffer,
                                          size_t *buffer_size);
 /*----------------------------------------------------------------------------*/
-void
+extern void
 cutils_cdar_DynamicArray_void_ptr_print(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                         FILE *stream,
                                         const char *name,
                                         char *(*format)(const void*, char**, size_t*));
+/*----------------------------------------------------------------------------*/
+extern bool
+cutils_cdar_DynamicArray_void_ptr_compare(const void *item1,
+                                          const void *item2,
+                                          size_t item_size);

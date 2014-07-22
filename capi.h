@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.580 (20140719)                       **
+**                       Version: 0.8.80.156 (20140721)                       **
 **                                                                            **
 **                                File: capi.h                                **
 **                                                                            **
@@ -21,20 +21,131 @@
 #include "carg.h"
 
 /*----------------------------------------------------------------------------*/
-/* TODO: Figure out how to dispatch to a macro (for default values) inside
-         a _Generic macro dispatcher...
-
-         #define new(...) cutils_carg_vargs(__VA_ARGS__)(4)(__VA_ARGS__, \
-             cutils_carg_zero, __cutils_generic_new3, __cutils_generic_new3, \
-             __cutils_generic_new1)(__VA_ARGS__)  */
-
 /* Functions and methods called with default values */
 #undef __cutils_empty_new
 #undef __cutils_vargs_new
-#define __cutils_empty_new(object) __cutils_generic_new(object, 0, NULL)
+#define __cutils_generic_empty_new(object) __cutils_generic_new(object, 0, NULL)
+#define __cutils_pointer_empty_new(object, size) __cutils_generic_new(object, size, 0, NULL)
 #define __cutils_vargs_new(...) cutils_carg_vargs(__VA_ARGS__)(5)(__VA_ARGS__, \
     __cutils_empty_new, __cutils_generic_new, __cutils_generic_new, \
-    __cutils_generic_new, __cutils_empty_new)(__VA_ARGS__)
+    __cutils_pointer_empty_new, __cutils_generic_empty_new)(__VA_ARGS__)
+
+#undef __cutils_custom_print
+#undef __cutils_vargs_print
+#define __cutils_custom_print(object, format) \
+    cutils_cdar_DynamicArray_void_ptr_print(object, stdout, "DynamicArray", format)
+#define __cutils_vargs_print(...) cutils_carg_vargs(__VA_ARGS__)(3)(__VA_ARGS__, \
+    __cutils_generic_print, __cutils_custom_print, __cutils_generic_print)(__VA_ARGS__)
+
+#undef __cutils_single_swap
+#undef __cutils_vargs_swap
+#define __cutils_single_swap(object, index1, index2) \
+    __cutils_generic_swap(object, index1, index2, 1)
+#define __cutils_vargs_swap(...) cutils_carg_vargs(__VA_ARGS__)(5)(__VA_ARGS__, \
+    __cutils_generic_swap, __cutils_generic_swap, __cutils_single_swap, \
+    __cutils_generic_swap, __cutils_generic_swap)(__VA_ARGS__)
+
+#undef __cutils_single_append
+#undef __cutils_vargs_append
+#define __cutils_single_append(object, data) __cutils_generic_append(object, 1, data)
+#define __cutils_vargs_append(...) cutils_carg_vargs(__VA_ARGS__)(4)(__VA_ARGS__, \
+    __cutils_generic_append, __cutils_generic_append, __cutils_single_append, \
+    __cutils_generic_append)(__VA_ARGS__)
+
+#undef __cutils_single_push
+#undef __cutils_vargs_push
+#define __cutils_single_push(object, index, data) \
+    __cutils_generic_push(object, index, 1, data)
+#define __cutils_vargs_push(...) cutils_carg_vargs(__VA_ARGS__)(5)(__VA_ARGS__, \
+    __cutils_generic_push, __cutils_generic_push, __cutils_single_push, \
+    __cutils_generic_push, __cutils_generic_push)(__VA_ARGS__)
+
+#undef __cutils_single_pull
+#undef __cutils_vargs_pull
+#define __cutils_single_pull(object, index) __cutils_generic_pull(object, index, 1)
+#define __cutils_vargs_pull(...) cutils_carg_vargs(__VA_ARGS__)(4)(__VA_ARGS__, \
+    __cutils_generic_pull, __cutils_generic_pull, __cutils_single_pull, \
+    __cutils_generic_pull)(__VA_ARGS__)
+
+#undef __cutils_single_pop
+#undef __cutils_vargs_pop
+#define __cutils_single_pop(object, index, destination) \
+    __cutils_generic_pop(object, index, 1, destination)
+#define __cutils_vargs_pop(...) cutils_carg_vargs(__VA_ARGS__)(5)(__VA_ARGS__, \
+    __cutils_generic_pop, __cutils_generic_pop, __cutils_single_pop, \
+    __cutils_generic_pop, __cutils_generic_pop)(__VA_ARGS__)
+
+#undef __cutils_single_sub
+#undef __cutils_vargs_sub
+#define __cutils_single_sub(object, index, destination) \
+    __cutils_generic_sub(object, index, 1, destination)
+#define __cutils_vargs_sub(...) cutils_carg_vargs(__VA_ARGS__)(5)(__VA_ARGS__, \
+    __cutils_generic_sub, __cutils_generic_sub, __cutils_single_sub, \
+    __cutils_generic_sub, __cutils_generic_sub)(__VA_ARGS__)
+
+#undef __cutils_single_set
+#undef __cutils_vargs_set
+#define __cutils_single_set(object, index, item) \
+    __cutils_generic_set(object, index, 1, item)
+#define __cutils_vargs_set(...) cutils_carg_vargs(__VA_ARGS__)(5)(__VA_ARGS__, \
+    __cutils_generic_set, __cutils_generic_set, __cutils_single_set, \
+    __cutils_generic_set, __cutils_generic_set)(__VA_ARGS__)
+
+/* TODO: generate these two automatically */
+#undef __cutils_custom_find
+#undef __cutils_vargs_find
+#define __cutils_custom_find(object, ...) _Generic((object), \
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_find, \
+    cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_find, \
+    cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_find, \
+    cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_find, \
+    cutils_cdar_DynamicArray_char_ptr*:cutils_cdar_DynamicArray_char_ptr_find, \
+    cutils_cdar_DynamicArray_short*:cutils_cdar_DynamicArray_short_find, \
+    cutils_cdar_DynamicArray_unsigned_short*:cutils_cdar_DynamicArray_unsigned_short_find, \
+    cutils_cdar_DynamicArray_int*:cutils_cdar_DynamicArray_int_find, \
+    cutils_cdar_DynamicArray_unsigned_int*:cutils_cdar_DynamicArray_unsigned_int_find, \
+    cutils_cdar_DynamicArray_long*:cutils_cdar_DynamicArray_long_find, \
+    cutils_cdar_DynamicArray_unsigned_long*:cutils_cdar_DynamicArray_unsigned_long_find, \
+    cutils_cdar_DynamicArray_long_long*:cutils_cdar_DynamicArray_long_long_find, \
+    cutils_cdar_DynamicArray_unsigned_long_long*:cutils_cdar_DynamicArray_unsigned_long_long_find, \
+    cutils_cdar_DynamicArray_float*:cutils_cdar_DynamicArray_float_find, \
+    cutils_cdar_DynamicArray_double*:cutils_cdar_DynamicArray_double_find, \
+    cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_find, \
+    cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_find, \
+    cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_find, \
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_find) \
+    (object,##__VA_ARGS__)
+#define __cutils_vargs_find(...) cutils_carg_vargs(__VA_ARGS__)(5)(__VA_ARGS__, \
+    __cutils_generic_find, __cutils_custom_find, __cutils_generic_find, \
+    __cutils_generic_find, __cutils_generic_find)(__VA_ARGS__)
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+#undef __cutils_custom_findall
+#undef __cutils_vargs_findall
+#define __cutils_custom_findall(object, ...) _Generic((object), \
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_findall, \
+    cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_findall, \
+    cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_findall, \
+    cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_findall, \
+    cutils_cdar_DynamicArray_char_ptr*:cutils_cdar_DynamicArray_char_ptr_findall, \
+    cutils_cdar_DynamicArray_short*:cutils_cdar_DynamicArray_short_findall, \
+    cutils_cdar_DynamicArray_unsigned_short*:cutils_cdar_DynamicArray_unsigned_short_findall, \
+    cutils_cdar_DynamicArray_int*:cutils_cdar_DynamicArray_int_findall, \
+    cutils_cdar_DynamicArray_unsigned_int*:cutils_cdar_DynamicArray_unsigned_int_findall, \
+    cutils_cdar_DynamicArray_long*:cutils_cdar_DynamicArray_long_findall, \
+    cutils_cdar_DynamicArray_unsigned_long*:cutils_cdar_DynamicArray_unsigned_long_findall, \
+    cutils_cdar_DynamicArray_long_long*:cutils_cdar_DynamicArray_long_long_findall, \
+    cutils_cdar_DynamicArray_unsigned_long_long*:cutils_cdar_DynamicArray_unsigned_long_long_findall, \
+    cutils_cdar_DynamicArray_float*:cutils_cdar_DynamicArray_float_findall, \
+    cutils_cdar_DynamicArray_double*:cutils_cdar_DynamicArray_double_findall, \
+    cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_findall, \
+    cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_findall, \
+    cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_findall, \
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_findall) \
+    (object,##__VA_ARGS__)
+#define __cutils_vargs_findall(...) cutils_carg_vargs(__VA_ARGS__)(5)(__VA_ARGS__, \
+    __cutils_generic_findall, __cutils_custom_findall, __cutils_generic_findall, \
+    __cutils_generic_findall, __cutils_generic_findall)(__VA_ARGS__)
+
 
 /*----------------------------------------------------------------------------*/
 #ifndef CUTILS_NAMESPACE /* use bare token names */
@@ -64,24 +175,24 @@
 #define new(...) __cutils_vargs_new(__VA_ARGS__)
 #define data(...) __cutils_generic_data(__VA_ARGS__)
 #define raw(...) __cutils_generic_raw(__VA_ARGS__)
-#define append(...) __cutils_generic_append(__VA_ARGS__)
-#define push(...) __cutils_generic_push(__VA_ARGS__)
-#define set(...) __cutils_generic_set(__VA_ARGS__)
-#define pop(...) __cutils_generic_pop(__VA_ARGS__)
-#define sub(...) __cutils_generic_sub(__VA_ARGS__)
+#define append(...) __cutils_vargs_append(__VA_ARGS__)
+#define push(...) __cutils_vargs_push(__VA_ARGS__)
+#define set(...) __cutils_vargs_set(__VA_ARGS__)
+#define pop(...) __cutils_vargs_pop(__VA_ARGS__)
+#define sub(...) __cutils_vargs_sub(__VA_ARGS__)
 #define get(...) __cutils_generic_get(__VA_ARGS__)
-#define find(...) __cutils_generic_find(__VA_ARGS__)
-#define findall(...) __cutils_generic_findall(__VA_ARGS__)
+#define find(...) __cutils_vargs_find(__VA_ARGS__)
+#define findall(...) __cutils_vargs_findall(__VA_ARGS__)
 #define del(...) __cutils_generic_del(__VA_ARGS__)
 #define len(...) __cutils_generic_len(__VA_ARGS__)
 #define size(...) __cutils_generic_size(__VA_ARGS__)
 #define resize(...) __cutils_generic_resize(__VA_ARGS__)
-#define swap(...) __cutils_generic_swap(__VA_ARGS__)
+#define swap(...) __cutils_vargs_swap(__VA_ARGS__)
 #define reverse(...) __cutils_generic_reverse(__VA_ARGS__)
-#define pull(...) __cutils_generic_pull(__VA_ARGS__)
+#define pull(...) __cutils_vargs_pull(__VA_ARGS__)
 #define truncate(...) __cutils_generic_truncate(__VA_ARGS__)
 #define clear(...) __cutils_generic_clear(__VA_ARGS__)
-#define print(...) __cutils_generic_print(__VA_ARGS__)
+#define print(...) __cutils_vargs_print(__VA_ARGS__)
 
 #ifdef _C_ARGUMENTS_H_19836769466709525_
   #undef zero
@@ -133,6 +244,8 @@
 #else
   /* HACK: Define type to make _Generic() work */
   typedef struct {} cutils_cutt_Tester;
+  static inline void cutils_cutt_Tester_new(){}
+  static inline void cutils_cutt_Tester_del(){}
 #endif /* _C_UNIT_TEST_TOOLS_H_3818217702141947_ */
 
 #ifdef _C_DYNAMIC_ARRAY_H_2427147457128005_
@@ -207,24 +320,24 @@
 #define cutils_new(...) __cutils_vargs_new(__VA_ARGS__)
 #define cutils_data(...) __cutils_generic_data(__VA_ARGS__)
 #define cutils_raw(...) __cutils_generic_raw(__VA_ARGS__)
-#define cutils_append(...) __cutils_generic_append(__VA_ARGS__)
-#define cutils_push(...) __cutils_generic_push(__VA_ARGS__)
-#define cutils_set(...) __cutils_generic_set(__VA_ARGS__)
-#define cutils_pop(...) __cutils_generic_pop(__VA_ARGS__)
-#define cutils_sub(...) __cutils_generic_sub(__VA_ARGS__)
+#define cutils_append(...) __cutils_vargs_append(__VA_ARGS__)
+#define cutils_push(...) __cutils_vargs_push(__VA_ARGS__)
+#define cutils_set(...) __cutils_vargs_set(__VA_ARGS__)
+#define cutils_pop(...) __cutils_vargs_pop(__VA_ARGS__)
+#define cutils_sub(...) __cutils_vargs_sub(__VA_ARGS__)
 #define cutils_get(...) __cutils_generic_get(__VA_ARGS__)
-#define cutils_find(...) __cutils_generic_find(__VA_ARGS__)
-#define cutils_findall(...) __cutils_generic_findall(__VA_ARGS__)
+#define cutils_find(...) __cutils_vargs_find(__VA_ARGS__)
+#define cutils_findall(...) __cutils_vargs_findall(__VA_ARGS__)
 #define cutils_del(...) __cutils_generic_del(__VA_ARGS__)
 #define cutils_len(...) __cutils_generic_len(__VA_ARGS__)
 #define cutils_size(...) __cutils_generic_size(__VA_ARGS__)
 #define cutils_resize(...) __cutils_generic_resize(__VA_ARGS__)
-#define cutils_swap(...) __cutils_generic_swap(__VA_ARGS__)
+#define cutils_swap(...) __cutils_vargs_swap(__VA_ARGS__)
 #define cutils_reverse(...) __cutils_generic_reverse(__VA_ARGS__)
-#define cutils_pull(...) __cutils_generic_pull(__VA_ARGS__)
+#define cutils_pull(...) __cutils_vargs_pull(__VA_ARGS__)
 #define cutils_truncate(...) __cutils_generic_truncate(__VA_ARGS__)
 #define cutils_clear(...) __cutils_generic_clear(__VA_ARGS__)
-#define cutils_print(...) __cutils_generic_print(__VA_ARGS__)
+#define cutils_print(...) __cutils_vargs_print(__VA_ARGS__)
 
 #ifdef _C_ARGUMENTS_H_19836769466709525_
   #undef cutils_zero
@@ -276,6 +389,8 @@
 #else
   /* HACK: Define type to make _Generic() work */
   typedef struct {} cutils_cutt_Tester;
+  static inline void cutils_cutt_Tester_new(){}
+  static inline void cutils_cutt_Tester_del(){}
 #endif /* _C_UNIT_TEST_TOOLS_H_3818217702141947_ */
 
 #ifdef _C_DYNAMIC_ARRAY_H_2427147457128005_
@@ -539,49 +654,123 @@
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_find
 #define __cutils_generic_find(object, ...) _Generic((object),\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_find,\
-    cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_find,\
-    cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_find,\
-    cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_find,\
-    cutils_cdar_DynamicArray_char_ptr*:cutils_cdar_DynamicArray_char_ptr_find,\
-    cutils_cdar_DynamicArray_short*:cutils_cdar_DynamicArray_short_find,\
-    cutils_cdar_DynamicArray_unsigned_short*:cutils_cdar_DynamicArray_unsigned_short_find,\
-    cutils_cdar_DynamicArray_int*:cutils_cdar_DynamicArray_int_find,\
-    cutils_cdar_DynamicArray_unsigned_int*:cutils_cdar_DynamicArray_unsigned_int_find,\
-    cutils_cdar_DynamicArray_long*:cutils_cdar_DynamicArray_long_find,\
-    cutils_cdar_DynamicArray_unsigned_long*:cutils_cdar_DynamicArray_unsigned_long_find,\
-    cutils_cdar_DynamicArray_long_long*:cutils_cdar_DynamicArray_long_long_find,\
-    cutils_cdar_DynamicArray_unsigned_long_long*:cutils_cdar_DynamicArray_unsigned_long_long_find,\
-    cutils_cdar_DynamicArray_float*:cutils_cdar_DynamicArray_float_find,\
-    cutils_cdar_DynamicArray_double*:cutils_cdar_DynamicArray_double_find,\
-    cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_find,\
-    cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_find,\
-    cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_find,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_find)\
-    (object,##__VA_ARGS__)
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_find(\
+        (cutils_cdar_DynamicArray_void_ptr*)object,\
+        cutils_cdar_DynamicArray_void_ptr_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_find(\
+        (cutils_cdar_DynamicArray_char*)object,\
+        cutils_cdar_DynamicArray_char_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_find(\
+        (cutils_cdar_DynamicArray_signed_char*)object,\
+        cutils_cdar_DynamicArray_signed_char_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_find(\
+        (cutils_cdar_DynamicArray_unsigned_char*)object,\
+        cutils_cdar_DynamicArray_unsigned_char_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_char_ptr*:cutils_cdar_DynamicArray_char_ptr_find(\
+        (cutils_cdar_DynamicArray_char_ptr*)object,\
+        cutils_cdar_DynamicArray_char_ptr_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_short*:cutils_cdar_DynamicArray_short_find(\
+        (cutils_cdar_DynamicArray_short*)object,\
+        cutils_cdar_DynamicArray_short_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_unsigned_short*:cutils_cdar_DynamicArray_unsigned_short_find(\
+        (cutils_cdar_DynamicArray_unsigned_short*)object,\
+        cutils_cdar_DynamicArray_unsigned_short_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_int*:cutils_cdar_DynamicArray_int_find(\
+        (cutils_cdar_DynamicArray_int*)object,\
+        cutils_cdar_DynamicArray_int_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_unsigned_int*:cutils_cdar_DynamicArray_unsigned_int_find(\
+        (cutils_cdar_DynamicArray_unsigned_int*)object,\
+        cutils_cdar_DynamicArray_unsigned_int_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_long*:cutils_cdar_DynamicArray_long_find(\
+        (cutils_cdar_DynamicArray_long*)object,\
+        cutils_cdar_DynamicArray_long_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_unsigned_long*:cutils_cdar_DynamicArray_unsigned_long_find(\
+        (cutils_cdar_DynamicArray_unsigned_long*)object,\
+        cutils_cdar_DynamicArray_unsigned_long_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_long_long*:cutils_cdar_DynamicArray_long_long_find(\
+        (cutils_cdar_DynamicArray_long_long*)object,\
+        cutils_cdar_DynamicArray_long_long_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_unsigned_long_long*:cutils_cdar_DynamicArray_unsigned_long_long_find(\
+        (cutils_cdar_DynamicArray_unsigned_long_long*)object,\
+        cutils_cdar_DynamicArray_unsigned_long_long_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_float*:cutils_cdar_DynamicArray_float_find(\
+        (cutils_cdar_DynamicArray_float*)object,\
+        cutils_cdar_DynamicArray_float_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_double*:cutils_cdar_DynamicArray_double_find(\
+        (cutils_cdar_DynamicArray_double*)object,\
+        cutils_cdar_DynamicArray_double_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_find(\
+        (cutils_cdar_DynamicArray_long_double*)object,\
+        cutils_cdar_DynamicArray_long_double_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_find(\
+        (cutils_cdar_DynamicArray_bool*)object,\
+        cutils_cdar_DynamicArray_bool_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_find(\
+        (cutils_cdar_DynamicArray_size_t*)object,\
+        cutils_cdar_DynamicArray_size_t_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_find(\
+        (cutils_cdar_DynamicArray_ptrdiff_t*)object,\
+        cutils_cdar_DynamicArray_ptrdiff_t_compare,##__VA_ARGS__))
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_findall
 #define __cutils_generic_findall(object, ...) _Generic((object),\
-    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_findall,\
-    cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_findall,\
-    cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_findall,\
-    cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_findall,\
-    cutils_cdar_DynamicArray_char_ptr*:cutils_cdar_DynamicArray_char_ptr_findall,\
-    cutils_cdar_DynamicArray_short*:cutils_cdar_DynamicArray_short_findall,\
-    cutils_cdar_DynamicArray_unsigned_short*:cutils_cdar_DynamicArray_unsigned_short_findall,\
-    cutils_cdar_DynamicArray_int*:cutils_cdar_DynamicArray_int_findall,\
-    cutils_cdar_DynamicArray_unsigned_int*:cutils_cdar_DynamicArray_unsigned_int_findall,\
-    cutils_cdar_DynamicArray_long*:cutils_cdar_DynamicArray_long_findall,\
-    cutils_cdar_DynamicArray_unsigned_long*:cutils_cdar_DynamicArray_unsigned_long_findall,\
-    cutils_cdar_DynamicArray_long_long*:cutils_cdar_DynamicArray_long_long_findall,\
-    cutils_cdar_DynamicArray_unsigned_long_long*:cutils_cdar_DynamicArray_unsigned_long_long_findall,\
-    cutils_cdar_DynamicArray_float*:cutils_cdar_DynamicArray_float_findall,\
-    cutils_cdar_DynamicArray_double*:cutils_cdar_DynamicArray_double_findall,\
-    cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_findall,\
-    cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_findall,\
-    cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_findall,\
-    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_findall)\
-    (object,##__VA_ARGS__)
+    cutils_cdar_DynamicArray_void_ptr*:cutils_cdar_DynamicArray_void_ptr_findall(\
+        (cutils_cdar_DynamicArray_void_ptr*)object,\
+        cutils_cdar_DynamicArray_void_ptr_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_char*:cutils_cdar_DynamicArray_char_findall(\
+        (cutils_cdar_DynamicArray_char*)object,\
+        cutils_cdar_DynamicArray_char_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_signed_char*:cutils_cdar_DynamicArray_signed_char_findall(\
+        (cutils_cdar_DynamicArray_signed_char*)object,\
+        cutils_cdar_DynamicArray_signed_char_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_unsigned_char*:cutils_cdar_DynamicArray_unsigned_char_findall(\
+        (cutils_cdar_DynamicArray_unsigned_char*)object,\
+        cutils_cdar_DynamicArray_unsigned_char_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_char_ptr*:cutils_cdar_DynamicArray_char_ptr_findall(\
+        (cutils_cdar_DynamicArray_char_ptr*)object,\
+        cutils_cdar_DynamicArray_char_ptr_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_short*:cutils_cdar_DynamicArray_short_findall(\
+        (cutils_cdar_DynamicArray_short*)object,\
+        cutils_cdar_DynamicArray_short_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_unsigned_short*:cutils_cdar_DynamicArray_unsigned_short_findall(\
+        (cutils_cdar_DynamicArray_unsigned_short*)object,\
+        cutils_cdar_DynamicArray_unsigned_short_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_int*:cutils_cdar_DynamicArray_int_findall(\
+        (cutils_cdar_DynamicArray_int*)object,\
+        cutils_cdar_DynamicArray_int_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_unsigned_int*:cutils_cdar_DynamicArray_unsigned_int_findall(\
+        (cutils_cdar_DynamicArray_unsigned_int*)object,\
+        cutils_cdar_DynamicArray_unsigned_int_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_long*:cutils_cdar_DynamicArray_long_findall(\
+        (cutils_cdar_DynamicArray_long*)object,\
+        cutils_cdar_DynamicArray_long_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_unsigned_long*:cutils_cdar_DynamicArray_unsigned_long_findall(\
+        (cutils_cdar_DynamicArray_unsigned_long*)object,\
+        cutils_cdar_DynamicArray_unsigned_long_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_long_long*:cutils_cdar_DynamicArray_long_long_findall(\
+        (cutils_cdar_DynamicArray_long_long*)object,\
+        cutils_cdar_DynamicArray_long_long_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_unsigned_long_long*:cutils_cdar_DynamicArray_unsigned_long_long_findall(\
+        (cutils_cdar_DynamicArray_unsigned_long_long*)object,\
+        cutils_cdar_DynamicArray_unsigned_long_long_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_float*:cutils_cdar_DynamicArray_float_findall(\
+        (cutils_cdar_DynamicArray_float*)object,\
+        cutils_cdar_DynamicArray_float_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_double*:cutils_cdar_DynamicArray_double_findall(\
+        (cutils_cdar_DynamicArray_double*)object,\
+        cutils_cdar_DynamicArray_double_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_long_double*:cutils_cdar_DynamicArray_long_double_findall(\
+        (cutils_cdar_DynamicArray_long_double*)object,\
+        cutils_cdar_DynamicArray_long_double_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_bool*:cutils_cdar_DynamicArray_bool_findall(\
+        (cutils_cdar_DynamicArray_bool*)object,\
+        cutils_cdar_DynamicArray_bool_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_size_t*:cutils_cdar_DynamicArray_size_t_findall(\
+        (cutils_cdar_DynamicArray_size_t*)object,\
+        cutils_cdar_DynamicArray_size_t_compare,##__VA_ARGS__),\
+    cutils_cdar_DynamicArray_ptrdiff_t*:cutils_cdar_DynamicArray_ptrdiff_t_findall(\
+        (cutils_cdar_DynamicArray_ptrdiff_t*)object,\
+        cutils_cdar_DynamicArray_ptrdiff_t_compare,##__VA_ARGS__))
 /*----------------------------------------------------------------------------*/
 #undef __cutils_generic_del
 #define __cutils_generic_del(object, ...) _Generic((object),\

@@ -1,0 +1,5 @@
+- array is empty
+- >
+  It is more like a warning or note: the passed array is empty, which
+  may or may not what one wanted. The return value will also be `true`
+  so one can ignore this exception.
