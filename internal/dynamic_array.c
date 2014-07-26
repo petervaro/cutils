@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.80.158 (20140722)                       **
+**                       Version: 0.8.80.303 (20140726)                       **
 **                                                                            **
 **                       File: internal/dynamic_array.c                       **
 **                                                                            **
@@ -99,7 +99,7 @@
   #include <jemalloc/jemalloc.h>  /* malloc(), realloc(), free() */
 #endif
 
-#include <stdio.h>    /* fprintf(), snprintf(), stderr, size_t */
+#include <stdio.h>    /* fprintf(), snprintf(), stderr, size_t, FILE */
 #include <string.h>   /* memcpy(), strcpy(), strcat() */
 #include <stdbool.h>  /* bool, true, false */
 
@@ -196,7 +196,8 @@ cutils_cdar_DynamicArray_void_ptr_new(cutils_cdar_DynamicArray_void_ptr **dynarr
     if (!data) goto Error_Array_Allocation_Failed;
 
     /* Allocate space for struct */
-    cutils_cdar_DynamicArray_void_ptr *_dynarr = malloc(sizeof(cutils_cdar_DynamicArray_void_ptr));
+    cutils_cdar_DynamicArray_void_ptr *_dynarr =
+        malloc(sizeof(cutils_cdar_DynamicArray_void_ptr));
     if (!_dynarr) goto Error_Struct_Allocation_Failed;
 
     /* Fill struct with values */
@@ -226,6 +227,11 @@ cutils_cdar_DynamicArray_void_ptr_new(cutils_cdar_DynamicArray_void_ptr **dynarr
         #define EXCEPTION_MSG CEXC_MSG_ALLOC_FAIL("new")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
+        #ifndef CDAR_OPT
+        /* Set pointer to array to NULL, so all other methods of
+           DynamicArray won't break the code, just raise exceptions */
+        *dynarr = NULL;
+        #endif
         return false;
 }
 
@@ -448,6 +454,9 @@ cutils_cdar_DynamicArray_void_ptr_swap(cutils_cdar_DynamicArray_void_ptr *dynarr
         #undef EXCEPTION_MSG
         return false; /* Not valid index */
     }
+
+    /* TODO: change behaviour: return false, instead of limiting,
+             just like in csll; also: correct the documentation */
 
     /* Sort indices */
     size_t greater, smaller;
@@ -996,7 +1005,7 @@ cutils_cdar_DynamicArray_void_ptr_find(cutils_cdar_DynamicArray_void_ptr *dynarr
     }
     else if (!index)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_NULL("find", "3rd", index)
+        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_NULL("find", "4th", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return false; /* Invalid data */

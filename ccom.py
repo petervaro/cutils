@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.523 (20140714)                       ##
+##                       Version: 0.8.80.311 (20140726)                       ##
 ##                                                                            ##
 ##                               File: ccom.py                                ##
 ##                                                                            ##
@@ -156,6 +156,16 @@ def collect(infolder,
 
     # TODO: Make hidden files OS independent, probably using
     #       https://docs.python.org/3.4/library/tempfile.html ?
+
+    # FIXME: for some reason, if a comment-type ever existed in the TODO
+    #        file, but after a while its posts are all gone, the keyword
+    #        still remains there, according to the current TODO file,
+    #        which still have the "QUESTIONS" keyword, and comment
+
+    # TODO: Add explicit-remove/browsing capabilities of the .*_cache files
+    #       (for example: if git reverted changes --> remove hash from cache file)
+    #       The best solution would be a complete CLI tool, to read and manage
+    #       and use the cutils command line tools
 
     # Compile regular expression patterns
     pattern1 = re_compile(_COMMENT.format(r'|'.join(map(comment_escape, line)),

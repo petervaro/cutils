@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.80.207 (20140723)                       ##
 ##                                                                            ##
 ##                         File: doc/src/11_cbug.yaml                         ##
 ##                                                                            ##
@@ -165,3 +165,20 @@ FUNC:
           \\OFF
           000 File: 'main.c', line: 10, function: 'func'
           EXCEPTION: Pointer is NULL
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: boolean
+    args:
+      - - ''
+        - value
+    info: string (`char *`) representation of truth-test of the passed value
+    examples:
+      - - Testing `0` and `1`
+        - |
+          printf("%s\n", boolean(0));
+          printf("%s\n", boolean(1));
+      - - OUTPUT
+        - |
+          \\OFF
+          false
+          true

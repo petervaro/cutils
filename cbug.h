@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.365 (20140711)                       **
+**                       Version: 0.8.80.201 (20140723)                       **
 **                                                                            **
 **                                File: cbug.h                                **
 **                                                                            **
@@ -75,5 +75,9 @@ __debug_9802738545513323(const char *file_name,
   #undef  cutils_cbug_debug
   #define cutils_cbug_debug(...)
 #endif  /* CBUG_OFF */
+
+/* Format value into boolean representation */
+#undef  cutils_cbug_boolean
+#define cutils_cbug_boolean(value) (value ? "true" : "false")
 
 #endif  /* _C_DEBUG_H_10629572188582681_ */

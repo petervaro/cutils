@@ -4,9 +4,9 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.80.228 (20140724)                       ##
+##                       Version: 0.8.80.182 (20140722)                       ##
 ##                                                                            ##
-##                         File: doc/src/17_csll.yaml                         ##
+##                    File: internal/singly_linked_list.py                    ##
 ##                                                                            ##
 ##           Designed and written by Peter Varo. Copyright (c) 2014           ##
 ##             License agreement is provided in the LICENSE file              ##
@@ -14,45 +14,37 @@
 ##                                                                            ##
 ######################################################################## INFO ##
 
-#------------------------------------------------------------------------------#
-PAGE: CSLL Singly Linked List
-NAME: csll
+# Import cutils modules
+from generator import args, methods
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+GUARD = 'SINGLY_LINKED_LIST'
+LLIST = 'cutils_csll_SinglyLinkedList'
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+TYPES = ((),)
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+ARG1_T = '{0}*'
+ARG1_N = 't'
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+_RETURN = ''
+WRAPPERS = (
+    # new
+    ('void', 'new',
+    args(ARG1_T + '*', ARG1_N),
+    _RETURN),
+
+    # del
+    ('void', 'del',
+    args(ARG1_T, ARG1_N),
+    _RETURN)
+)
 
 #------------------------------------------------------------------------------#
-HEAD:
-  FILE: const/head.yaml
-
-#------------------------------------------------------------------------------#
-INFO:
-  FILE: const/wip.yaml
-
-#------------------------------------------------------------------------------#
-USER:
-  - - About
-    - name: Summary
-      info: >
-            Implementation of a singly linked list object type and its methods.
-            \\n\\n
-            *Coming soon...*
-
-# Convert DynamicArray to SinglyLinkedList
-# ----------------------------------------
-#
-# DynamicArray_long *dynarr;
-# SinglyLinkedList_long *linlist;
-#
-# new(&dynarr, 4, ((long[]){3l, 67l, 31l, 9l}));
-# linlist(&linlist, len(dynarr), raw(dynarr));
-
-
-FUNC:
-  - func: next
-    args:
-      - - SinglyLinkedList_type_iterator *
-        - iterator
-      - - type **
-        - item
-
-    return: bool
-
-    info: one step ahead in iterator
+def generate(folder, macros_dict):
+    methods(types=TYPES,
+            base_name=LLIST,
+            wrappers=WRAPPERS,
+            macros_dict=macros_dict)

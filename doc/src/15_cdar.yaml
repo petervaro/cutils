@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.80.167 (20140722)                       ##
+##                       Version: 0.8.80.296 (20140726)                       ##
 ##                                                                            ##
 ##                         File: doc/src/15_cdar.yaml                         ##
 ##                                                                            ##
@@ -13,6 +13,13 @@
 ##                 For more info visit: http://www.cutils.org                 ##
 ##                                                                            ##
 ######################################################################## INFO ##
+
+# TODO: update all samples --> add error checking wether
+#       method() was successful (new, append, etc.)
+#
+#           bool check;
+#           check = method(...);
+#           if (!check) return EXIT_FAILURE;
 
 #------------------------------------------------------------------------------#
 PAGE: CDAR Dynamic Array
@@ -58,7 +65,7 @@ USER:
             [jemalloc](http://www.canonware.com/jemalloc/) (dependency)
 
     - name: CDAR_OPT
-      info: 'Most optimised'
+      info: 'Most optimised: no bounds checking and no exceptions'
 
 #------------------------------------------------------------------------------#
 TYPE:

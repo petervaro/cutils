@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.80.170 (20140722)                       ##
+##                       Version: 0.8.80.307 (20140726)                       ##
 ##                                                                            ##
 ##                        File: doc/src/00_cutils.yaml                        ##
 ##                                                                            ##
@@ -39,6 +39,9 @@ INFO:
 
 # NOTE: "The best way to predict the future is to invent it." -- Alan Kay
 
+# TODO: add progressbar to front-page representing
+#       which modules are ready and which are WIP
+
 # TODO: consider changing `clic` -> `ccom` and `ccom` -> `ctag`
 
 # TODO: create a proper makefile
@@ -49,6 +52,21 @@ INFO:
 
 # TODO: create call - which will include all the header files available
 
+# NOTE: Why the error-signal of functions on success is a value that can be
+#       evaluated to 'true' and if 'false' if failes? Wouldn't it be easier
+#       to write the explicit error checking like:
+#
+#           if (some_method) return EXIT_FAILURE;
+#
+#       instead of:
+#
+#           if (!some_method) return EXIT_FAILURE; ???
+#
+#       Answer: 1) Most of the container-manipulation methods return the number
+#       of items they have manipulated, which evaluates to 'true' on success and
+#       'false' on fail. So it makes more convenient and straightforward to use
+#       this kind of pattern in all cutils functions and methods 2) it is more
+#       intuitive to return 'false' on failure than 'true'
 
 # TODO: add EXEC to cdoc to add "interactive" python snippets to code
 EXEC: |

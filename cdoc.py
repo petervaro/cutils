@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.80.158 (20140722)                       ##
+##                       Version: 0.8.80.296 (20140726)                       ##
 ##                                                                            ##
 ##                               File: cdoc.py                                ##
 ##                                                                            ##
@@ -87,7 +87,7 @@ C_SYNTAX = re_compile(r"""
     (((?<!\w)\.\d+([eE][+-]?\d+)?[fFlL]?\b)|
      ((?<!\w)\d+\.(\d+([eE][+-]?\d+)?)?[fFlL]?(?=\W))|
      ((\b0[xX](\h+)?\.\h*([pP][+-]?\d+)?[fFlL]?))|
-     ((?<!\.)([1-9]\d*|0)([eE][+-]?\d+)?[uU]?(ll?|LL?)?\b)|
+     ((?<!\.|\w)([1-9]\d*|0)([eE][+-]?\d+)?[uU]?(ll?|LL?)?\b)|
      (\b0[0-7]+)|
      (\b0[xX]\h+)))|
 
@@ -110,7 +110,7 @@ C_SYNTAX = re_compile(r"""
     (size|offset)of|(_A|a)lign(as|of)|_Generic|defined)\b|
 
 (?P<functions>
-    [a-zA-Z_]\w*(?=\())
+    [a-zA-Z_]\w*\s*(?=\())
 """, flags=re_VERBOSE | re_DOTALL | re_MULTILINE)
 
 # Markdown tokens in order

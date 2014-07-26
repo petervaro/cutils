@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.80.186 (20140723)                       ##
 ##                                                                            ##
 ##                         File: doc/src/18_cdll.yaml                         ##
 ##                                                                            ##
@@ -15,7 +15,7 @@
 ######################################################################## INFO ##
 
 #------------------------------------------------------------------------------#
-PAGE: CDLL Double Linked List
+PAGE: CDLL Doubly Linked List
 NAME: cdll
 
 #------------------------------------------------------------------------------#
@@ -31,8 +31,9 @@ USER:
   - - About
     - name: Summary
       info: >
-            Implementation of a double linked list object type and its methods.
+            Implementation of a doubly linked list object type and its methods.
             \\n\\n
             *Coming soon...*
 
 # TODO: Implement cdll: Double Linked List
+#       Check this: http://en.wikipedia.org/wiki/XOR_linked_list

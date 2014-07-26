@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.80.156 (20140721)                       **
+**                       Version: 0.8.80.201 (20140723)                       **
 **                                                                            **
 **                                File: capi.h                                **
 **                                                                            **
@@ -203,7 +203,9 @@
 
 #ifdef _C_DEBUG_H_10629572188582681_
   #undef debug
+  #undef boolean
   #define debug(...) cutils_cbug_debug(__VA_ARGS__)
+  #define boolean(...) cutils_cbug_boolean(__VA_ARGS__)
 #endif /* _C_DEBUG_H_10629572188582681_ */
 
 #ifdef _C_FRAME_PER_SECOND_H_2834550704086395_
@@ -348,7 +350,9 @@
 
 #ifdef _C_DEBUG_H_10629572188582681_
   #undef cutils_debug
+  #undef cutils_boolean
   #define cutils_debug(...) cutils_cbug_debug(__VA_ARGS__)
+  #define cutils_boolean(...) cutils_cbug_boolean(__VA_ARGS__)
 #endif /* _C_DEBUG_H_10629572188582681_ */
 
 #ifdef _C_FRAME_PER_SECOND_H_2834550704086395_

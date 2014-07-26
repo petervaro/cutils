@@ -1,6 +1,8 @@
 *.DS_Store
 *.pyc
 *.pyo
+*.sublime-workspace
+*.sublime-project
 
 .ccom_cache
 .clic_cache
