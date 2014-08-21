@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.541 (20140716)                       ##
+##                       Version: 0.8.90.506 (20140819)                       ##
 ##                                                                            ##
 ##                         File: doc/src/13_cpro.yaml                         ##
 ##                                                                            ##
@@ -35,10 +35,11 @@ INFO:
 #------------------------------------------------------------------------------#
 USER:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - FILE: const/name.yaml
-    VARS:
-      VAR_head: cpro
-      VAR_func: profile
+  - - Options
+    - FILE: const/name.yaml
+      VARS:
+        VAR_head: cpro
+        VAR_func: profile
 
 #------------------------------------------------------------------------------#
 FUNC:

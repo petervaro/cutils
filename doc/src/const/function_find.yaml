@@ -1,0 +1,110 @@
+func: find
+vargs:
+  - - - $object$_type *
+      - $variable$
+    - - const type *
+      - item
+    - - size_t *
+      - index
+
+  - - - $object$_type *
+      - $variable$
+    - - bool(*
+      - compare
+      - )(const void*, const void*, size_t)
+    - - const type *
+      - item
+    - - size_t *
+      - index
+
+return:
+  - - bool
+    - Indicates if item is in the $type$ or not.
+
+info: >
+      `find` is a type-generic function-like macro, which takes a pointer
+      to a type-specific $object$, a pointer to type item and a pointer
+      to the storage of the index. It searches for the first appeareance of
+      the given item in the $type$, and writes the index of it to `index`.
+
+exceptions:
+  - FILE: const/exception_null_ptr.yaml
+  - - 3rd argument is out of range
+    - if the `index` argument is pointing to `NULL`
+  - FILE: const/exception_empty.yaml
+
+examples:
+  - - Search for standard type in $type$
+    - |
+      /* Create $type$ */
+      $object$_long_double *$shortvar$;
+      new(&$shortvar$, 5, ((long double[]){5.14, 784.1, 12., 5.477, 11.31}));
+      print($shortvar$);
+      \\n
+      /* Values and variables */
+      size_t index;
+      long double number = 12.;
+      \\n
+      /* Find number in $type$ */
+      printf("Is '%Lf' in $type$? ", number);
+      if (find($shortvar$, &number, &index))
+            printf("True. => [%zu] %Lf\n", index, get($shortvar$, index));
+      else
+          printf("False.\n");
+      \\n
+      /* Delete $type$ */
+      del($shortvar$);
+
+  - - OUTPUT
+    - |
+      \\OFF
+      $object$_long_double{5.140000, 784.100000, 12.000000, 5.477000, 11.310000}
+      Is '12.000000' in list? True. => [2] 12.000000
+
+  - - Using a user-defined function to find first appearance of a user-type
+    - |
+      /* Base type */
+      typedef union
+      {
+          long value;
+          bool truth;
+      } Data;
+      \\n
+      \\n
+      \\n
+      /* Comparing function */
+      static inline bool
+      compare_data(const void *p1,
+                   const void *p2,
+                   size_t size)
+      {
+          return *(long *)p1 == (**(Data **)p2).value;
+      }
+      \\n
+      \\n
+      \\n
+      int main(void)
+      {
+          /* Create $type$ */
+          $object$_void_ptr *data;
+          new(&data, sizeof(Data*), 3, ((Data*[]){&(Data){.value= 19l},
+                                                  &(Data){.value=243l},
+                                                  &(Data){.value=  5l}}));
+          print(data);
+          \\n
+          /* Print index of first appearance */
+          size_t index;
+          if (find(data, compare_data, &(long){243l}, &index))
+              printf("[%zu] %lu\n", index, (**(Data **)get(data, index)).value);
+          \\n
+          /* Delete $type$ */
+          del(data);
+          \\n
+          return 0;
+      }
+
+  - - OUTPUT
+    - |
+      \\OFF
+      $object$_void_ptr{<pointer to 0x7fcfd14038e0>, <pointer to 0x7fcfd14038e8>, <pointer to 0x7fcfd14038f0>}
+      [1] 243

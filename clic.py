@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.85.381 (20140816)                       ##
 ##                                                                            ##
 ##                               File: clic.py                                ##
 ##                                                                            ##
@@ -30,20 +30,32 @@ from re import (DOTALL  as re_DOTALL,
 
 # Import cutils modules
 # FIXME: if modules cannot be found?
-from internal.check import Checker as check_Checker
-from internal.comment import (LINE as comment_LINE,
-                              BLOCK as comment_BLOCK,
-                              escape as comment_escape,
-                              block_comments as comment_block_comments)
+
+# HACK: to make it work as a local module, fix it ASAP
+if __name__ == '__main__':
+    from internal.check import Checker as check_Checker
+    from internal.comment import (LINE as comment_LINE,
+                                  BLOCK as comment_BLOCK,
+                                  escape as comment_escape,
+                                  block_comments as comment_block_comments)
+else:
+    from .internal.check import Checker as check_Checker
+    from .internal.comment import (LINE as comment_LINE,
+                                   BLOCK as comment_BLOCK,
+                                   escape as comment_escape,
+                                   block_comments as comment_block_comments)
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+# TODO: Add special exception variable; maybe simply: 'cutils' as a dir?
+EXCEPTION_SELF = 'clic.py', 'comment.py', 'check.py', 'table.py'
+
 # File extensions
 EXTENSIONS = ('.h', '.c', '.fs', '.vs', '.py', '.yaml',
               'make', 'makefile', 'MAKE', 'MAKEFILE',
               'todo', 'TODO', 'readme', 'README')
 EXCEPTIONS = ('.ccom_cache', '.ccom_todo',
               '.cdoc_cache', '.cdoc_toc',
-              '.clic_cache' )
+              '.clic_cache')
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 _FORMAT = {'CENTER': '^', 'LEFT':'<', 'RIGHT': '>'}
@@ -156,7 +168,8 @@ def header(infolder,
                 name, extension = os_path_splitext(file)
                 if not extension:
                     extension = name
-                if (extension in extensions and
+                if (file not in exceptions and
+                    extension in extensions and
                     extension not in exceptions):
                     filepath = os_path_join(root, file)
                     # If file has been changed since last check

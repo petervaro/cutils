@@ -1,0 +1,34 @@
+func: clear
+args:
+  - - $object$_type *
+    - $variable$
+
+info: |
+      `clear` is a type-generic function-like macro, which takes a pointer
+      to a type-specific $object$ and makes it empty. $extra$
+
+exceptions:
+  - FILE: const/exception_null_ptr.yaml
+
+examples:
+  - - Get length of $type$
+    - |
+      /* Create and fill $type$ */
+      $object$_signed_char *$shortvar$;
+      new(&$shortvar$, 3, ((signed char[]){-5, 0, 5}));
+      \\n
+      /* Check length $type$ */
+      printf("Number of items in $type$: %zu\n", len($shortvar$));
+      clear($shortvar$);
+      \\n
+      /* Check length $type$ */
+      printf("Number of items in $type$: %zu\n", len($shortvar$));
+      \\n
+      /* Delete $type$ */
+      del($shortvar$);
+
+  - - OUTPUT
+    - |
+      \\OFF
+      Number of items in $type$: 3
+      Number of items in $type$: 0

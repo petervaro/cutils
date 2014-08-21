@@ -1,0 +1,138 @@
+func: findall
+vargs:
+  - - - $object$_type *
+      - $variable$
+    - - const type *
+      - item
+    - - size_t *
+      - indices
+
+  - - - $object$_type *
+      - $variable$
+    - - bool(*
+      - compare
+      - )(const void*, const void*, size_t)
+    - - const type *
+      - item
+    - - size_t *
+      - indices
+
+return:
+  - - size_t
+    - Indicates the number of indices found.
+
+info: >
+      `findall` is a type-generic function-like macro, which takes a pointer
+      to a type-specific $object$, a pointer to type item and a pointer
+      to the storage of the indices. It searches for all appearances of
+      the given item in the $type$, and writes all indices of it to `indices`.
+
+exceptions:
+  - FILE: const/exception_null_ptr.yaml
+  - - 3rd argument is out of range
+    - if the `index` argument is pointing to `NULL`
+  - FILE: const/exception_empty.yaml
+
+examples:
+  - - Find all appearances of `(unsigned char)3` in $type$
+    - |
+      #define CHARS 7
+      \\n
+      /* Create $type$ */
+      $object$_unsigned_char *dynarr;
+      new(&dynarr, CHARS, ((unsigned char[]){15, 9, 3, 3, 78, 67, 3}));
+      print(dynarr);
+      \\n
+      unsigned char number = 3;
+      size_t indices[CHARS],
+             found = findall(dynarr, &number, indices);
+      \\n
+      /* Find number in $type$ */
+      printf("Where is '%uu' in the $type$?\n", number);
+      if (found)
+          for (size_t i=0; i<found; i++)
+              printf("It is at index [%zu].\n", indices[i]);
+      else
+          printf("It is not in the $type$.\n");
+      \\n
+      /* Delete $type$ */
+      del(dynarr);
+
+  - - OUTPUT
+    - |
+      \\OFF
+      $object$_unsigned_char{15, 9, 3, 3, 78, 67, 3}
+      Where is '3' in the $type$?
+      It is at index [2]
+      It is at index [3]
+      It is at index [6]
+
+  - - Using a user-defined function to find all appearances of an item
+    - |
+      #include <ctype.h>
+      #define SIZE (size_t)64
+      \\n
+      /* Base type */
+      typedef struct
+      {
+          char name[SIZE];
+          int power;
+      } Spell;
+      \\n
+      \\n
+      \\n
+      /* Comparing function */
+      static inline bool
+      compare_spells(const void *p1,
+                     const void *p2,
+                     size_t size)
+      {
+          size_t i;
+          char *str;
+          char buffer[SIZE];
+      \\n
+          str = (*(Spell **)p2)->name;
+          for (i=0; i<SIZE; i++) buffer[i] = tolower(str[i]);
+      \\n
+          return !strncmp((char *)p1, buffer, SIZE);
+      }
+      \\n
+      \\n
+      \\n
+      int main(void)
+      {
+          #define SPELLS 4
+          \\n
+          /* Create $type$ */
+          $object$_void_ptr *spells;
+          new(&spells, sizeof(Spell*), SPELLS, ((Spell*[]){&(Spell){.name="Geminio", .power= 81},
+                                                           &(Spell){.name="accio",   .power= 64},
+                                                           &(Spell){.name="imperio", .power=144},
+                                                           &(Spell){.name="ACCIO",   .power= 64}}));
+          print(spells);
+          \\n
+          /* Search for spell in $type$ */
+          size_t indices[SPELLS];
+          size_t index,
+                 found = findall(spells, compare_spells, (char *)"accio", indices);
+          \\n
+          /* Print all indices */
+          if (found)
+              for (size_t i=0; i<found; i++)
+              {
+                  index = indices[i];
+                  printf("[%zu] %s\n", index, (*(Spell **)get(spells, index))->name);
+              }
+          \\n
+          /* Delete $type$ */
+          del(spells);
+          \\n
+          return 0;
+      }
+
+  - - OUTPUT
+    - |
+      \\OFF
+      $object$_void_ptr{<pointer to 0x7fd642d00000>, <pointer to 0x7fd642d00008>, <pointer to 0x7fd642d00010>, <pointer to 0x7fd642d00018>}
+      [1] accio
+      [3] ACCIO

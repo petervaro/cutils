@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.90.488 (20140819)                       ##
 ##                                                                            ##
 ##                               File: makefile                               ##
 ##                                                                            ##
@@ -14,61 +14,74 @@
 ##                                                                            ##
 ######################################################################## INFO ##
 
-# Toggle switch
-IS_PRODUCTION=
-CEXC_PREFS=USE LOG
+# User flags
+IS_OPTIMISED=
+USE_JEMALLOC=
+EXCEPTION_LOG=
+IS_STATIC=true
 
-# Filename of binary
-app_NAME=main
+# Filename of library
+cutils_NAME=libcutils
 
-app_NAME_DAR=libcdar
 
 # Output dirs
-app_BUILD_OUT_DIR=cdar/build
-app_BUILD_LIB_DIR=$(app_BUILD_OUT_DIR)/lib
-app_BUILD_SRC_DIR=$(app_BUILD_OUT_DIR)/src
-app_BUILD_TMP_DIR=$(app_BUILD_OUT_DIR)/tmp
+cutils_BUILD_OUT_DIR=build
+cutils_BUILD_TMP_DIR=$(cutils_BUILD_OUT_DIR)/tmp
 
-# DynamicArray sources
-app_C_SOURCES_DAR=$(wildcard $(app_BUILD_SRC_DIR)/*.c)
-app_C_OBJECTS_DAR=$(addprefix $(app_BUILD_TMP_DIR)/, $(notdir $(app_C_SOURCES_DAR:.c=.o)))
+# Resources in current library
+cutils_C_SOURCES=$(wildcard *.c)
+cutils_C_OBJECTS=$(addprefix $(cutils_BUILD_TMP_DIR)/, $(notdir $(cutils_C_SOURCES:.c=.o)))
 
-app_INCLUDES=/usr/local/include
-app_LIBRARY_DIRS=/usr/local/lib
-app_LIBRARIES=jemalloc
-app_FRAMEWORKS=
+# Includes, libs and frameworks
+cutils_INCLUDES=/usr/local/include .
+cutils_LIBRARY_DIRS=/usr/local/lib
+cutils_LIBRARIES=
+cutils_FRAMEWORKS=
+
+# If use the jemalloc library
+ifdef USE_JEMALLOC
+cutils_LIBRARIES+=jemalloc
+CFLAGS+=-D CDAR_JEM -D CSLL_JEM
+endif
 
 # Flags
-ifdef IS_PRODUCTION
-CFLAGS+=-O3
+ifdef IS_OPTIMISED
+CFLAGS+=-O3 -DCDAR_OPT -D CSLL_OPT
 else
-CFLAGS+=-Wall -v -g
-CFLAGS+=$(foreach act, $(CEXC_PREFS), -DCEXC_$(act))
+CFLAGS+=-Wall -v -g -fmacro-backtrace-limit=0
 endif
-CFLAGS+=-std=c11 $(foreach dir, $(app_INCLUDES), -I$(dir))
-LDFLAGS=$(foreach libdir, $(app_LIBRARY_DIRS), -L$(libdir))
-LDFLAGS+=$(foreach library, $(app_LIBRARIES), -l$(library))
 
-app_PYTHON=/usr/local/bin/python3
+ifdef EXCEPTION_LOG
+CFLAGS+=-D CEXC_LOG
+endif
+
+CFLAGS+=-std=c11 $(foreach dir, $(cutils_INCLUDES), -I$(dir))
+LDFLAGS=$(foreach libdir, $(cutils_LIBRARY_DIRS), -L$(libdir))
+LDFLAGS+=$(foreach library, $(cutils_LIBRARIES), -l$(library))
+
+cutils_PYTHON=/usr/local/bin/python3
 
 # Rules
 .PHONY: all clean
 
-all: makedirs $(app_NAME_DAR)
+all: make_dirs build_static
 
-# $(app_NAME): $(app_C_OBJECTS)
-# 	$(LINK.c) $(app_C_OBJECTS) -o $(app_BUILD_OUT_DIR)/$(app_NAME)
+$(cutils_BUILD_TMP_DIR)/%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(app_NAME_DAR): $(app_C_OBJECTS_DAR)
-	$(LINK.c) $(app_C_OBJECTS_DAR) -shared -o $(app_BUILD_LIB_DIR)/$(app_NAME_DAR).so
+build_static: $(cutils_C_OBJECTS)
+	ar -c -r -s -v $(cutils_BUILD_OUT_DIR)/$(cutils_NAME).a $(cutils_C_OBJECTS)
 
-$(app_BUILD_TMP_DIR)/%.o: $(app_BUILD_SRC_DIR)/%.c
-	$(CC) $(CFLAGS) -fPIC -c -o $@ $<
+# $(cutils_BUILD_TMP_DIR)/%.o: %.c
+# 	$(CC) $(CFLAGS) -fPIC -c -o $@ $<
 
-makedirs:
-	mkdir -p $(app_BUILD_TMP_DIR)
+# build_shared: $(cutils_NAME)
+# 	$(CC) -shared -Wl -soname -o $(cutils_BUILD_OUT_DIR)/$(cutils_NAME).so
 
+# Create build dir and tmp dir inside it
+make_dirs:
+	mkdir -p $(cutils_BUILD_TMP_DIR)
+
+# Remove build dir and all dirs and files inside
 clean:
-	rm -f $(app_BUILD_SRC_DIR)/*.c
-	rm -f $(app_BUILD_TMP_DIR)/*.o
-	rm -f $(app_BUILD_OUT_DIR)/$(app_NAME_DAR)
+	rm -f -r $(cutils_BUILD_OUT_DIR)

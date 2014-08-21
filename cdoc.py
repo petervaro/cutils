@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.80.296 (20140726)                       ##
+##                       Version: 0.8.90.537 (20140820)                       ##
 ##                                                                            ##
 ##                               File: cdoc.py                                ##
 ##                                                                            ##
@@ -14,6 +14,9 @@
 ##                 For more info visit: http://www.cutils.org                 ##
 ##                                                                            ##
 ######################################################################## INFO ##
+
+# TODO: add 'since' to indicate which version the given feature is availbe from
+#       like:   since: version 3.14
 
 # Import Python modules
 from re import (VERBOSE as re_VERBOSE,
@@ -31,7 +34,8 @@ from os.path import (splitext as os_path_splitext,
                      dirname as os_path_dirname,
                      isdir as os_path_isdir,
                      isfile as os_path_isfile,
-                     abspath as os_path_abspath)
+                     abspath as os_path_abspath,
+                     basename as os_path_basename)
 from itertools import count as iter_count
 from collections import OrderedDict, _Link
 from sys import argv as sys_argv
@@ -68,8 +72,6 @@ except FeatureNotFound:
 # C tokens in order
 C_TOKENS = ('comments', 'strings', 'macros', 'numbers', 'operators',
           'constants', 'types', 'keywords', 'functions')
-
-# TODO: REGEX fix func5 <- number should not be matched
 
 # Mini C Syntax
 C_SYNTAX = re_compile(r"""
@@ -248,7 +250,7 @@ def _replace(parent, keyindex, child, path, loader, depends):
         #        check for all special features and find out how
         #        to store them properly in the cache files
         filepath = os_path_join(path, child['FILE'])
-        depends.append(filepath)
+        depends.add(filepath)
         with open(filepath, encoding='utf-8') as file:
             content = file.read()
             # Replace variables with values if there is any
@@ -495,7 +497,7 @@ def _html_format(parent, source, path):
 #------------------------------------------------------------------------------#
 # Index formatter -- TOC generator
 def _indx_format(sidebar, selfname, sources):
-    for (pagename, filepath), (filename, depends) in sources.items():
+    for pagename, filepath, (filename, depends) in sources.items():
         if pagename == selfname:
             new(sidebar, 'a', href='#', class_='toc toc_current', string=pagename)
             continue
@@ -602,6 +604,9 @@ def _type_format(sidebar, content, source):
 #------------------------------------------------------------------------------#
 def _build(sources, outfolder, gentoc, toc):
     for pagename, source in sources.items():
+        # If there is no valid source
+        if source is None:
+            continue
         # Clear soup and add en empty, new body
         SOUP.body.decompose()
         new(SOUP.html, 'body')
@@ -645,6 +650,8 @@ def _build(sources, outfolder, gentoc, toc):
             new(sidebar, 'br')
             _indx_format(sidebar, pagename, toc)
             new(sidebar, 'br')
+
+        # TODO: Implement a Schema validator for better user-feedback
 
         # TODO: add FOOT key
 
@@ -725,64 +732,98 @@ def _build(sources, outfolder, gentoc, toc):
 
 
 #------------------------------------------------------------------------------#
-def document(infolder, outfolder, extension, loader, generate_toc=None):
-    # TODO: collect 'reserved' names
+def _process(file, filepath, pages, loader, counter):
+    with open(filepath, encoding='utf-8') as f:
+        depends = set()
+        pagedata = _import(loader(f.read()), infolder, loader, depends)
+        pagename = pagedata.get('PAGE', 'Document {}'.format(next(counter)))
+        filename = pagedata.get('NAME', os_path_splitext(file)[0]) + '.html'
+        pages[pagename] = pagedata
+    return filename, pagename, depends
 
+#------------------------------------------------------------------------------#
+def document(infolder, outfolder, extension, loader, generate_toc=None):
     # Get previously generated TOC object
     TOC = os_path_join(infolder, '.cdoc_toc')
     try:
         with open(TOC, 'rb') as file:
-            toc = pickle_load(file)
+            old_toc = pickle_load(file)
     except (FileNotFoundError, EOFError):
-        toc = table_Dict2D()
+        old_toc = table_Dict2D(OrderedDict)
 
+    # Create new TOC object
+    new_toc = table_Dict2D(OrderedDict)
+
+    # TODO: do we really need a separate OrderedDict for pages ???
     pages = OrderedDict()
     anonym = iter_count()
-    EMPTY = ((),)*2
+
     # Load all pages
-    # FIXME: pre check files, because if a new file added,
-    #        the TOC won't be regenerated for the old files
-    #        also: what happens when the order changes?
     with check_Checker(infolder, file='.cdoc_cache', lazy_update=True) as checker:
+        # Go through all files
         for file in os_listdir(infolder):
+            # If file has the proper extension
             if file.endswith(extension):
+                # Create full file path
                 filepath = os_path_join(infolder, file)
-                # If the file or any dependencies
-                # of the file have been changed
-                if (checker.ischanged(filepath) or
-                    any(map(checker.ischanged, toc.get(filepath, EMPTY)[1]))):
-                    with open(filepath, encoding='utf-8') as f:
-                        depends = []
-                        pagedata = _import(loader(f.read()), infolder, loader, depends)
-                        pagename = pagedata.get('PAGE', 'Document {}'.format(next(anonym)))
-                        filename = pagedata.get('NAME', os_path_splitext(file)[0]) + '.html'
-                        pages[pagename] = pagedata
-                        toc.setdefault(pagename, filepath, (filename, depends))
+                # If file has been changed since last check
+                if checker.ischanged(filepath):
+                    # Regenerate file
+                    filename, pagename, depends = \
+                        _process(file, filepath, pages, loader, anonym)
+                # If file hasn't been changed
+                else:
+                    # If file has been cached before
+                    try:
+                        # Get previous infos
+                        filename, depends = old_toc[filepath]
+                        pagename = old_toc.otherkey(filepath)
+                        pages[pagename] = None
+                        # If any of the dependencies has changed
+                        for dependency in depends:
+                            if checker.ischanged(dependency):
+                                # Regenerate file
+                                filename, pagename, depends = \
+                                    _process(file, filepath, pages, loader, anonym)
+                                break
+                    # If file is new and hasn't been cached before
+                    except KeyError:
+                        # Generate it for the first time
+                        filename, pagename, depends = \
+                            _process(file, filepath, pages, loader, anonym)
+                # Store new values
+                new_toc[pagename:filepath] = filename, depends
+
+    # If order changing, renaming, inserting, deleting, etc. happened
+    if set(old_toc) - set(new_toc):
+        for pagename, filepath in new_toc.keys():
+            if pages[pagename] is None:
+                _process(os_path_basename(filepath), filepath, pages, loader, anonym)
 
     # Write back TOC object
     with open(TOC, 'wb') as file:
-        pickle_dump(toc, file, pickle_HIGHEST_PROTOCOL)
+        pickle_dump(new_toc, file, pickle_HIGHEST_PROTOCOL)
     # Generate Table of Content?
     if generate_toc is None:
-        generate_toc = len(toc) > 1
+        generate_toc = len(new_toc) > 1
     # Create documents
-    _build(pages, outfolder, generate_toc, toc)
+    _build(pages, outfolder, generate_toc, new_toc)
 
 
 #------------------------------------------------------------------------------#
 if __name__ == '__main__':
     print('- '*40)
-    try:
-        # TODO: add 'external CSS path' argument
+    # try:
+    # TODO: add 'external CSS path' argument
 
-        # TODO: add -reset flags which will remove the cache files
-        script, infolder, outfolder, *rest = sys_argv
-        # Create documentation
-        document(infolder=infolder,
-                 outfolder=outfolder,
-                 extension='.yaml',
-                 loader=lambda s: yaml_load(s, Loader=yaml_Loader))
-        print('='*80)
-        print('CDOC: All documents has been successfully converted.\n')
-    except ValueError:
-        print('CDOC: !!! Warning !!! No folder provided\n')
+    # TODO: add -reset flags which will remove the cache files
+    script, infolder, outfolder, *rest = sys_argv
+    # Create documentation
+    document(infolder=infolder,
+             outfolder=outfolder,
+             extension='.yaml',
+             loader=lambda s: yaml_load(s, Loader=yaml_Loader))
+    print('='*80)
+    print('CDOC: All documents has been successfully converted.\n')
+    # except ValueError:
+    #     print('CDOC: !!! Warning !!! No folder provided\n')

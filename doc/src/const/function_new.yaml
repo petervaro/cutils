@@ -1,0 +1,94 @@
+func: new
+vargs:
+  - - - $object$_type **
+      - $variable$
+
+  - - - $object$_type **
+      - $variable$
+    - - size_t
+      - item_count
+    - - type *
+      - items
+
+  - - - $object$_void_ptr **
+      - $variable$
+    - - size_t
+      - item_size
+
+  - - - $object$_void_ptr **
+      - $variable$
+    - - size_t
+      - item_size
+    - - size_t
+      - item_count
+    - - type *
+      - items
+
+return:
+    - - bool
+    - - true
+      - if $type$ was created successfully
+    - - false
+      - if internal allocation failed
+
+info: |
+      `new` is a type-generic function-like macro, which takes a pointer to
+      pointer to a type-specific $object$ to create a new $type$. All
+      types of $object$ can be initialised as an empty $type$ by passing
+      only the pointer to pointer to the $object$ to the `new` method;
+      except the `$object$_void_ptr` which also requires the size of the
+      type of the data it is storing.
+      \\n\\n
+      Also: all types of $object$ can be initialised by arbitrary
+      number of data, by passing the number of items, and the pointer to the
+      data to the `new` method; except the `$object$_void_ptr` which
+      also needs the size of the type of the data it is storing.
+      $newline$
+      $extra$
+
+exceptions:
+  - FILE: const/exception_alloc.yaml
+
+examples:
+  - - Create a new empty $type$ of `int`s and another of `void*`s
+    - |
+      /* $object$ of integers */
+      $object$_int *$shortvar$_i;
+      new(&$shortvar$_i, 0, NULL);
+      \\n
+      /* $object$ of pointers to void */
+      typedef struct {int i; float f;} Item;
+      $object$_void_ptr *$shortvar$_vp;
+      new(&$shortvar$_vp, sizeof(Item*), 0, NULL);
+
+  - - a shorthand version of the above can also be used
+    - |
+      /* $object$ of integers */
+      $object$_int *$shortvar$_i;
+      new(&$shortvar$_i);
+      \\n
+      /* $object$ of pointers to void */
+      typedef struct {int i; float f;} Item;
+      $object$_void_ptr *$shortvar$_vp;
+      new(&$shortvar$_vp, sizeof(Item*));
+
+  - - Create a new $object$ of `double`s filled with a single `double`
+    - |
+      double number = .1234;
+      $object$_double *$shortvar$;
+      new(&$shortvar$, 1, &number);
+
+  - - Create a new $object$ of `float`s filled with 4 `float`s
+    - |
+      float numbers[] = {1.f, 2.f, 3.f, 4.f};
+      $object$_float *$shortvar$;
+      new(&$shortvar$, 4, &numbers);
+
+  - - Don't forget to check if the creation of the $object$ was successful
+    - |
+      #define CHARS "dennis ritchie"
+      $object$_char *$shortvar$;
+      if (!new(&$shortvar$, (sizeof CHARS) - 1, CHARS))
+      {
+          fprintf(stderr, "Internal allocation failed\n");
+      }

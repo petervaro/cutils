@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.80.296 (20140726)                       ##
+##                       Version: 0.8.90.680 (20140821)                       ##
 ##                                                                            ##
 ##                         File: doc/src/15_cdar.yaml                         ##
 ##                                                                            ##
@@ -41,10 +41,11 @@ INFO:
 
 #------------------------------------------------------------------------------#
 USER:
-  - FILE: const/name.yaml
-    VARS:
-      VAR_head: cdar
-      VAR_func: append
+  - - Options
+    - FILE: const/name.yaml
+      VARS:
+        VAR_head: cdar
+        VAR_func: append
 
   # TODO: finish dependings
   - - Depends
@@ -145,13 +146,13 @@ TYPE:
   - type: DynamicArray_void_ptr
     original: void *
     info: |
-          This is the so-called universal array type, and alo the base type of
-          all the specific typed DynamicArrays. It holds `void *` type of items,
-          therefore it can hold any kind of pointer to type. It has a slightly
-          different [new](#func_new) function as well.
+          This is the so-called universal array type, and also the base type of
+          all the specific typed `DynamicArray`s. It holds `void *` type of
+          items, therefore it can hold any kind of pointer to type. It has a
+          slightly different [new](#func_new) function as well.
           \\n\\n
-          DyanmicArray stores the items by their values (copies them), not only
-          a pointer to them. For example if the array is a
+          `DyanmicArray` stores the items by their values (copies them), not
+          only a pointer to them. For example if the array is a
           [`DynamicArray_int`](#type_DynamicArray_int) it will save a copy of
           the integers themselves inside itself. Also, if for example the array
           is a [`DynamicArray_void_ptr`](#type_DynamicArray_void_ptr) all the
@@ -174,239 +175,31 @@ TYPE:
 #------------------------------------------------------------------------------#
 FUNC:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - func: new
-    vargs:
-      - - - DynamicArray_type **
-          - dynamic_array
-
-      - - - DynamicArray_type **
-          - dynamic_array
-        - - size_t
-          - item_count
-        - - type *
-          - items
-
-      - - - DynamicArray_void_ptr **
-          - dynamic_array
-        - - size_t
-          - item_size
-
-      - - - DynamicArray_void_ptr **
-          - dynamic_array
-        - - size_t
-          - item_size
-        - - size_t
-          - item_count
-        - - type *
-          - items
-
-    return:
-        - - bool
-        - - true
-          - if array was created successfully
-        - - false
-          - if internal allocation failed
-
-    info: |
-          `new` is a type-generic function-like macro, which takes a pointer to
-          pointer to a type-specific DynamicArray to create a new array. The new
-          array can be initialised with arbitrary number of data. Each type of
-          DynamicArray can be initialised as an empty array passing only the
-          pointer to pointer to the DynamicArray, except the
-          `DynamicArray_void_ptr` which also requires the size of the pointer to
-          type which is the data it is storing.
-          \\n\\n
-          Each type of DynamicArray can be initialised by arbitrary number of
-          data, by passing the number of items, and the pointer to data, except
-          the `DynamicArray_void_ptr` which also needs the size of the pointer
-          to types it is storing.
-
-    exceptions:
-      - - internal allocation failed
-        - >
-          The allocation of space in memory for the instance of the base struct
-          and/or for the raw array of the data failed
-
-    examples:
-      - - Create a new empty dynamic array of `int`s and another of `void*`s
-        - |
-          /* DynamicArray of integers */
-          DynamicArray_int *dynarr_i;
-          new(&dynarr_i, 0, NULL);
-          \\n
-          /* DynamicArray of pointers to void */
-          typedef struct {int i; float f;} Item;
-          DynamicArray_void_ptr *dynarr_vp;
-          new(&dynarr_vp, sizeof(Item*), 0, NULL);
-
-      - - a shorthand version of the above can also be used
-        - |
-          /* DynamicArray of integers */
-          DynamicArray_int *dynarr_i;
-          new(&dynarr_i);
-          \\n
-          /* DynamicArray of pointers to void */
-          typedef struct {int i; float f;} Item;
-          DynamicArray_void_ptr *dynarr_vp;
-          new(&dynarr_vp, sizeof(Item*));
-
-      - - >
-          Create a new empty DynamicArray of `char`s with preallocated space of
-          40 `char`s
-        - |
-          DynamicArray_char *dynarr;
-          new(&dynarr, 40, NULL);
-
-      - - Create a new DynamicArray of `double`s filled with a single `double`
-        - |
-          double number = .1234;
-          DynamicArray_double *dynarr;
-          new(&dynarr, 1, &number);
-
-      - - Create a new DynamicArray of `float`s filled with 4 `float`s
-        - |
-          float numbers[] = {1.f, 2.f, 3.f, 4.f};
-          DynamicArray_float *dynarr;
-          new(&dynarr, 4, &numbers);
+  - FILE: const/function_new.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
+      $shortvar$: dynarr
+      $type$: array
+      $newline$: \\n\\n
+      $extra$: "***Note:*** An empty `DynamicArray` with a preallocated space in
+               memory can be created by passing the number of items and a
+               pointer to `NULL` to the `new` function. *Example:*
+               `new(&dynarr, 40, NULL);`"
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - func: del
-    args:
-      - - DynamicArray_type *
-        - dynamic_array
-
-    info: >
-          `del` is a type-generic function-like macro, which takes a pointer
-          to a type-specific DynamicArray and deletes it and all of its content.
+  - FILE: const/function_del.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - func: print
-    vargs:
-      - - - DynamicArray_type *
-          - dynamic_array
-
-      - - - DynamicArray_void_ptr *
-          - dynamic_array
-        - - char*(*
-          - formatter
-          - )(const void*, char**, size_t*)
-
-    exceptions:
-      - - internal allocation failed
-        - >
-          Allocating space in memory for the string buffer failed
-
-    info: |
-          `print` is a type-generic function-like macro, which takes a pointer
-          to a type-specific DynamicArray and prints its content formatted.
-          Internally it is using the format string notation of the standard
-          library, and all the basic C and `cutils` types prints out with the
-          proper formatting.
-          \\n\\n
-          It is also possible to pass a custom formatter as the second argument,
-          which makes it possible to format user-defined types. This `formatter`
-          callback function has to return a null-terminated C string (`char*`),
-          which is most of the time the string written to the dynamically
-          allocated `buffer`, which is the first argument. (The reason why this
-          function needs to return a string, instead of using the buffer
-          directly, is that in some chases, the array itself contains strings,
-          which makes it redundant, to allocate space for them again, and copy
-          them into the provided `buffer`.)
-          \\n\\n
-          The current size of the dynamically allocated buffer is also passed to
-          the formatter function which makes it possible, to compare if the
-          buffer has enough size, to store the formatter string. If not, buffer
-          can be `realloc`'d, and the new size can be written to `buffer_size`.
-          \\n\\n
-          ***Note:*** If `print` is used on a `DynamicArray_char_ptr`, all
-          `char*`s need to be null-terminated, otherwise the function call
-          will produce undefined-behaviour. It is highly recommended, to use
-          the [`String`](cstr.html) object in case of literal purposes.
-
-    examples:
-      - - >
-          In the following example four DynamicArrays will be created, printed
-          and deleted
-        - |
-          /* Pointer of arrays */
-          DynamicArray_char *dynarr_c;
-          DynamicArray_bool *dynarr_b;
-          DyanmicArray_char_ptr *dynarr_cp;
-          DynamicArray_void_ptr *dynarr_vp;
-          \\n
-          /* Initialising arrays */
-          new(&dynarr_c, 11, ((char[]){'!', '"', '#', '$', '%', '&',
-                                       '\'', '(', ')', '*', '+'}));
-          new(&dynarr_b, 4, ((bool[]){true, false, false, true}));
-          new(&dynarr_cp, 2, ((char *[]){"Talk is cheap.\nShow me the code.\n",
-                                         "\t--\tLinus Torvalds\a"}));
-          new(&dynarr_vp, sizeof(void*), 3, ((void *[]){&(int){1},
-                                                        &(float){1.12f},
-                                                        &(double){5.66}}));
-          /* Pretty print content of arrays */
-          print(dynarr_c);
-          print(dynarr_b);
-          print(dynarr_cp);
-          print(dynarr_vp);
-          \\n
-          /* Delete arrays */
-          del(dynarr_c);
-          del(dynarr_b);
-          del(dynarr_cp);
-          del(dynarr_vp);
-
-      - - OUTPUT
-        - |
-          \\OFF
-          DynamicArray_char{'!', '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+'}
-          DynamicArray_bool{true, false, false, true}
-          DynamicArray_void_ptr{<pointer to 0x7fb00bc03940>, <pointer to 0x7fb00bc03948>,
-          <pointer to 0x7fb00bc03950>}
-          DynamicArray_char_ptr{"Talk is cheap.\nShow me the code.\n", "\t--\tLinus Torvalds\a"}
-
-      - - >
-          Using the custom formatter callback function to print out the content
-          of a `DynamicArray_void_ptr` storing user-defined `Object` type items
-        - |
-          /* Base type */
-          typedef struct
-          {
-              int i;
-              float f;
-          } Object;
-          \\n
-          /* Formatter callback */
-          static char*
-          format_Obj(const void *item,
-                     char **buffer,
-                     size_t *buffer_size)
-          {
-              Object *obj = *(Object **)item;
-              snprintf(*buffer, *buffer_size, "Object{.i=%d, .f=%f}", obj->i, obj->f);
-              return *buffer;
-          }
-          \\n
-          int main(void)
-          {
-              Object o1 = {.i=12, .f=20};
-              Object o2 = {.i=69, .f=100};
-              Object o3 = {.i=0,  .f=19};
-              \\n
-              DynamicArray_void_ptr *dynarr_Obj;
-              new(&dynarr_Obj, sizeof(Object*), 3, ((Object*[]){&o1, &o2, &o3}));
-              \\n
-              print(dynarr_Obj, format_Obj);
-              \\n
-              del(dynarr_Obj);
-              \\n
-              return 0;
-          }
-
-      - - OUTPUT
-        - |
-          \\OFF
-          DynamicArray{Object{.i=12, .f=20.000000}, Object{.i=69, .f=100.000000},
-          Object{.i=0, .f=19.000000}}
+  - FILE: const/function_print.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
+      $shortvar$: dynarr
+      $shortvar_space$: '      ' # Spacehack for 'dynarr'
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - func: data
@@ -433,11 +226,9 @@ FUNC:
           and the number of items stored in the array to `item_count`.
 
     exceptions:
-      - FILE: const/cdar_except_init.yaml
-
+      - FILE: const/exception_null_ptr.yaml
       - - 2nd argument is NULL
         - Function cannot write to a `NULL` pointer
-
       - - 3rd argument is NULL
         - Function cannot write to a `NULL` pointer
 
@@ -486,7 +277,7 @@ FUNC:
           (except for `DynamicArray_void_ptr` it returns a `void **`).
 
     exceptions:
-      - FILE: const/cdar_except_init.yaml
+      - FILE: const/exception_null_ptr.yaml
 
     examples:
       - - Get raw data
@@ -511,33 +302,12 @@ FUNC:
           -- David Bowman
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - func: len
-    args:
-      - - DynamicArray_type *
-        - dynamic_array
-
-    return:
-      - - size_t
-        - Number of items in the array
-
-    info: >
-          `len` is a type-generic function-like macro, which takes a pointer to
-          a type-specific DynamicArray, and returns the number of items stored
-          in the array (the length of the array).
-
-    exceptions:
-      - FILE: const/cdar_except_init.yaml
-
-    examples:
-      - - Get and print length of an array
-        - |
-          DynamicArray_char *dynarr;
-          new(&dynarr, 3, ((char[]){'a', 'b', 'c'}));
-          printf("Number of items: %zu\n", len(dynarr));
-          del(dynarr);
-
-      - - OUTPUT
-        - '\\OFFNumber of items: 3'
+  - FILE: const/function_len.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
+      $shortvar$: dynarr
+      $type$: array
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - func: size
@@ -558,7 +328,7 @@ FUNC:
           `size_t bytes = sizeof(item_type_in_array) * len(dynamic_array);`
 
     exceptions:
-      - FILE: const/cdar_except_init.yaml
+      - FILE: const/exception_null_ptr.yaml
 
     examples:
       - - Get and print byte size of an array
@@ -572,47 +342,20 @@ FUNC:
         - '\\OFFSize of array: 32 byte(s)'
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - func: clear
-    args:
-      - - DynamicArray_type *
-        - dynamic_array
-
-    info: |
-          `clear` is a type-generic function-like macro, which takes a pointer
-          to a type-specific DynamicArray, which makes an array empty. Because
-          this function does not destroy the previously stored data, only makes
-          the "slots" available to store new data again; and because it does not
-          shrink the size of the array either, it is considered to be a good
-          practice to clear an existing dynamic array if it is not in use
-          anymore and use that array to store new data in it, so the array does\
-          not have to allocate the memory again, therefore it is more efficient
-          in speed, but probably takes more space in the memory.
-
-    exceptions:
-      - FILE: const/cdar_except_init.yaml
-
-    examples:
-      - - Create an array of `float`s, fill the array and then remove all items
-        - |
-          /* Create and fill array */
-          DynamicArray_float *dynarr;
-          new(&dynarr, 3, ((float[]){5.f, 6.f, 7.f}));
-          \\n
-          /* Check length */
-          printf("Number of items in array: %zu\n", len(dynarr));
-          /* Clear array */
-          clear(dynarr);
-          /* Check length again */
-          printf("Number of items in array: %zu\n", len(dynarr));
-          \\n
-          /* Destroy array */
-          del(dynarr);
-
-      - - OUTPUT
-        - |
-          \\OFF
-          Number of items in array: 3
-          Number of items in array: 0
+  - FILE: const/function_clear.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
+      $shortvar$: dynarr
+      $type$: array
+      $extra$: "Because this function does not destroy the previously stored
+                data, only makes the \"slots\" available to store new data again;
+                and because it does not shrink the size of the array either, it
+                is considered to be a good practice to clear an existing dynamic
+                array if it is not in use anymore and use that array to store
+                new data in it, so the array does not have to allocate the
+                memory again, therefore it is more efficient in speed, but
+                probably takes more space in the memory."
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - func: resize
@@ -645,1027 +388,106 @@ FUNC:
         - reallocating the data in memory failed
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - func: swap
-    vargs:
-      - - - DynamicArray_type *
-          - dynamic_array
-        - - size_t
-          - index1
-        - - size_t
-          - index2
-
-      - - - DynamicArray_type *
-          - dynamic_array
-        - - size_t
-          - index1
-        - - size_t
-          - index2
-        - - size_t
-          - item_count
-
-    return:
-      - - bool
-        - Indicates if the swapping was successful or not.
-      - - true
-        - >
-          if there was nothing to swap (indices are the same, the array is
-          empty, etc.) or the swap was successful
-      - - false
-        - if array is a pointer to `NULL`
-      - - false
-        - if one of the indices is out of range
-
-    info: >
-          `swap` is a type-generic function-like macro, which takes a pointer to
-          a type-specific DynamicArray, an index to the first element of the
-          first block, another index to the first element of the second block,
-          and the number of elements in the blocks and swaps the two blocks
-          inside the array. `swap` also has a variant, where the last argument
-          can be dropped and it will be passed as the defualt `1`.
-
-    exceptions:
-      - FILE: const/cdar_except_init.yaml
-      - FILE: const/cdar_except_empty.yaml
-
-      - - 2nd argument is out of range
-        - The 1st index passed is greater than the number of items in the array.
-
-      - - 3rd argument is out of range
-        - The 2nd index passed is greater than the number of items in the array.
-
-      - - blocks are overlapping
-        - >
-          It is more like a warning or note: the passed count argument is
-          greater than the number of items between the two indices. The
-          execution of the function will continue and the function will use the
-          maximum available number of items to swap, so one can ignore this
-          exception.
-
-      - - 4th argument is out of range
-        - >
-          The count argument is greater than the number of items between the
-          greater index and the end of the array. The execution of the function
-          will continue and the function will use the maximum available number
-          of items to swap, so one can ignore this exception.
-
-    examples:
-      - - Swap a single `unsigned integer` in array
-        - |
-          /* Create, fill and print array */
-          DynamicArray_unsigned_int *dynarr;
-          new(&dynarr, 4, ((unsigned[]){3u, 9u, 6u, 12u}));
-          printf("Before swap:\n");
-          print(dynarr);
-          \\n
-          /* Swap elements and print array again */
-          if (!swap(dynarr, 1, 2))
-            printf("Oups! Something went wrong during swapping..");
-          printf("\nAfter swap:\n");
-          print(dynarr);
-          \\n
-          /* Destroy array and its content */
-          del(dynarr);
-
-      - - OUTPUT
-        - |
-          \\OFF
-          Before swap:
-          DynamicArray_unsigned_int{3, 9, 6, 12}
-          \\n
-          After swap:
-          DynamicArray_unsigned_int{3, 6, 9, 12}
-
-      - - Swap blocks of `long`s in array
-        - |
-          /* Create, fill and print array */
-          DynamicArray_long *dynarr;
-          new(&dynarr, 6, ((long[]){13l, 21l, 5l, 8l, 2l, 3l}));
-          printf("Before swap:\n");
-          print(dynarr);
-          \\n
-          /* Swap elements and print array again */
-          if (!swap(dynarr, 0, 4, 2))
-            printf("Oh, snap.. Not again!");
-          printf("\nAfter swap:\n");
-          print(dynarr);
-          \\n
-          /* Destroy array and its content */
-          del(dynarr);
-
-      - - OUTPUT
-        - |
-          \\OFF
-          Before swap:
-          DynamicArray_long{13, 21, 5, 8, 2, 3}
-          \\n
-          After swap:
-          DynamicArray_long{2, 3, 5, 8, 13, 21}
+  - FILE: const/function_swap.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
+      $shortvar$: dynarr
+      $type$: array
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - func: reverse
-    args:
-      - - DyanmicArray_type *
-        - dynamic_array
-
-    return:
-      - - bool
-        - Indicates if the reversing was successful or not.
-      - - true
-        - if array has been successfully reversed
-      - - false
-        - if array is a pointer to `NULL`
-
-    info: >
-          `reverse` is a type-generic function-like macro, which takes a pointer
-          to a type-specific DynamicArray and reverses the content of the array.
-
-    exceptions:
-      - FILE: const/cdar_except_init.yaml
-      - FILE: const/cdar_except_empty.yaml
-
-    examples:
-      - - Reversing an array of `size_t`s
-        - |
-          /* Create array */
-          DynamicArray_size_t *dynarr;
-          new(&dynarr, 6, ((size_t[]){0, 5, 10, 15, 20, 25}));
-          \\n
-          /* Reverse array */
-          print(dynarr);
-          reverse(dynarr);
-          print(dynarr);
-          \\n
-          /* Delete array */
-          del(dynarr);
-          return 0;
-
-      - - OUTPUT
-        - |
-          \\OFF
-          DynamicArray_size_t{0, 5, 10, 15, 20, 25}
-          DynamicArray_size_t{25, 20, 15, 10, 5, 0}
+  - FILE: const/function_reverse.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
+      $shortvar$: dynarr
+      $type$: array
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - func: append
-    vargs:
-      - - - DyanmicArray_type *
-          - dynamic_array
-        - - type *
-          - item
-
-      - - - DyanmicArray_type *
-          - dynamic_array
-        - - size_t
-          - item_count
-        - - type *
-          - items
-
-    return:
-      - - bool
-        - Indicates if the addition was successful or not.
-      - - true
-        - if item(s) was/were successfully appended to the array
-      - - false
-        - if array is a pointer to `NULL`
-      - - false
-        - if internal reallocation failed
-
-    info: >
-          `append` is a type-generic function-like macro, which takes a pointer
-          to a type-specific DynamicArray and a pointer to a single item or the
-          number of items and a pointer to the items and appends the item(s) at
-          the end of the array.
-
-    exceptions:
-      - FILE: const/cdar_except_init.yaml
-      - - 3rd argument is `NULL`
-        - if the `item`/`items` pointer pointing to `NULL`
-      - FILE: const/cdar_except_realloc.yaml
-
-    examples:
-      - - >
-          First append two items, then a single one to an initially empty array
-          of `char`s
-        - |
-          /* Create array */
-          DynamicArray_char *dynarr;
-          new(&dynarr);
-          \\n
-          /* Append to array */
-          print(dynarr);
-          append(dynarr, 2, ((char[]){'u', 'v'}));
-          print(dynarr);
-          append(dynarr, (&(char){'w'}));
-          print(dynarr);
-          \\n
-          /* Delete array */
-          del(dynarr);
-
-      - - OUTPUT
-        - |
-          \\OFF
-          DynamicArray_char{}
-          DynamicArray_char{'u', 'v'}
-          DynamicArray_char{'u', 'v', 'w'}
-
-      - - Adding pointers to `NULL`s to `DynamicArray_void_ptr`
-        - |
-          /* Create array */
-          DynamicArray_void_ptr *dynarr_vp;
-          new(&dynarr_vp, sizeof(void*), 3, ((void *[]){NULL, &(char){'c'}, &(int){8}}));
-          \\n
-          /* Append another pointer to NULL */
-          append(dynarr_vp, (&(void *){NULL}));
-          print(dynarr_vp);
-          \\n
-          /* Delete array */
-          del(dynarr_vp);
-      - - OUTPUT
-        - |
-          \\OFF
-          DynamicArray_void_ptr{<pointer to NULL>, <pointer to 0x7fa9534038e8>,
-          <pointer to 0x7fa9534038f0>, <pointer to NULL>}
-
-
+  - FILE: const/function_append.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
+      $shortvar$: dynarr
+      $type$: array
+      $shortvar_space$: '      ' # Spacehack for 'dynarr'
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - func: push
-    vargs:
-      - - - DynamicArray_type *
-          - dynamic_array
-        - - size_t
-          - index
-        - - type *
-          - item
-
-      - - - DynamicArray_type *
-          - dynamic_array
-        - - size_t
-          - index
-        - - size_t
-          - count
-        - - type *
-          - items
-
-    return:
-      - - bool
-        - Indicates if the insertion was successful or not.
-      - - true
-        - if item(s) was/were successfully inserted to the array
-      - - false
-        - if array is a pointer to `NULL`
-      - - false
-        - if internal reallocation failed
-
-    info: |
-          `push` is a type-generic function-like macro, which takes a pointer
-          to a type-specific DynamicArray, an index, a pointer to the source and
-          optionally the number of items. It inserts item(s) before the given
-          index and shifts the data already there.
-          \\n\\n
-          ***Note:*** Why `push` and `pull` instead of the more intuitive
-          `insert` and `remove`? The main reason, is because the standard
-          library already using the function name `remove` in `stdio`. Of course
-          dispatching between the standard and cutils calls would be easy by
-          adding a `const char *` to the assocation list of the `_Generic` of
-          this function, still the cleaner solution is to use a different name:
-          `pull`. Besides, it is even shorter! And of course if `remove`'s pair
-          is `insert`, then `pull`'s pair is `push` — which is also shorter!
-
-    exceptions:
-      - FILE: const/cdar_except_init.yaml
-      - - 4th argument is `NULL`
-        - if the `item`/`items` pointer pointing to `NULL`
-      - FILE: const/cdar_except_realloc.yaml
-
-    examples:
-      - - >
-          Insert a single item at the second place of the array, then insert two
-          more at the beginning of the array
-        - |
-          /* Create array */
-          DynamicArray_short *dynarr;
-          new(&dynarr, 4, ((short[]){(short)3, (short)5, (short)6, (short)7}));
-          \\n
-          /* Insert items into array */
-          print(dynarr);
-          push(dynarr, 1, (&(short){4}));
-          print(dynarr);
-          push(dynarr, 0, 2, ((short[]){(short)1, (short)2}));
-          print(dynarr);
-          \\n
-          /* Delete array */
-          del(dynarr);
-
-      - - OUTPUT
-        - |
-          \\OFF
-          DynamicArray_short{3, 5, 6, 7}
-          DynamicArray_short{3, 4, 5, 6, 7}
-          DynamicArray_short{1, 2, 3, 4, 5, 6, 7}
+  - FILE: const/function_push.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
+      $shortvar$: dynarr
+      $type$: array
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - func: pull
-    vargs:
-      - - - DynamicArray_type *
-          - dynamic_array
-        - - size_t
-          - index
-
-      - - - DynamicArray_type *
-          - dynamic_array
-        - - size_t
-          - index
-        - - size_t
-          - item_count
-
-    return:
-      - - size_t
-        - Indicates the number of items has been successfully removed.
-      - - 0
-        - if index out of range
-
-    info: |
-          `pull` is a type-generic function-like macro, which takes a pointer
-          to a type-specific DynamicArray, an index, and optionally the number
-          items, and it will remove it/them from the array.
-          \\n\\n
-          ***Note:*** Why `push` and `pull` instead of the more intuitive
-          `insert` and `remove`? The main reason, is because the standard
-          library already using the function name `remove` in `stdio`. Of course
-          dispatching between the standard and cutils calls would be easy by
-          adding a `const char *` to the assocation list of the `_Generic` of
-          this function, still the cleaner solution is to use a different name:
-          `pull`. Besides, it is even shorter! And of course if `remove`'s pair
-          is `insert`, then `pull`'s pair is `push` — which is also shorter!
-
-    exceptions:
-      - FILE: const/cdar_except_init.yaml
-      - FILE: const/cdar_except_empty.yaml
-      - - 2nd argument is out of range
-        - if the `index` argument is out of range
-
-    examples:
-      - - >
-          Remove the last item, then the second and third ones from the array
-        - |
-          /* Create array */
-          DynamicArray_bool *dynarr;
-          new(&dynarr, 5, ((bool[]){true, false, false, true, false}));
-          \\n
-          /* Remove items from array */
-          print(dynarr);
-          pull(dynarr, len(dynarr) - 1);
-          print(dynarr);
-          pull(dynarr, 1, 2);
-          print(dynarr);
-          \\n
-          /* Delete array */
-          del(dynarr);
-
-      - - OUTPUT
-        - |
-          \\OFF
-          DynamicArray_bool{true, false, false, true, false}
-          DynamicArray_bool{true, false, false, true}
-          DynamicArray_bool{true, true}
+  - FILE: const/function_pull.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
+      $shortvar$: dynarr
+      $type$: array
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - func: pop
-    vargs:
-      - - - DynamicArray_type *
-          - dynamic_array
-        - - size_t
-          - index
-        - - type *
-          - destination
-
-      - - - DynamicArray_type *
-          - dynamic_array
-        - - size_t
-          - index
-        - - size_t
-          - item_count
-        - - type *
-          - destination
-
-    return:
-      - - size_t
-        - Indicates the number of items has been successfully popped.
-      - - 0
-        - if pointer to array is `NULL`
-      - - 0
-        - if pointer destination is `NULL`
-      - - 0
-        - if array is empty
-      - - 0
-        - if `index` is out of range
-
-    info: >
-          `pop` is a type-generic function-like macro, which takes a pointer
-          to a type-specific DynamicArray, an index, a pointer to type of
-          destination and optionally the number of items to pop. It will remove
-          the items specified by the index from the array and copy it to the
-          destination.
-
-    exceptions:
-      - FILE: const/cdar_except_init.yaml
-      - - 4th argument is `NULL`
-        - if the `item`/`items` pointer pointing to `NULL`
-      - FILE: const/cdar_except_empty.yaml
-      - - 2nd argument is out of range
-        - if the `index` argument is out of range
-
-    examples:
-      - - >
-          Pop out a single item, and then another two from the array
-        - |
-          #define NUMS 3
-          \\n
-          /* Create array */
-          DynamicArray_double *dynarr;
-          new(&dynarr, 5, ((double[]){23.974624, 10., 86.666667, 3.14, .56}));
-          \\n
-          /* Create destination storages */
-          double number;
-          double numbers[NUMS];
-          \\n
-          /* Pop items from array to destinations */
-          print(dynarr);
-          pop(dynarr, 0, &number);
-          print(dynarr);
-          printf("popped: %lf\n", number);
-          pop(dynarr, 1, NUMS, numbers);
-          print(dynarr);
-          for (size_t i=0; i<NUMS; i++)
-              printf("popped [%zu] %lf\n", i, numbers[i]);
-          \\n
-          /* Delete array */
-          del(dynarr);
-
-      - - OUTPUT
-        - |
-          \\OFF
-          DynamicArray_double{23.974624, 10.000000, 86.666667, 3.140000, 0.560000}
-          DynamicArray_double{10.000000, 10.000000, 86.666667, 3.140000}
-          popped: 23.974624
-          DynamicArray_double{10.000000}
-          popped [0] 10.000000
-          popped [1] 86.666667
-          popped [2] 3.140000
+  - FILE: const/function_pop.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
+      $shortvar$: dynarr
+      $type$: array
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - func: sub
-    vargs:
-      - - - DynamicArray_type *
-          - dynamic_array
-        - - size_t
-          - index
-        - - type *
-          - destination
-
-      - - - DynamicArray_type *
-          - dynamic_array
-        - - size_t
-          - index
-        - - size_t
-          - item_count
-        - - type *
-          - destination
-
-    return:
-      - - size_t
-        - Indicates the number of items has been successfully copied.
-      - - 0
-        - if pointer to array is `NULL`
-      - - 0
-        - if pointer destination is `NULL`
-      - - 0
-        - if array is empty
-      - - 0
-        - if `index` is out of range
-
-    info: >
-          `sub` is a type-generic function-like macro, which takes a pointer
-          to a type-specific DynamicArray, an index, a pointer to type of
-          destination and optionally the number of items to sub-copy. It will
-          copy the items specified by the index from the array to the
-          destination.
-
-    exceptions:
-      - FILE: const/cdar_except_init.yaml
-      - - 4th argument is `NULL`
-        - if the `item`/`items` pointer pointing to `NULL`
-      - FILE: const/cdar_except_empty.yaml
-      - - 2nd argument is out of range
-        - if the `index` argument is out of range
-
-    examples:
-      - - >
-          Copy a single item, and then five other items from the array
-        - |
-          #define NUMS 5
-          \\n
-          /* Create array */
-          DynamicArray_long_long *dynarr;
-          new(&dynarr, 6, ((long long[]){11ll, 22ll, 33ll, 44ll, 55ll, 66ll}));
-          \\n
-          /* Create destination storages */
-          long long number;
-          long long numbers[NUMS];
-          \\n
-          /* Pop items from array to destinations */
-          print(dynarr);
-          sub(dynarr, 2, &number);
-          printf("copied: %lld\n", number);
-          sub(dynarr, 1, NUMS, numbers);
-          for (size_t i=0; i<NUMS; i++)
-              printf("copied [%zu] %lld\n", i, numbers[i]);
-          print(dynarr);
-          \\n
-          /* Delete array */
-          del(dynarr);
-
-      - - OUTPUT
-        - |
-          \\OFF
-          DynamicArray_long_long{11, 22, 33, 44, 55, 66}
-          copied: 33
-          copied [0] 22
-          copied [1] 33
-          copied [2] 44
-          copied [3] 55
-          copied [4] 66
-          DynamicArray_long_long{11, 22, 33, 44, 55, 66}
+  - FILE: const/function_sub.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
+      $shortvar$: dynarr
+      $type$: array
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - func: truncate
-    args:
-      - - DynamicArray_type *
-        - dynamic_array
-      - - size_t
-        - index
-
-    info: >
-          `truncate` is a type-generic function-like macro, which takes a
-          pointer to a type-specific DynamicArray and an index. It removes all
-          items starts from the index.
-
-    exceptions:
-      - FILE: const/cdar_except_init.yaml
-      - - 2nd argument is out of range
-        - if the `index` argument is out of range
-
-    examples:
-      - - >
-          Truncating from the last element, and then from the second element
-        - |
-          int a, b, c, d, e;
-          /* Create array */
-          DynamicArray_ptrdiff_t *dynarr;
-          new(&dynarr, 4, ((ptrdiff_t[]){&a - &d, &e - &b, &b - &c, &d - &b}));
-          \\n
-          /* Truncate array */
-          print(dynarr);
-          truncate(dynarr, len(dynarr) - 1);
-          print(dynarr);
-          truncate(dynarr, 1);
-          print(dynarr);
-          \\n
-          /* Delete array */
-          del(dynarr);
-
-      - - OUTPUT
-        - |
-          \\OFF
-          DynamicArray_ptrdiff_t{3, -3, 1, -2}
-          DynamicArray_ptrdiff_t{3, -3, 1}
-          DynamicArray_ptrdiff_t{3}
+  - FILE: const/function_truncate.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
+      $shortvar$: dynarr
+      $type$: array
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - func: set
-    vargs:
-      - - - DynamicArray_type *
-          - dynamic_array
-        - - size_t
-          - index
-        - - type *
-          - item
-
-      - - - DynamicArray_type *
-          - dynamic_array
-        - - size_t
-          - index
-        - - size_t
-          - item_count
-        - - type *
-          - items
-
-    return:
-      - - bool
-        - Indicates if the settings was successful or not.
-      - - true
-        - if all items were set
-      - - false
-        - if pointer to array is `NULL`
-      - - false
-        - if `item`/`items` is pointing to `NULL`
-      - - false
-        - if `index` is out of range
-
-    info: >
-          `set` is a type-generic function-like macro, which takes a pointer
-          to a type-specific DynamicArray, and index, a pointer to type as
-          source and optionally the number of items. It sets the item/items
-          at/starts from the given index in array.
-
-    exceptions:
-      - FILE: const/cdar_except_init.yaml
-      - - 4th argument is `NULL`
-        - if the `item`/`items` pointer pointing to `NULL`
-      - FILE: const/cdar_except_empty.yaml
-      - - 2nd argument is out of range
-        - if the `index` argument is out of range
-
-    examples:
-      - - >
-          Set a single item, and then three other items in the array
-        - |
-          /* Create array */
-          DynamicArray_int *dynarr;
-          new(&dynarr, 7, ((int[]){0, 7, 2, 0, 2, 1, 6}));
-          \\n
-          /* Set items in array */
-          print(dynarr);
-          set(dynarr, 1, (&(int){1}));
-          print(dynarr);
-          set(dynarr, 3, 3, ((int[]){3, 4, 5}));
-          print(dynarr);
-          \\n
-          /* Delete array */
-          del(dynarr);
-
-      - - OUTPUT
-        - |
-          \\OFF
-          DynamicArray_int{0, 7, 2, 0, 2, 1, 6}
-          DynamicArray_int{0, 1, 2, 0, 2, 1, 6}
-          DynamicArray_int{0, 1, 2, 3, 4, 5, 6}
+  - FILE: const/function_set.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
+      $shortvar$: dynarr
+      $type$: array
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - func: get
-    args:
-      - - DynamicArray_type *
-        - dynamic_array
-      - - size_t
-        - index
-
-    return:
-      - - type *
-        - returns a properly casted to type item
-      - - NULL
-        - if pointer to arrat is `NULL`
-      - - NULL
-        - if array is empty
-      - - NULL
-        - if `index` is out of range
-
-    info: >
-          `get` is a type-generic function-like macro, which takes a pointer
-          to a type-specific DynamicArray and an index. It returns a properly
-          casted to type item, except for `DynamicArray_void_ptr`, where it
-          returns a pointer to the pointer stored in the array.
-
-    exceptions:
-      - FILE: const/cdar_except_init.yaml
-      - FILE: const/cdar_except_empty.yaml
-      - - 2nd argument is out of range
-        - if the `index` argument is out of range
-
-    examples:
-      - - Get each `float` and the next one from the array and add them
-        - |
-          #define SIZE 4
-          \\n
-          /* Create array */
-          DynamicArray_float *dynarr;
-          new(&dynarr, SIZE, ((float[]){4.78, 99., 13.62, .123}));
-          \\n
-          /* Set items in array */
-          print(dynarr);
-          float a, b;
-          for (size_t i=0; i<SIZE - 1; i++)
-          {
-              a = get(dynarr, i);
-              b = get(dynarr, i + 1);
-              printf("%.2f + %.2f = %.2f\n", a, b, a + b);
-          }
-          \\n
-          /* Delete array */
-          del(dynarr);
-
-      - - OUTPUT
-        - |
-          \\OFF
-          DynamicArray_float{4.780000, 99.000000, 13.620000, 0.123000}
-          4.78 + 99.00 = 103.78
-          99.00 + 13.62 = 112.62
-          13.62 + 0.12 = 13.74
+  - FILE: const/function_get.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
+      $shortvar$: dynarr
+      $type$: array
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - func: find
-    vargs:
-      - - - DynamicArray_type *
-          - dynamic_array
-        - - const type *
-          - item
-        - - size_t *
-          - index
-
-      - - - DynamicArray_type *
-          - dynamic_array
-        - - bool(*
-          - compare
-          - )(const void*, const void*, size_t)
-        - - const type *
-          - item
-        - - size_t *
-          - index
-
-    return:
-      - - bool
-        - Indicates if item is in the array or not.
-
-    info: >
-          `find` is a type-generic function-like macro, which takes a pointer
-          to a type-specific DynamicArray, a pointer to type item and a pointer
-          to the storage of the index. It searches for the first appeareance of
-          the given item in the array, and writes the index of it to `index`.
-
-    exceptions:
-      - FILE: const/cdar_except_init.yaml
-      - - 3rd argument is out of range
-        - if the `index` argument is pointing to `NULL`
-      - FILE: const/cdar_except_empty.yaml
-
-    examples:
-      - - <note on example>
-        - |
-          /* Create array */
-          DynamicArray_long_double *dynarr;
-          new(&dynarr, 5, ((long double[]){5.14, 784.1, 12., 5.477, 11.31}));
-          print(dynarr);
-          \\n
-          size_t index;
-          long double number = 12.;
-          \\n
-          /* Find number in array */
-          printf("Is '%Lf' in array? ", number);
-          if (find(dynarr, &number, &index))
-              if (get(dynarr, index) == number)
-                  printf("True.\n");
-              else
-                  printf("False.\n");
-          else
-              printf("False.\n");
-          \\n
-          /* Delete array */
-          del(dynarr);
-
-      - - OUTPUT
-        - |
-          \\OFF
-          DynamicArray_long_double{5.140000, 784.100000, 12.000000, 5.477000, 11.310000}
-          Is '12.000000' in array? True.
-
-      - - Using a user-defined function to find first appearance of `243l`
-        - |
-          /* Base type */
-          typedef union
-          {
-              long value;
-              bool truth;
-          \\n
-          } Data;
-          \\n
-          \\n
-          /* Comparing function */
-          static inline bool
-          compare_data(const void *p1,
-                       const void *p2,
-                       size_t size)
-          {
-              return *(long *)p1 == (**(Data **)p2).value;
-          }
-          \\n
-          \\n
-          int main(void)
-          {
-              /* Create array */
-              DynamicArray_void_ptr *data;
-              new(&data, sizeof(Data*), 3, ((Data*[]){&(Data){.value= 19l},
-                                                      &(Data){.value=243l},
-                                                      &(Data){.value=  5l}}));
-              print(data);
-              \\n
-              /* Search for spell in array */
-              size_t index;
-              \\n
-              /* Print all indices */
-              if (find(data, compare_data, &(long){243l}, &index))
-                  printf("[%zu] %lu\n", index, (**(Data **)get(data, index)).value);
-              \\n
-              /* Delete array */
-              del(data);
-              \\n
-              return 0;
-          }
-
-      - - OUTPUT
-        - |
-          \\OFF
-          DynamicArray_void_ptr{<pointer to 0x7fcfd14038e0>, <pointer to 0x7fcfd14038e8>,
-          <pointer to 0x7fcfd14038f0>}
-          [1] 243
+  - FILE: const/function_map.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
+      $shortvar$: dynarr
+      $type$: array
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - func: findall
-    vargs:
-      - - - DynamicArray_type *
-          - dynamic_array
-        - - const type *
-          - item
-        - - size_t *
-          - indices
-
-      - - - DynamicArray_type *
-          - dynamic_array
-        - - bool(*
-          - compare
-          - )(const void*, const void*, size_t)
-        - - const type *
-          - item
-        - - size_t *
-          - indices
-
-    return:
-      - - size_t
-        - Indicates the number of indices found.
-
-    info: >
-          `findall` is a type-generic function-like macro, which takes a pointer
-          to a type-specific DynamicArray, a pointer to type item and a pointer
-          to the storage of the indices. It searches for all appearances of
-          the given item in the array, and writes all indices of it to `indices`.
-
-    exceptions:
-      - FILE: const/cdar_except_init.yaml
-      - - 3rd argument is out of range
-        - if the `index` argument is pointing to `NULL`
-      - FILE: const/cdar_except_empty.yaml
-
-    examples:
-      - - Find all appearances of `(unsigned char)3` in array
-        - |
-          #define CHARS 7
-          \\n
-          /* Create array */
-          DynamicArray_unsigned_char *dynarr;
-          new(&dynarr, CHARS, ((unsigned char[]){15, 9, 3, 3, 78, 67, 3}));
-          print(dynarr);
-          \\n
-          unsigned char number = 3;
-          size_t indices[CHARS],
-                 found = findall(dynarr, &number, indices);
-          \\n
-          /* Find number in array */
-          printf("Where is '%uu' in the array?\n", number);
-          if (found)
-              for (size_t i=0; i<found; i++)
-                  printf("It is at index [%zu].\n", indices[i]);
-          else
-              printf("It is not in the array.\n");
-          \\n
-          /* Delete array */
-          del(dynarr);
-
-      - - OUTPUT
-        - |
-          \\OFF
-          DynamicArray_unsigned_char{15, 9, 3, 3, 78, 67, 3}
-          Where is '3' in the array?
-          It is at index [2]
-          It is at index [3]
-          It is at index [6]
-
-      - - Using a user-defined function to find all appearances of an item
-        - |
-          #include <ctype.h>
-          #define SIZE (size_t)64
-          \\n
-          /* Base type */
-          typedef struct
-          {
-              char name[SIZE];
-              int power;
-          \\n
-          } Spell;
-          \\n
-          \\n
-          /* Comparing function */
-          static inline bool
-          compare_spells(const void *p1,
-                         const void *p2,
-                         size_t size)
-          {
-              size_t i;
-              char *str;
-              char buffer[SIZE];
-          \\n
-              str = (*(Spell **)p2)->name;
-              for (i=0; i<SIZE; i++) buffer[i] = tolower(str[i]);
-          \\n
-              return !strncmp((char *)p1, buffer, SIZE);
-          }
-          \\n
-          \\n
-          int main(void)
-          {
-              #define SPELLS 4
-              \\n
-              /* Create array */
-              DynamicArray_void_ptr *spells;
-              new(&spells, sizeof(Spell*), SPELLS, ((Spell*[]){&(Spell){.name="Geminio", .power= 81},
-                                                               &(Spell){.name="accio",   .power= 64},
-                                                               &(Spell){.name="imperio", .power=144},
-                                                               &(Spell){.name="ACCIO",   .power= 64}}));
-              print(spells);
-              \\n
-              /* Search for spell in array */
-              size_t indices[SPELLS];
-              size_t index,
-                     found = findall(spells, compare_spells, (char *)"accio", indices);
-              \\n
-              /* Print all indices */
-              if (found)
-                  for (size_t i=0; i<found; i++)
-                  {
-                      index = indices[i];
-                      printf("[%zu] %s\n", index, (*(Spell **)get(spells, index))->name);
-                  }
-              \\n
-              /* Delete array */
-              del(spells);
-              \\n
-              return 0;
-          }
-
-      - - OUTPUT
-        - |
-          \\OFF
-          DynamicArray_void_ptr{<pointer to 0x7fd642d00000>, <pointer to 0x7fd642d00008>,
-          <pointer to 0x7fd642d00010>, <pointer to 0x7fd642d00018>}
-          [1] accio
-          [3] ACCIO
+  - FILE: const/function_find.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
+      $shortvar$: dynarr
+      $type$: array
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # - func: <name of function>
-  #
-  #   # Optional -- if variants exists to this function
-  #   vargs:
-  #     # Variant: 1 argument
-  #     - - - <type of argument>
-  #         - <name of argument>
-  #     # Variant: 2 arguments
-  #     - - - <type of argument>
-  #         - <name of argument>
-  #       - - <type of argument>
-  #         - <name of argument>
-  #
-  #   # 2 arguments
-  #   args:
-  #     - - <type of argument>
-  #       - <name of argument>
-  #     - - <type of argument>
-  #       - <name of argument>
-  #
-  #   return:
-  #     - - <type of return value>
-  #       - <note on type of return value>
-  #     - - <posibble return value>
-  #       - <note on possible return value>
-  #
-  #   info: <summary on function>
-  #
-  #   exceptions:
-  #     - - <text of exception>
-  #       - <info on exception>
-  #     - - <text of exception>
-  #       - <info on exception>
-  #
-  #   examples:
-  #     - - <note on example>
-  #       - |
-  #     - - OUTPUT
-  #       - |
-  #         \\OFF
+  - FILE: const/function_findall.yaml
+    VARS:
+      $object$: DynamicArray
+      $variable$: dynamic_array
+      $shortvar$: dynarr
+      $type$: array

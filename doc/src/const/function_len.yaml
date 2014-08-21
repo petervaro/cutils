@@ -1,0 +1,34 @@
+func: len
+args:
+  - - $object$_type *
+    - $variable$
+
+return:
+  - - size_t
+    - Number of items in the $type$
+
+info: >
+      `len` is a type-generic function-like macro, which takes a pointer to
+      a type-specific $object$, and returns the number of items stored in the
+      $type$ (the length of the $type$).
+
+exceptions:
+  - FILE: const/exception_null_ptr.yaml
+
+examples:
+  - - Get length of $type$
+    - |
+      /* Create $type$ of unsigned longs */
+      $object$_unsigned_long *$shortvar$;
+      new(&$shortvar$, 5, ((unsigned long[]){75ul, 44ul, 79ul, 125ul, 68ul}));
+      \\n
+      /* Check length of $type$ */
+      printf("Number of items in $type$: %zu\n", len($shortvar$));
+      \\n
+      /* Destroy $type$ */
+      del($shortvar$);
+
+  - - OUTPUT
+    - |
+      \\OFF
+      Number of items in $type$: 5

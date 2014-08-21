@@ -1,0 +1,46 @@
+func: truncate
+args:
+  - - $object$_type *
+    - $variable$
+  - - size_t
+    - index
+
+info: >
+      `truncate` is a type-generic function-like macro, which takes a
+      pointer to a type-specific $object$ and an index. It removes all
+      items starts from the index.
+
+exceptions:
+  - FILE: const/exception_null_ptr.yaml
+  - - 2nd argument is out of range
+    - if the `index` argument is out of range
+
+examples:
+  - - >
+      Truncating from the last element, and then from the second element
+    - |
+      /* Variables */
+      int a, b, c, d, e;
+      \\n
+      /* Create $type$ */
+      $object$_ptrdiff_t *$shortvar$;
+      new(&$shortvar$, 4, ((ptrdiff_t[]){&a - &d, &e - &b, &b - &c, &d - &b}));
+      \\n
+      /* Truncate $type$ from the item befire the last one */
+      print($shortvar$);
+      truncate($shortvar$, len($shortvar$) - 2);
+      print($shortvar$);
+      \\n
+      /* Truncate $type$ from the first item */
+      truncate($shortvar$, 1);
+      print($shortvar$);
+      \\n
+      /* Delete $type$ */
+      del($shortvar$);
+
+  - - OUTPUT
+    - |
+      \\OFF
+      $object$_ptrdiff_t{3, -3, 1, -2}
+      $object$_ptrdiff_t{3, -3}
+      $object$_ptrdiff_t{3}

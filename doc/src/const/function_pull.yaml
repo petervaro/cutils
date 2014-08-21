@@ -1,0 +1,64 @@
+func: pull
+vargs:
+  - - - $object$_type *
+      - $variable$
+    - - size_t
+      - index
+
+  - - - $object$_type *
+      - $variable$
+    - - size_t
+      - index
+    - - size_t
+      - item_count
+
+return:
+  - - size_t
+    - Indicates the number of items has been successfully removed.
+  - - 0
+    - if index out of range
+
+info: |
+      `pull` is a type-generic function-like macro, which takes a pointer
+      to a type-specific $object$, an index, and optionally the number
+      items, and it will remove it/them from the $type$.
+      \\n\\n
+      ***Note:*** Why `push` and `pull` instead of the more intuitive
+      `insert` and `remove`? The main reason, is because the standard
+      library already uses the function name `remove` in `stdio`. Of course
+      dispatching between the standard and the cutils calls would be easy. (One
+      has to add a `const char *` to the `_Generic` assocation list of this
+      function.) However using an alternative version, `pull`, is still a nicer
+      solution. Besides, it is even shorter! And to keep the naming consistent,
+      if `remove`'s pair is `insert`, then `pull`'s pair is `push`!
+
+exceptions:
+  - FILE: const/exception_null_ptr.yaml
+  - FILE: const/exception_empty.yaml
+  - - 2nd argument is out of range
+    - if the `index` argument is out of range
+
+examples:
+  - - >
+      Remove the last item, then the second and third ones from the $type$
+    - |
+      /* Create $type$ */
+      $object$_bool *$shortvar$;
+      new(&$shortvar$, 5, ((bool[]){true, false, false, true, false}));
+      \\n
+      /* Remove items from $type$ */
+      print($shortvar$);
+      pull($shortvar$, len($shortvar$) - 1);
+      print($shortvar$);
+      pull($shortvar$, 1, 2);
+      print($shortvar$);
+      \\n
+      /* Delete $type$ */
+      del($shortvar$);
+
+  - - OUTPUT
+    - |
+      \\OFF
+      $object$_bool{true, false, false, true, false}
+      $object$_bool{true, false, false, true}
+      $object$_bool{true, true}

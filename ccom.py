@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.80.311 (20140726)                       ##
+##                       Version: 0.8.85.374 (20140731)                       ##
 ##                                                                            ##
 ##                               File: ccom.py                                ##
 ##                                                                            ##
@@ -35,12 +35,21 @@ from pickle import (dump as pickle_dump,
                     HIGHEST_PROTOCOL as pickle_HIGHEST_PROTOCOL)
 
 # Import cutils modules
-from internal.table import Table as table_Table
-from internal.check import Checker as check_Checker
-from internal.comment import (LINE as comment_LINE,
-                              BLOCK as comment_BLOCK,
-                              escape as comment_escape,
-                              block_comments as comment_block_comments)
+# HACK: to make it work as a local module, fix it ASAP
+if __name__ == '__main__':
+    from internal.table import Table as table_Table
+    from internal.check import Checker as check_Checker
+    from internal.comment import (LINE as comment_LINE,
+                                  BLOCK as comment_BLOCK,
+                                  escape as comment_escape,
+                                  block_comments as comment_block_comments)
+else:
+    from .internal.table import Table as table_Table
+    from .internal.check import Checker as check_Checker
+    from .internal.comment import (LINE as comment_LINE,
+                                   BLOCK as comment_BLOCK,
+                                   escape as comment_escape,
+                                   block_comments as comment_block_comments)
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 # Special tags to look for
@@ -50,7 +59,7 @@ MARKS = OrderedDict([(r'!'*3, 'alert'), (r'?'*3, 'question')])
 EXTENSIONS = '.h', '.c', '.py', '.fs', '.vs', '.yaml'
 EXCEPTIONS = ('.ccom_cache', '.ccom_todo',
               '.cdoc_cache', '.cdoc_toc',
-              '.clic_cache' )
+              '.clic_cache')
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 _SHORT = ' '*2
@@ -196,7 +205,8 @@ def collect(infolder,
                 name, extension = os_path_splitext(filename)
                 if not extension:
                     extension = name
-                if (extension in extensions and
+                if (filename not in exceptions and
+                    extension in extensions and
                     extension not in exceptions):
                     filepath = os_path_join(root, filename)[2:]
                     if checker.ischanged(filepath):

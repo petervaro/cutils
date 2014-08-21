@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.80.307 (20140726)                       **
+**                       Version: 0.8.90.471 (20140819)                       **
 **                                                                            **
 **                    File: internal/singly_linked_list.h                     **
 **                                                                            **
@@ -17,8 +17,8 @@
 /* !!! DON NOT ADD GUARD TO THIS FILE !!! */
 
 #define FILE_STARTS_HERE
-#include <stdio.h>   /* stdout */
-#include <stdlib.h>  /* size_t */
+#include <stdlib.h>   /* size_t */
+#include <stdbool.h>  /* bool */
 
 /*----------------------------------------------------------------------------*/
 typedef struct {} cutils_csll_SinglyLinkedList_void_ptr;
@@ -110,7 +110,13 @@ extern bool
 cutils_csll_SinglyLinkedList_void_ptr_next(cutils_csll_SinglyLinkedList_void_ptr_iterator *node,
                                            void *data);
 /*----------------------------------------------------------------------------*/
-extern char *
+extern void
+cutils_csll_SinglyLinkedList_void_ptr_map(cutils_csll_SinglyLinkedList_void_ptr *linlist,
+                                          size_t index,
+                                          size_t count,
+                                          void (*function)());
+/*----------------------------------------------------------------------------*/
+extern bool
 cutils_csll_SinglyLinkedList_void_ptr_format(const void *data,
                                              char **buffer,
                                              size_t *buffer_size);
@@ -118,41 +124,10 @@ cutils_csll_SinglyLinkedList_void_ptr_format(const void *data,
 extern void
 cutils_csll_SinglyLinkedList_void_ptr_print(cutils_csll_SinglyLinkedList_void_ptr *linlist,
                                             FILE *stream,
-                                            const char *name,
-                                            char *(*format)(const void*, char**, size_t*));
-
-
-
+                                            const char *sub_type,
+                                            bool(*format)());
 /*----------------------------------------------------------------------------*/
-/* Fake CAPI for testing */
-#include "cutils/internal/fcmp.h"
-typedef cutils_csll_SinglyLinkedList_void_ptr SinglyLinkedList_void_ptr;
-typedef cutils_csll_SinglyLinkedList_void_ptr_iterator SinglyLinkedList_void_ptr_iterator;
-
-static bool __csll_fcmp(const void *p1,
-                        const void *p2,
-                        size_t s)
-{
-    return cutils_fcmp_float_compare(*(float *)p1, *(float *)p2);
-}
-
-#define new(...) cutils_csll_SinglyLinkedList_void_ptr_new(__VA_ARGS__)
-#define del(...) cutils_csll_SinglyLinkedList_void_ptr_del(__VA_ARGS__)
-#define len(...) cutils_csll_SinglyLinkedList_void_ptr_len(__VA_ARGS__)
-#define swap(...) cutils_csll_SinglyLinkedList_void_ptr_swap(__VA_ARGS__)
-#define reverse(...) cutils_csll_SinglyLinkedList_void_ptr_reverse(__VA_ARGS__)
-#define append(...) cutils_csll_SinglyLinkedList_void_ptr_append(__VA_ARGS__)
-#define push(...) cutils_csll_SinglyLinkedList_void_ptr_push(__VA_ARGS__)
-#define pull(...) cutils_csll_SinglyLinkedList_void_ptr_pull(__VA_ARGS__)
-#define pop(...) cutils_csll_SinglyLinkedList_void_ptr_pop(__VA_ARGS__)
-#define sub(...) cutils_csll_SinglyLinkedList_void_ptr_sub(__VA_ARGS__)
-#define truncate(...) cutils_csll_SinglyLinkedList_void_ptr_truncate(__VA_ARGS__)
-#define set(...) cutils_csll_SinglyLinkedList_void_ptr_set(__VA_ARGS__)
-#define get(...) *(float *)cutils_csll_SinglyLinkedList_void_ptr_get(__VA_ARGS__)
-#define find(l,t,i,...) cutils_csll_SinglyLinkedList_void_ptr_find(l,__csll_fcmp,t,i,##__VA_ARGS__)
-#define findall(l,t,i,...) cutils_csll_SinglyLinkedList_void_ptr_findall(l,__csll_fcmp,t,i,##__VA_ARGS__)
-#define iter(...) cutils_csll_SinglyLinkedList_void_ptr_iter(__VA_ARGS__)
-#define next(...) cutils_csll_SinglyLinkedList_void_ptr_next(__VA_ARGS__)
-#define print(linlist, ...) \
-    cutils_csll_SinglyLinkedList_void_ptr_print(linlist, stdout, "SinglyLinkedList", \
-        cutils_csll_SinglyLinkedList_void_ptr_format,##__VA_ARGS__)
+extern bool
+cutils_csll_SinglyLinkedList_void_ptr_compare(const void *item1,
+                                              const void *item2,
+                                              size_t item_size);

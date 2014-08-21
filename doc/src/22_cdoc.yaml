@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.465 (20140713)                       ##
+##                       Version: 0.8.90.569 (20140820)                       ##
 ##                                                                            ##
 ##                         File: doc/src/22_cdoc.yaml                         ##
 ##                                                                            ##
@@ -113,7 +113,7 @@ USER:
         - - Install `lxml`
           - \\OFFpip3 install lxml
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - - usage
+  - - Usage
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
     - name: Command Line Tool
       info: |
@@ -125,7 +125,7 @@ USER:
           - \\OFF$ python3 cdoc.py proj/doc/src proj/doc
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - - generic keys
+  - - Generic Keys
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
     - name: 'PAGE: Table of Content'
       info: >
@@ -276,7 +276,7 @@ USER:
 
         - - >
             A template called `var_section.yaml` in the `const` folder
-            containing variables, which all start with the shortend `VAR_`,
+            containing variables, which all start with the prefix `VAR_`,
             although one can use any special characters, such as `$` or
             any other tokens to make the variable name unique in the file
           - |
@@ -300,7 +300,7 @@ USER:
                   info: and won't be affected
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - - schemas
+  - - Schemas
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
     - name: 'USER: user defined'
       info: |
@@ -564,7 +564,7 @@ USER:
                     - It is time to take the warnings seriously
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - - special syntax
+  - - Special Syntax
     #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
     - name: markdown
       info: |

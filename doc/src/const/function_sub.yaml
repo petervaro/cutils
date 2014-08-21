@@ -1,0 +1,83 @@
+func: sub
+vargs:
+  - - - $object$_type *
+      - $variable$
+    - - size_t
+      - index
+    - - type *
+      - destination
+
+  - - - $object$_type *
+      - $variable$
+    - - size_t
+      - index
+    - - size_t
+      - item_count
+    - - type *
+      - destination
+
+return:
+  - - size_t
+    - Indicates the number of items has been successfully copied.
+  - - 0
+    - if pointer to $type$ is `NULL`
+  - - 0
+    - if pointer destination is `NULL`
+  - - 0
+    - if $type$ is empty
+  - - 0
+    - if `index` is out of range
+
+info: >
+      `sub` is a type-generic function-like macro, which takes a pointer
+      to a type-specific $object$, an index, a pointer to type of
+      destination and optionally the number of items to sub-copy. It will
+      copy the items specified by the index from the $type$ to the
+      destination.
+
+exceptions:
+  - FILE: const/exception_null_ptr.yaml
+  - - 4th argument is `NULL`
+    - if the `item`/`items` pointer pointing to `NULL`
+  - FILE: const/exception_empty.yaml
+  - - 2nd argument is out of range
+    - if the `index` argument is out of range
+
+examples:
+  - - >
+      Copy a single item, and then five other items from the $type$
+    - |
+      /* Create $type$ */
+      $object$_long_long *$shortvar$;
+      new(&$shortvar$, 6, ((long long[]){11ll, 22ll, 33ll, 44ll, 55ll, 66ll}));
+      print($shortvar$);
+      \\n
+      /* Create destination storages */
+      #define NUMS 5
+      long long number;
+      long long numbers[NUMS];
+      \\n
+      /* Pop a single item from $type$ to destination */
+      sub($shortvar$, 2, &number);
+      printf("copied: %lld\n", number);
+      \\n
+      /* Pop a multiple item from $type$ to destination */
+      sub($shortvar$, 1, NUMS, numbers);
+      for (size_t i=0; i<NUMS; i++)
+          printf("copied: [%zu] %lld\n", i, numbers[i]);
+      print($shortvar$);
+      \\n
+      /* Delete $type$ */
+      del($shortvar$);
+
+  - - OUTPUT
+    - |
+      \\OFF
+      $object$_long_long{11, 22, 33, 44, 55, 66}
+      copied: 33
+      copied: [0] 22
+      copied: [1] 33
+      copied: [2] 44
+      copied: [3] 55
+      copied: [4] 66
+      $object$_long_long{11, 22, 33, 44, 55, 66}

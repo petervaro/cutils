@@ -1,0 +1,4 @@
+- internal allocation failed
+- >
+  The allocation of space in memory for the instance of the base struct
+  and/or for the raw $type$ of the data failed

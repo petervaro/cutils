@@ -1,0 +1,6 @@
+- object is empty
+- >
+  This exceptions is more like a warning or a notification rather than an actual
+  error. The passed object is empty, which may or may not be the situation one
+  wanted. The return value (*error signal*) if there is any, will also indicate
+  success, therefore this exception can be ignored.

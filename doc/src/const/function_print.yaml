@@ -1,0 +1,160 @@
+func: print
+vargs:
+  - - - $object$_type *
+      - $variable$
+
+  - - - $object$_type *
+      - $variable$
+    - - char*(*
+      - formatter
+      - )(const type*, char**, size_t*)
+
+exceptions:
+  - FILE: const/exception_null_ptr.yaml
+  - FILE: const/exception_alloc.yaml
+
+info: |
+      `print` is a type-generic function-like macro, which takes a pointer
+      to a type-specific $object$ and prints its content formatted.
+      Internally it is using the format string notation of the standard
+      library, and all the basic C and `cutils` types prints out with the
+      proper formatting. It is also extended with some user-friendly
+      representation, like the `bool` values, the `char` and `char*`s or the
+      generic `void*`s.
+      \\n\\n
+      It is also possible to pass a custom formatter as the second argument,
+      which makes it possible to format user-defined types. This `formatter`
+      callback function takes a pointer to type, a pointer to pointer to
+      `char` which points to a dynamically allocated buffer and a pointer
+      to a `size_t` which is the size of the allcoated buffer (which size is
+      128 `char`s by default). The `formatter` function can resize this
+      buffer (and it will be resized until the print function returns) or it
+      can change the pointer to point to other values. (For example, if the
+      object contains pointers to `char`s, it would be unefficient to copy
+      the string of each value.) For each item the passed pointer will
+      always point to the default buffer, even the pointer was changed for
+      the previous item.
+      \\n\\n
+      ***Note 1:*** Do not `free()` the buffer, it will be automatically
+      `free`'d at the end of the `print` funtion. If the buffer is `free`'d
+      before the `print` function printed all the content of the object, it
+      is very likely that the program will crash with a `SEGMENTATION FAULT`.
+      \\n\\n
+      ***Note 2:*** If `print` is used on a `$object$_char_ptr`, all
+      `char*`s need to be null-terminated, otherwise the function call
+      will produce undefined-behaviour. It is highly recommended, to use
+      the [`String`](cstr.html) object in case of literal purposes.
+
+examples:
+  - - Different types of $object$s have different representations
+    - |
+      /* $object$ of pointers to bools */
+      $object$_bool *$shortvar$_b;
+      if (new(&$shortvar$_b, 5, ((bool[]){true, false, false, true, true})))
+          print($shortvar$_b);
+      \\n
+      /* $object$ of pointers to doubles */
+      $object$_double *$shortvar$_d;
+      if (new(&$shortvar$_d, 4, ((double[]){2.5, 17.257, 65.537, 42.9496})))
+          print($shortvar$_d);
+      \\n
+      /* $object$ of pointers to chars */
+      $object$_char *$shortvar$_c;
+      if (new(&$shortvar$_c, 6, ((char[]){'\n', '\t', '\\', '\'', '\0', '"'})))
+          print($shortvar$_c);
+      \\n
+      /* $object$ of pointers to pointer to char */
+      $object$_char_ptr *$shortvar$_cp;
+      if (new(&$shortvar$_cp, 2, ((char*[]){"Talk is cheap.\nShow me the code.\n"
+              $shortvar_space$                    "\t--\tLinus Torvalds\a"})));
+          print($shortvar$_cp);
+      \\n
+      /* $object$ of pointers to pointer to void */
+      $object$_void_ptr *$shortvar$_vp;
+      if (new(&$shortvar$_vp, sizeof(int *), 3, ((void*[]){&(int){55},
+                $shortvar_space$                                 &(int){77},
+                $shortvar_space$                                 &(int){99}})))
+          print($shortvar$_vp);
+      \\n
+      del($shortvar$_b);
+      del($shortvar$_d);
+      del($shortvar$_c);
+      del($shortvar$_cp);
+      del($shortvar$_vp);
+
+  - - OUTPUT
+    - |
+      \\OFF
+      $object$_bool{true, false, false, true, true}
+      $object$_double{2.500000, 17.257000, 65.537000, 42.949600}
+      $object$_char{'\n', '\t', '\\', '\'', '\0', '"'}
+      $object$_char_ptr{"Talk is cheap.\nShow me the code.\n", "\t--\tLinus Torvalds\a"}
+      $object$_void_ptr{<pointer to 0x7fe5c0403b58>, <pointer to 0x7fe5c0403b68>, <pointer to 0x7fe5c0403b78>}
+
+  - - >
+      Using the custom formatter callback function to print out the content
+      of a `$object$_void_ptr` storing user-defined `Object` type items
+    - |
+      /* Base type */
+      typedef struct
+      {
+          bool hidden;
+          float value;
+      } Object;
+      \\n
+      \\n
+      \\n
+      /* Formatter callback */
+      static bool
+      Object_repr(const Object *object,
+                  char **buffer,
+                  size_t *buffer_size)
+      {
+          #define REPR(value) "Object{" value "}"
+          #define HIDDEN REPR("HIDDEN")
+          #define PUBLIC REPR(".f=%f")
+          \\n
+          /* Number of digits needed by the float value */
+          size_t public_size = snprintf(NULL, 0, "%f", object->value) + sizeof PUBLIC;
+          \\n
+          /* Resize buffer if necessary */
+          if (!(*buffer_size >= public_size && *buffer_size >= sizeof HIDDEN))
+          {
+              /* If resize failed */
+              if (!(*buffer = realloc(*buffer, public_size)))
+                  return false;
+              *buffer_size = public_size;
+          }
+          \\n
+          /* Format string representation*/
+          if (object->hidden)
+              snprintf(*buffer, *buffer_size, HIDDEN);
+          else
+              snprintf(*buffer, *buffer_size, PUBLIC, object->value);
+          return true;
+      }
+      \\n
+      \\n
+      \\n
+      int main(void)
+      {
+          bool check;
+          \\n
+          $object$_void_ptr *objects;
+          check = new(&objects, sizeof(Object), 2, ((Object[]){{.hidden=true,  .value=42.f},
+                                                               {.hidden=false, .value=3.14f}}));
+          if (!check)
+          {
+              fprintf(stderr, "Allocation failed\n");
+              return EXIT_FAILURE;
+          }
+          print(objects, Object_repr);
+          \\n
+          del(objects);
+          return 0;
+      }
+
+  - - OUTPUT
+    - |
+      \\OFF
+      $object${Object{HIDDEN}, Object{.f=3.140000}}

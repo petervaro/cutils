@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.450 (20140713)                       ##
+##                       Version: 0.8.90.506 (20140819)                       ##
 ##                                                                            ##
 ##                         File: doc/src/07_clic.yaml                         ##
 ##                                                                            ##
@@ -60,7 +60,7 @@ USER:
       VARS:
         VAR_module: clic
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - - usage
+  - - Usage
     - name: Command Line Tool
       info: >
             `clic` is a command line tool that takes a path to a folder as a
@@ -74,7 +74,7 @@ USER:
           - \\OFF$ python3 clic.py .
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - - files
+  - - Files
     - name: INFO file
       info: |
             This file doesn't have any extension and its name has to be `INFO`
@@ -173,7 +173,7 @@ USER:
             //////////////////////////////////////////////////////// INFO //
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - - format macro
+  - - Format Macro
     - name: LEFT|CENTER|RIGHT
       info: |
             If one wants to specify the alignment of the generated
@@ -206,7 +206,7 @@ USER:
           - '\\OFF#format CENTER 100'
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - - variables
+  - - Variables
     - name: VERSION
       info: Grab content of VERSION file if exists
     - name: LICENSE

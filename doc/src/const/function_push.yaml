@@ -1,0 +1,74 @@
+func: push
+vargs:
+  - - - $object$_type *
+      - $variable$
+    - - size_t
+      - index
+    - - type *
+      - item
+
+  - - - $object$_type *
+      - $variable$
+    - - size_t
+      - index
+    - - size_t
+      - count
+    - - type *
+      - items
+
+return:
+  - - bool
+    - Indicates if the insertion was successful or not.
+  - - true
+    - if item(s) was/were successfully inserted to the $type$
+  - - false
+    - if $type$ is a pointer to `NULL`
+  - - false
+    - if internal reallocation failed
+
+info: |
+      `push` is a type-generic function-like macro, which takes a pointer
+      to a type-specific $object$, an index, a pointer to the source and
+      optionally the number of items. It inserts item(s) before the given
+      index and shifts the data already there.
+      \\n\\n
+      ***Note:*** Why `push` and `pull` instead of the more intuitive
+      `insert` and `remove`? The main reason, is because the standard
+      library already uses the function name `remove` in `stdio`. Of course
+      dispatching between the standard and the cutils calls would be easy. (One
+      has to add a `const char *` to the `_Generic` assocation list of this
+      function.) However using an alternative version, `pull`, is still a nicer
+      solution. Besides, it is even shorter! And to keep the naming consistent,
+      if `remove`'s pair is `insert`, then `pull`'s pair is `push`!
+
+exceptions:
+  - FILE: const/exception_null_ptr.yaml
+  - - 4th argument is `NULL`
+    - if the `item`/`items` pointer pointing to `NULL`
+  - FILE: const/exception_realloc.yaml
+
+examples:
+  - - >
+      Insert a single item at the second place of the $type$, then insert two
+      more at the beginning of the $type$
+    - |
+      /* Create $type$ */
+      $object$_short *$shortvar$;
+      new(&$shortvar$, 4, ((short[]){(short)3, (short)5, (short)6, (short)7}));
+      \\n
+      /* Insert items into $type$ */
+      print($shortvar$);
+      push($shortvar$, 1, (&(short){4}));
+      print($shortvar$);
+      push($shortvar$, 0, 2, ((short[]){(short)1, (short)2}));
+      print($shortvar$);
+      \\n
+      /* Delete $type$ */
+      del($shortvar$);
+
+  - - OUTPUT
+    - |
+      \\OFF
+      $object$_short{3, 5, 6, 7}
+      $object$_short{3, 4, 5, 6, 7}
+      $object$_short{1, 2, 3, 4, 5, 6, 7}

@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.80.228 (20140724)                       ##
+##                       Version: 0.8.90.680 (20140821)                       ##
 ##                                                                            ##
 ##                         File: doc/src/17_csll.yaml                         ##
 ##                                                                            ##
@@ -24,28 +24,181 @@ HEAD:
 
 #------------------------------------------------------------------------------#
 INFO:
-  FILE: const/wip.yaml
+  - - h1
+    - string: CSLL | Singly Linked List
+  - - br
+  - - p
+    - string: |
+              Implementation of singly linked list and its iterator high-level
+              data-type objects and their methods.
 
 #------------------------------------------------------------------------------#
 USER:
-  - - About
-    - name: Summary
-      info: >
-            Implementation of a singly linked list object type and its methods.
-            \\n\\n
-            *Coming soon...*
+  - - Options
+    - FILE: const/name.yaml
+      VARS:
+        VAR_head: csll
+        VAR_func: iter
 
-# Convert DynamicArray to SinglyLinkedList
-# ----------------------------------------
-#
-# DynamicArray_long *dynarr;
-# SinglyLinkedList_long *linlist;
-#
-# new(&dynarr, 4, ((long[]){3l, 67l, 31l, 9l}));
-# linlist(&linlist, len(dynarr), raw(dynarr));
+#------------------------------------------------------------------------------#
+TYPE:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_char
+    original: char
 
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_signed_char
+    original: signed char
 
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_unsigned_char
+    original: unsigned char
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_char_ptr
+    original: char *
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_short
+    original: short
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_unsigned_short
+    original: unsigned short
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_int
+    original: int
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_unsigned_int
+    original: unsigned int
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_long
+    original: long
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_unsigned_long
+    original: unsigned long
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_long_long
+    original: long long
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_unsigned_long_long
+    original: unsigned long long
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_float
+    original: float
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_double
+    original: double
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_long_double
+    original: long double
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_bool
+    original: bool
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_size_t
+    original: size_t
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_ptrdiff_t
+    original: ptrdiff_t
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - type: SinglyLinkedList_void_ptr
+    original: void *
+    info: |
+          This is the so-called universal list type, and also the base type of
+          all the specific typed `SinglyLinkedList`s. It holds `void *` type of
+          items, therefore it can hold any kind of pointer to type. It has a
+          slightly different [new](#func_new) function as well.
+          \\n\\n
+          `SinglyLinkedList` stores the items by their values (copies them), not
+          only by a pointer to them. For example if the list is a
+          [`SinglyLinkedList_int`](#type_SinglyLinkedList_int) it will save a
+          copy of the integers themselves inside itself. Also, if for example
+          the list is a
+          [`SinglyLinkedList_void_ptr`](#type_SinglyLinkedList_void_ptr) all the
+          pointers will be copied and stored and pointing at the exact same
+          memory location as the original pointers.
+
+#------------------------------------------------------------------------------#
 FUNC:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/function_new.yaml
+    VARS:
+      $object$: SinglyLinkedList
+      $variable$: linked_list
+      $shortvar$: linlist
+      $type$: list
+      $newline$: ''
+      $extra$: ''
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/function_del.yaml
+    VARS:
+      $object$: SinglyLinkedList
+      $variable$: linked_list
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/function_print.yaml
+    VARS:
+      $object$: SinglyLinkedList
+      $variable$: linked_list
+      $shortvar$: linlist
+      $shortvar_space$: '       ' # Spacehack for 'linlist'
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/function_len.yaml
+    VARS:
+      $object$: SinglyLinkedList
+      $variable$: linked_list
+      $shortvar$: linlist
+      $type$: list
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/function_clear.yaml
+    VARS:
+      $object$: SinglyLinkedList
+      $variable$: linked_list
+      $shortvar$: linlist
+      $type$: list
+      $extra$: ''
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - func: iter
+    args:
+      - - SinglyLinkedList_type *
+        - linked_list
+
+    return:
+      - - SinglyLinkedList_type_iterator *
+        - >
+          It returns an iterator object even if the list is empty. The
+          [next](#func_next) function can be called at least at once on the
+          returned object.
+
+    info: >
+          `iter` is a type-generic function-like macro, which takes a pointer
+          to a type-specific SinglyLinkedList and returns an iterator object
+          which can be iterated by the [next](#func_next) function. For examples
+          look at the examples of the [next](#func_next) function.
+
+    excpetions:
+      - FILE: const/exception_null_ptr.yaml
+      - FILE: const/exception_alloc.yaml
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - func: next
     args:
       - - SinglyLinkedList_type_iterator *
@@ -53,6 +206,154 @@ FUNC:
       - - type **
         - item
 
-    return: bool
+    return:
+      - - bool
+        - Indicates if iterator has more value
 
-    info: one step ahead in iterator
+    info: >
+          `next` is a type-generic function-like macro, which takes a pointer
+          to a type-specific iterator of a SinglyLinkedList and a pointer to a
+          pointer of the given type and gets the next value from the iterator of
+          the list created by the [iter](#func_iter) function and redirect the
+          pointer to the value in the list.
+
+    exceptions:
+        - FILE: const/exception_null_ptr.yaml
+        - - 2nd argument is `NULL`
+          - if the `item`/`items` pointer pointing to `NULL`
+
+    examples:
+      - - Iterate through a list of `float`s
+        - |
+          /* Create list of floats */
+          SinglyLinkedList_float *linlist;
+          if (!new(&linlist, 3, ((float[]){1.341f, 9.019f, 33.907f})))
+              printf("Allocation failed\n");
+          \\n
+          /* Create iterator object */
+          SinglyLinkedList_float_iterator *iter_linlist = iter(linlist);
+          \\n
+          /* Iterate through the list and print its items */
+          float *item;
+          while(next(iter_linlist, &item))
+              printf("%f\n", *item);
+
+      - - OUTPUT
+        - |
+          \\OFF
+          1.341000
+          9.019000
+          33.907001
+
+      - - Iterate through a list of `char*`s
+        - |
+          /* Create list of strings */
+          SinglyLinkedList_char_ptr *linlist;
+          if (!new(&linlist, 3, ((char*[]){"1 1/2 ounces vodka",
+                                           "  3/4 ounce Kahlua coffee liqueur",
+                                           "  3/4 ounce cream"})))
+              printf("Allocation failed\n");
+          \\n
+          /* Create iterator object */
+          SinglyLinkedList_char_ptr_iterator *iter_linlist = iter(linlist);
+          \\n
+          /* Iterate through the list and print its items */
+          char **item;
+          while(next(iter_linlist, &item))
+              printf("%s\n", *item);
+
+      - - OUTPUT
+        - |
+          \\OFF
+          1 1/2 ounces vodka
+            3/4 ounce Kahlua coffee liqueur
+            3/4 ounce cream
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/function_swap.yaml
+    VARS:
+      $object$: SinglyLinkedList
+      $variable$: linked_list
+      $shortvar$: linlist
+      $type$: list
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/function_reverse.yaml
+    VARS:
+      $object$: SinglyLinkedList
+      $variable$: linked_list
+      $shortvar$: linlist
+      $type$: list
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/function_append.yaml
+    VARS:
+      $object$: SinglyLinkedList
+      $variable$: linked_list
+      $shortvar$: linlist
+      $type$: list
+      $shortvar_space$: '       ' # Spacehack for 'linlist'
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/function_push.yaml
+    VARS:
+      $object$: SinglyLinkedList
+      $variable$: linked_list
+      $shortvar$: linlist
+      $type$: list
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/function_pull.yaml
+    VARS:
+      $object$: SinglyLinkedList
+      $variable$: linked_list
+      $shortvar$: linlist
+      $type$: list
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/function_pop.yaml
+    VARS:
+      $object$: SinglyLinkedList
+      $variable$: linked_list
+      $shortvar$: linlist
+      $type$: list
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/function_sub.yaml
+    VARS:
+      $object$: SinglyLinkedList
+      $variable$: linked_list
+      $shortvar$: linlist
+      $type$: list
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/function_truncate.yaml
+    VARS:
+      $object$: SinglyLinkedList
+      $variable$: linked_list
+      $shortvar$: linlist
+      $type$: list
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/function_set.yaml
+    VARS:
+      $object$: SinglyLinkedList
+      $variable$: linked_list
+      $shortvar$: linlist
+      $type$: list
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/function_get.yaml
+    VARS:
+      $object$: SinglyLinkedList
+      $variable$: linked_list
+      $shortvar$: linlist
+      $type$: list
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - FILE: const/function_map.yaml
+    VARS:
+      $object$: SinglyLinkedList
+      $variable$: linked_list
+      $shortvar$: linlist
+      $type$: list

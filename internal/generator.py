@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.80.068 (20140721)                       ##
+##                       Version: 0.8.85.326 (20140727)                       ##
 ##                                                                            ##
 ##                        File: internal/generator.py                         ##
 ##                                                                            ##
@@ -17,13 +17,14 @@
 # Import python modules
 from itertools import chain, repeat
 from string import punctuation as P
+from random import random
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 _INFO = '/* INFO *\n * INFO */\n\n'
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-_GUARD_HEAD = ('#ifndef _C_{0}_H_2427147457128005_\n'
-              '#define _C_{0}_H_2427147457128005_\n\n')
-_GUARD_FOOT = '\n#endif /* _C_{0}_H_2427147457128005_ */\n'
+_GUARD_HEAD = ('#ifndef _C_{0}_H_{1}_\n'
+              '#define _C_{0}_H_{1}_\n\n')
+_GUARD_FOOT = '\n#endif /* _C_{0}_H_{1}_ */\n'
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 _WRAPPED_HEADER = 'extern {1} {0}_{{1}}_{2}({3.types});'
 _WRAPPED_SOURCE = '{1} {0}_{{1}}_{2}({3.fulls}){{{{{4}}}}}'
@@ -135,7 +136,7 @@ def auto_api(macro_header, macros_dict):
 
 #------------------------------------------------------------------------------#
 def methods(types, base_name, sub_typed=False, guard=None,
-            prototype=None, wrappers=(), pointers=(),
+            prototype=None, supports=(), wrappers=(), pointers=(),
             proto_header=None, proto_source=None,
             output_header=None, output_source=None,
             macros_dict={}, includes=()):
@@ -151,6 +152,11 @@ def methods(types, base_name, sub_typed=False, guard=None,
         # Add base types
         headers = ['typedef struct {{}} {}_{};'.format(base_name, word)]
         sources = ['typedef {0}_{1} {0}_{2};'.format(base_name, prototype, word)]
+        # HACK: make the supporter types way more generic
+        #       create a better definition-structure!
+        for alias, real in supports:
+            headers.append(('typedef struct {{}} ' + alias + ';').format(base_name, word))
+            sources.append(('typedef {2} ' + alias + ';').format(base_name, word, real))
         # Create function wrappers and pointers
         for f, h, s in chain(zip(wrappers, repeat(_WRAPPED_HEADER), repeat(_WRAPPED_SOURCE)),
                              zip(pointers, repeat(_POINTER_HEADER), repeat(_POINTER_SOURCE))):
@@ -181,14 +187,14 @@ def methods(types, base_name, sub_typed=False, guard=None,
     if output_header:
         with open(output_header, 'w', encoding='utf-8') as h_file:
             h_file.write(_INFO)
-            h_file.write(_GUARD_HEAD.format(guard))
+            h_file.write(_GUARD_HEAD.format(*guard))
             h_file.write(''.join('#include {}\n'.format(i) for i in includes))
             with open(proto_header, encoding='utf-8') as h_proto:
                 code = h_proto.read()
                 h_file.write(code[code.find(_START) + _LEN_S:])
             h_file.write(_COMMENT)
             h_file.write(_COMMENT.join(methods_header))
-            h_file.write(_GUARD_FOOT.format(guard))
+            h_file.write(_GUARD_FOOT.format(*guard))
         print(output_header, 'generated.')
 
     if output_source:

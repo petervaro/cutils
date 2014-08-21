@@ -1,0 +1,115 @@
+func: swap
+vargs:
+  - - - $object$_type *
+      - $variable$
+    - - size_t
+      - index1
+    - - size_t
+      - index2
+
+  - - - $object$_type *
+      - $variable$
+    - - size_t
+      - index1
+    - - size_t
+      - index2
+    - - size_t
+      - item_count
+
+return:
+  - - bool
+    - Indicates if the swapping was successful or not.
+  - - true
+    - >
+      if there was nothing to swap (indices are the same, the $type$ is
+      empty, etc.) or the swap was successful
+  - - false
+    - if $type$ is a pointer to `NULL`
+  - - false
+    - if one of the indices is out of range
+
+info: >
+      `swap` is a type-generic function-like macro, which takes a pointer to
+      a type-specific $object$, an index to the first element of the
+      first block, another index to the first element of the second block,
+      and the number of elements in the blocks and swaps the two blocks
+      inside the $type$. `swap` also has a variant, where the last argument
+      can be dropped and it will be passed as the defualt `1`.
+
+exceptions:
+  - FILE: const/exception_null_ptr.yaml
+  - FILE: const/exception_empty.yaml
+
+  - - 2nd argument is out of range
+    - The 1st index passed is greater than the number of items in the $type$.
+
+  - - 3rd argument is out of range
+    - The 2nd index passed is greater than the number of items in the $type$.
+
+  - - blocks are overlapping
+    - >
+      It is more like a warning or note: the passed count argument is
+      greater than the number of items between the two indices. The
+      execution of the function will continue and the function will use the
+      maximum available number of items to swap, so one can ignore this
+      exception.
+
+  - - 4th argument is out of range
+    - >
+      The count argument is greater than the number of items between the
+      greater index and the end of the $type$. The execution of the function
+      will continue and the function will use the maximum available number
+      of items to swap, so one can ignore this exception.
+
+examples:
+  - - Swap a single `unsigned integer` in $type$
+    - |
+      /* Create, fill and print $type$ */
+      $object$_unsigned_int *$shortvar$;
+      new(&$shortvar$, 4, ((unsigned[]){3u, 9u, 6u, 12u}));
+      printf("Before swap:\n");
+      print($shortvar$);
+      \\n
+      /* Swap elements and print $type$ again */
+      if (!swap($shortvar$, 1, 2))
+        printf("Oups! Something went wrong during swapping..");
+      printf("\nAfter swap:\n");
+      print($shortvar$);
+      \\n
+      /* Destroy $type$ and its content */
+      del($shortvar$);
+
+  - - OUTPUT
+    - |
+      \\OFF
+      Before swap:
+      $object$_unsigned_int{3, 9, 6, 12}
+      \\n
+      After swap:
+      $object$_unsigned_int{3, 6, 9, 12}
+
+  - - Swap blocks of `long`s in $type$
+    - |
+      /* Create, fill and print $type$ */
+      $object$_long *$shortvar$;
+      new(&$shortvar$, 6, ((long[]){13l, 21l, 5l, 8l, 2l, 3l}));
+      printf("Before swap:\n");
+      print($shortvar$);
+      \\n
+      /* Swap elements and print $type$ again */
+      if (!swap($shortvar$, 0, 4, 2))
+        printf("Oh, snap.. Not again!");
+      printf("\nAfter swap:\n");
+      print($shortvar$);
+      \\n
+      /* Destroy $type$ and its content */
+      del($shortvar$);
+
+  - - OUTPUT
+    - |
+      \\OFF
+      Before swap:
+      $object$_long{13, 21, 5, 8, 2, 3}
+      \\n
+      After swap:
+      $object$_long{2, 3, 5, 8, 13, 21}

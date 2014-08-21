@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.90.506 (20140819)                       ##
 ##                                                                            ##
 ##                         File: doc/src/20_cfps.yaml                         ##
 ##                                                                            ##
@@ -34,10 +34,11 @@ INFO:
 
 #------------------------------------------------------------------------------#
 USER:
-  - FILE: const/name.yaml
-    VARS:
-      VAR_head: cfps
-      VAR_func: printfps
+  - - Options
+    - FILE: const/name.yaml
+      VARS:
+        VAR_head: cfps
+        VAR_func: printfps
 
 #------------------------------------------------------------------------------#
 FUNC:

@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.80.153 (20140721)                       ##
+##                       Version: 0.8.90.615 (20140820)                       ##
 ##                                                                            ##
 ##                      File: internal/dynamic_array.py                       ##
 ##                                                                            ##
@@ -21,7 +21,7 @@ from os.path import join as os_path_join
 from generator import fp, args, methods, VARGS
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-GUARD = 'DYNAMIC_ARRAY'
+GUARD = 'DYNAMIC_ARRAY', '2427147457128005'
 PROTO = 'void_ptr'
 ARRAY = 'cutils_cdar_DynamicArray'
 
@@ -125,18 +125,16 @@ WRAPPERS = (
 
     # format
     # TODO: is there a way to make this inline?
-    ('char*', 'format',
+    ('bool', 'format',
     # TODO: change this const void* --> const {2}* ?
-     args('const void*', 'i', 'char**', 'b', 'size_t*', 's'),
+     args('const {2}*', 'i', 'char**', 'b', 'size_t*', 's'),
     # TODO: add all suffixes of numbers (eg.: unsigned long long 1ull)
     #       and update the examples of the documentation
-     {'bool': 'snprintf(*b,*s,"%s",(*({2}*)i)?"true":"false");return *b;',
-      'char': 'cutils_fmtc_repr(*b,*s,({2}*)i,1);return *b;',
-      'char*': 'char *c=*({2}*)i;size_t l=strlen(c);\n'
-               'if(*s<l*2+3){{char *n=realloc(*b,l*2+3);if(!n){{strncpy(*b,\n'
-               '"<ERROR: INTERNAL REALLOCATION FAILED>",*s);return *b;}}\n'
-               '*s=l*2+3;*b=n;}}cutils_fmtc_repr(*b,*s,c,l);return *b;',
-      'default': 'snprintf(*b,*s,"%{3}",*({2}*)i);return *b;'},
+     {'bool': 'snprintf(*b,*s,"%s",*i?"true":"false");return true;',
+      'char': 'cutils_fmtc_repr(*b,*s,i,1);return true;',
+      'char*': 'size_t l=strlen(*i);if(*s<l+3)if(!(*b=realloc(*b,(*s=l*2+3))))\n'
+               'return false;cutils_fmtc_repr(*b,*s,*i,l);return true;',
+      'default': 'snprintf(*b,*s,"%{3}",*i);return true;'},
      NotImplemented),
 
     # compare
@@ -147,7 +145,7 @@ WRAPPERS = (
       'double': 'return cutils_fcmp_double_compare(*(double*)p1,*(double*)p2);',
       'long double': 'return cutils_fcmp_long_double_compare('
                      '*(long double*)p1,*(long double*)p2);',
-      'default': 'return !memcmp(p1, p2, s);'},
+      'default': 'return !memcmp(p1,p2,s);'},
      NotImplemented),
 )
 
@@ -200,16 +198,22 @@ POINTERS = (
      args(ARG1_T, ARG1_N),
      _FUNCTION),
 
+    # map
+    ('void', 'map',
+     args(ARG1_T, ARG1_N, 'size_t', 'i', 'size_t', 'c',
+          fp('void', 'f', 'size_t', '{2}*')),
+     _FUNCTION),
+
     # print
     # TODO: is there a way to make this inline?
     ('void', 'print',
      args(ARG1_T, ARG1_N, 'FILE*', 's', 'const char*', 'n',
-          fp('char*', 'f', 'const void*', 'char**', 'size_t*')),
+          fp('bool', 'f')),
      _FUNCTION,
     # singles: 0:object_type_name
     # doubles: 0:base_name, 1:sub_type_name, 2:func_name
      '{0}:{{0}}_{{1}}_{{2}}(\\\n'
-     '        ({0})object,stdout,"DynamicArray_{{1}}",\\\n'
+     '        ({0})object,stdout,"{{1}}",\\\n'
      '        {{0}}_{{1}}_format,##__VA_ARGS__)')
 )
 
@@ -227,8 +231,8 @@ def generate(folder, macros_dict):
             proto_source='dynamic_array.c',
             output_header=os_path_join(folder, 'cdar.h'),
             output_source=os_path_join(folder, 'cdar.c'),
-            includes=('<stddef.h>                /* ptrdiff_t */',
-                      '<string.h>                /* strlen(), strncpy() */',
-                      '"cutils/internal/fmtc.h"  /* cutils_fmtc_repr */',
-                      '"cutils/internal/fcmp.h"  /* cutils_fcmp_compare */'),
+            includes=('<stddef.h>         /* ptrdiff_t */',
+                      '<string.h>         /* strlen(), strncpy() */',
+                      '"internal/fmtc.h"  /* cutils_fmtc_repr */',
+                      '"internal/fcmp.h"  /* cutils_fcmp_compare */'),
             macros_dict=macros_dict)

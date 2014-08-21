@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.80.307 (20140726)                       **
+**                       Version: 0.8.90.629 (20140820)                       **
 **                                                                            **
 **                                File: cdar.c                                **
 **                                                                            **
@@ -14,10 +14,10 @@
 **                                                                            **
 ************************************************************************ INFO */
 
-#include <stddef.h>                /* ptrdiff_t */
-#include <string.h>                /* strlen(), strncpy() */
-#include "cutils/internal/fmtc.h"  /* cutils_fmtc_repr */
-#include "cutils/internal/fcmp.h"  /* cutils_fcmp_compare */
+#include <stddef.h>         /* ptrdiff_t */
+#include <string.h>         /* strlen(), strncpy() */
+#include "internal/fmtc.h"  /* cutils_fmtc_repr */
+#include "internal/fcmp.h"  /* cutils_fcmp_compare */
 #include <stdlib.h>   /* malloc(), realloc(), free() */
 #ifdef CDAR_JEM
   #include <jemalloc/jemalloc.h>  /* malloc(), realloc(), free() */
@@ -31,42 +31,14 @@
 #if defined CDAR_OPT
   #define cutils_cexc_raise(msg, len)
 #else
-  #include "cutils/cexc.h"
+  #include "cexc.h"
+  #include "internal/defs.h"
 #endif
 
 /*----------------------------------------------------------------------------*/
 /* Exception messages */
-#undef  CEXC_MSG_TYPE
-#define CEXC_MSG_TYPE "DynamicArray"
-
-#undef  CEXC_MSG_ARGUMENT_NULL
-#define CEXC_MSG_ARGUMENT_NULL(func, idx, arg) \
-        CEXC_MSG_TYPE ", " func ": " idx " argument '" #arg "' is NULL"
-
-#undef  CEXC_MSG_ARGUMENT_OUTOF
-#define CEXC_MSG_ARGUMENT_OUTOF(func, idx, arg) \
-        CEXC_MSG_TYPE ", " func ": " idx " argument '" #arg "' is out of range"
-
-#undef  CEXC_MSG_NOT_INIT
-#define CEXC_MSG_NOT_INIT(func) \
-        CEXC_MSG_TYPE ", " func ": array is not initialised"
-
-#undef  CEXC_MSG_EMPTY
-#define CEXC_MSG_EMPTY(func) \
-        CEXC_MSG_TYPE ", " func ": array is empty"
-
-#undef  CEXC_MSG_REALLOC_FAIL
-#define CEXC_MSG_REALLOC_FAIL(func) \
-        CEXC_MSG_TYPE ", " func ": internal reallocation failed"
-
-#undef  CEXC_MSG_ALLOC_FAIL
-#define CEXC_MSG_ALLOC_FAIL(func) \
-        CEXC_MSG_TYPE ", " func ": internal allocation failed"
-
-#undef  CEXC_MSG_OVERLAP
-#define CEXC_MSG_OVERLAP(func) \
-        CEXC_MSG_TYPE ", " func ": blocks are overlapping"
-
+#undef  TYPE_REPR
+#define TYPE_REPR "DynamicArray"
 /* A variable to construct the exception message in */
 #undef  EXCEPTION_MSG
 
@@ -148,7 +120,7 @@ cutils_cdar_DynamicArray_void_ptr_new(cutils_cdar_DynamicArray_void_ptr **dynarr
         free(data);
     /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     Error_Array_Allocation_Failed:
-        #define EXCEPTION_MSG CEXC_MSG_ALLOC_FAIL("new")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_ALLOC_FAIL(TYPE_REPR, "new")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         #ifndef CDAR_OPT
@@ -183,14 +155,15 @@ cutils_cdar_DynamicArray_void_ptr_data(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Not initialised */
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("data")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "data")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return NULL; /* Cannot operate on nothing */
     }
     /* Invalid size */
     if (!size)
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_NULL("data", "2nd", size)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "data", "2nd", size)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
     else
@@ -202,7 +175,8 @@ cutils_cdar_DynamicArray_void_ptr_data(cutils_cdar_DynamicArray_void_ptr *dynarr
 #ifndef CDAR_OPT
     /* Invalid count */
     if (!count)
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_NULL("data", "3rd", count)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "data", "3rd", count)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
     else
@@ -222,7 +196,7 @@ cutils_cdar_DynamicArray_void_ptr_raw(cutils_cdar_DynamicArray_void_ptr *dynarr)
     /* Not initialised */
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("raw")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "raw")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return NULL; /* Cannot operate on nothing */
@@ -242,7 +216,7 @@ cutils_cdar_DynamicArray_void_ptr_len(cutils_cdar_DynamicArray_void_ptr *dynarr)
     /* Not initialised */
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("len")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "len")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
@@ -262,7 +236,7 @@ cutils_cdar_DynamicArray_void_ptr_size(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Not initialised */
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("size")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "size")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
@@ -278,11 +252,11 @@ cutils_cdar_DynamicArray_void_ptr_size(cutils_cdar_DynamicArray_void_ptr *dynarr
 void
 cutils_cdar_DynamicArray_void_ptr_clear(cutils_cdar_DynamicArray_void_ptr *dynarr)
 {
-#ifdef CDAR_OPT
+#ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("clear")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "clear")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return; /* Cannot operate on nothing */
@@ -303,7 +277,7 @@ cutils_cdar_DynamicArray_void_ptr_resize(cutils_cdar_DynamicArray_void_ptr *dyna
     /* Not initialised */
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("resize")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "resize")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
@@ -321,7 +295,7 @@ cutils_cdar_DynamicArray_void_ptr_resize(cutils_cdar_DynamicArray_void_ptr *dyna
     /* Make it bigger */
     if (!__cdar_resize(dynarr, dynarr->size, count))
     {
-        #define EXCEPTION_MSG CEXC_MSG_REALLOC_FAIL("resize")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_REALLOC_FAIL(TYPE_REPR, "resize")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return false; /* No place to grow */
@@ -341,7 +315,7 @@ cutils_cdar_DynamicArray_void_ptr_swap(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Not initialised */
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("swap")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "swap")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
@@ -356,7 +330,7 @@ cutils_cdar_DynamicArray_void_ptr_swap(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Empty array */
     else if (!dynarr->used)
     {
-        #define EXCEPTION_MSG CEXC_MSG_EMPTY("swap")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "swap")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return true; /* Successfully did nothing */
@@ -365,7 +339,8 @@ cutils_cdar_DynamicArray_void_ptr_swap(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Out of range */
     else if (index1 >= dynarr->used)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_OUTOF("swap", "2nd", index1)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "swap", "2nd", index1)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return false; /* Not valid index */
@@ -373,7 +348,8 @@ cutils_cdar_DynamicArray_void_ptr_swap(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Out of range */
     else if (index2 >= dynarr->used)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_OUTOF("swap", "3rd", index2)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "swap", "3rd", index2)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return false; /* Not valid index */
@@ -390,7 +366,7 @@ cutils_cdar_DynamicArray_void_ptr_swap(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Limit count size, if overlapping */
     if (smaller + count >= greater)
     {
-        #define EXCEPTION_MSG CEXC_MSG_OVERLAP("swap")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_OVERLAP(TYPE_REPR, "swap")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         count = greater - smaller;
@@ -399,7 +375,8 @@ cutils_cdar_DynamicArray_void_ptr_swap(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Limit count size, if out of range */
     if ((greater + count) > dynarr->used)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_OUTOF("swap", "4th", count)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "swap", "4th", count)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         count = dynarr->used - greater;
@@ -433,7 +410,7 @@ cutils_cdar_DynamicArray_void_ptr_reverse(cutils_cdar_DynamicArray_void_ptr *dyn
 #ifndef CDAR_OPT
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("reverse")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "reverse")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
@@ -442,7 +419,7 @@ cutils_cdar_DynamicArray_void_ptr_reverse(cutils_cdar_DynamicArray_void_ptr *dyn
 #endif /* CDAR_OPT */
     if (!(length = dynarr->used))
     {
-        #define EXCEPTION_MSG CEXC_MSG_EMPTY("reverse")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "reverse")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return true; /* Successfully did nothing */
@@ -479,7 +456,8 @@ cutils_cdar_DynamicArray_void_ptr_append(cutils_cdar_DynamicArray_void_ptr *dyna
     /* Not initialised */
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("append")
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "append")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
@@ -487,7 +465,8 @@ cutils_cdar_DynamicArray_void_ptr_append(cutils_cdar_DynamicArray_void_ptr *dyna
     /* Invalid source */
     else if (!source)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_NULL("append", "3rd", source)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "append", "3rd", source)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return true; /* Successfully added nothing */
@@ -502,7 +481,8 @@ cutils_cdar_DynamicArray_void_ptr_append(cutils_cdar_DynamicArray_void_ptr *dyna
         size_t item_size = dynarr->size;
         if (!__cdar_resize(dynarr, item_size, count))
         {
-            #define EXCEPTION_MSG CEXC_MSG_REALLOC_FAIL("append")
+            #define EXCEPTION_MSG \
+                EXCEPTION_MESSAGE_REALLOC_FAIL(TYPE_REPR, "append")
             cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
             #undef EXCEPTION_MSG
             return false; /* No place to append */
@@ -529,7 +509,7 @@ cutils_cdar_DynamicArray_void_ptr_push(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Not initialised */
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("push")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "push")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
@@ -542,7 +522,8 @@ cutils_cdar_DynamicArray_void_ptr_push(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Invalid source */
     else if (!source)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_NULL("push", "4th", source)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "push", "4th", source)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return true; /* Successfully did nothing */
@@ -557,7 +538,7 @@ cutils_cdar_DynamicArray_void_ptr_push(cutils_cdar_DynamicArray_void_ptr *dynarr
     size_t item_size = dynarr->size;
     if (!__cdar_resize(dynarr, item_size, count))
     {
-        #define EXCEPTION_MSG CEXC_MSG_REALLOC_FAIL("push")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_REALLOC_FAIL(TYPE_REPR, "push")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return false; /* No place to insert */
@@ -601,7 +582,7 @@ cutils_cdar_DynamicArray_void_ptr_pull(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Not initialised */
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("pull")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "pull")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
@@ -614,7 +595,7 @@ cutils_cdar_DynamicArray_void_ptr_pull(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Empty array */
     else if (!dynarr->used)
     {
-        #define EXCEPTION_MSG CEXC_MSG_EMPTY("pull")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "pull")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return 0; /* Successfully removed nothing */
@@ -622,7 +603,8 @@ cutils_cdar_DynamicArray_void_ptr_pull(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Out of range */
     else if (index >= dynarr->used)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_OUTOF("pull", "2nd", index)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "pull", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return 0; /* Successfully removed nothing */
@@ -667,7 +649,7 @@ cutils_cdar_DynamicArray_void_ptr_pop(cutils_cdar_DynamicArray_void_ptr *dynarr,
     /* Not initialised */
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("pop")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "pop")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return 0;
@@ -680,7 +662,8 @@ cutils_cdar_DynamicArray_void_ptr_pop(cutils_cdar_DynamicArray_void_ptr *dynarr,
     /* Invalid destination */
     else if (!destination)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_NULL("pop", "4th", destination)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "pop", "4th", destination)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return 0; /* Successfully popped nothing */
@@ -688,7 +671,7 @@ cutils_cdar_DynamicArray_void_ptr_pop(cutils_cdar_DynamicArray_void_ptr *dynarr,
     /* Empty array */
     else if (!dynarr->used)
     {
-        #define EXCEPTION_MSG CEXC_MSG_EMPTY("pop")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "pop")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return 0; /* Successfully popped nothing */
@@ -696,7 +679,8 @@ cutils_cdar_DynamicArray_void_ptr_pop(cutils_cdar_DynamicArray_void_ptr *dynarr,
     /* Out of range */
     else if (index >= dynarr->used)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_OUTOF("pop", "2nd", index)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "pop", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return 0; /* Successfully popped nothing */
@@ -741,7 +725,7 @@ cutils_cdar_DynamicArray_void_ptr_sub(cutils_cdar_DynamicArray_void_ptr *dynarr,
     /* Not initialised */
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("sub")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "sub")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
@@ -754,7 +738,8 @@ cutils_cdar_DynamicArray_void_ptr_sub(cutils_cdar_DynamicArray_void_ptr *dynarr,
     /* Invalid destination */
     else if (!destination)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_NULL("sub", "4th", destination)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "sub", "4th", destination)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return 0; /* Successfully subbed nothing */
@@ -762,7 +747,8 @@ cutils_cdar_DynamicArray_void_ptr_sub(cutils_cdar_DynamicArray_void_ptr *dynarr,
     /* Empty array */
     else if (!dynarr->used)
     {
-        #define EXCEPTION_MSG CEXC_MSG_EMPTY("sub")
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "sub")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return 0; /* Successfully subbed nothing */
@@ -770,7 +756,8 @@ cutils_cdar_DynamicArray_void_ptr_sub(cutils_cdar_DynamicArray_void_ptr *dynarr,
     /* Out of range */
     else if (index >= dynarr->used)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_OUTOF("sub", "2nd", index)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "sub", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return 0; /* Successfully subbed nothing */
@@ -802,7 +789,7 @@ cutils_cdar_DynamicArray_void_ptr_truncate(cutils_cdar_DynamicArray_void_ptr *dy
     /* Not initialised */
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("truncate")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "truncate")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return; /* Cannot operate on nothing */
@@ -812,7 +799,8 @@ cutils_cdar_DynamicArray_void_ptr_truncate(cutils_cdar_DynamicArray_void_ptr *dy
     /* Out of range */
     if (index >= dynarr->used)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_OUTOF("truncate", "2nd", index)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "truncate", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return; /* Out of range */
@@ -834,7 +822,7 @@ cutils_cdar_DynamicArray_void_ptr_set(cutils_cdar_DynamicArray_void_ptr *dynarr,
     /* Not initialised */
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("set")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "set")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
@@ -847,7 +835,8 @@ cutils_cdar_DynamicArray_void_ptr_set(cutils_cdar_DynamicArray_void_ptr *dynarr,
     /* Invalid source */
     else if (!source)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_NULL("set", "4th", destination)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "set", "4th", destination)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return true; /* Successfully set nothing */
@@ -855,7 +844,8 @@ cutils_cdar_DynamicArray_void_ptr_set(cutils_cdar_DynamicArray_void_ptr *dynarr,
     /* Out of range */
     else if (index >= dynarr->used)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_OUTOF("set", "2nd", index)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "set", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return false; /* Out of range */
@@ -886,21 +876,22 @@ cutils_cdar_DynamicArray_void_ptr_get(cutils_cdar_DynamicArray_void_ptr *dynarr,
 #ifndef CDAR_OPT
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("get")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "get")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return NULL; /* Cannot operate on nothing */
     }
     else if (!dynarr->used)
     {
-        #define EXCEPTION_MSG CEXC_MSG_EMPTY("get")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "get")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return NULL;
     }
     else if (index >= dynarr->used)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_OUTOF("get", "2nd", index)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "get", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return NULL;
@@ -922,14 +913,16 @@ cutils_cdar_DynamicArray_void_ptr_find(cutils_cdar_DynamicArray_void_ptr *dynarr
 #ifndef CDAR_OPT
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("find")
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "find")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     else if (!index)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_NULL("find", "4th", index)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "find", "4th", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return false; /* Invalid data */
@@ -955,7 +948,7 @@ cutils_cdar_DynamicArray_void_ptr_find(cutils_cdar_DynamicArray_void_ptr *dynarr
         }
         return false; /* Successfully not found */
     }
-    #define EXCEPTION_MSG CEXC_MSG_EMPTY("find")
+    #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "find")
     cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
     #undef EXCEPTION_MSG
     return false; /* Successfully not found */
@@ -972,14 +965,16 @@ cutils_cdar_DynamicArray_void_ptr_findall(cutils_cdar_DynamicArray_void_ptr *dyn
 #ifndef CDAR_OPT
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("findall")
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "findall")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
     }
     else if (!indices)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_NULL("findall", "3rd", indices)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "findall", "3rd", indices)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return 0;
@@ -1000,7 +995,7 @@ cutils_cdar_DynamicArray_void_ptr_findall(cutils_cdar_DynamicArray_void_ptr *dyn
                 indices[count++] = i;
         return count;
     }
-    #define EXCEPTION_MSG CEXC_MSG_EMPTY("findall")
+    #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "findall")
     cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
     #undef EXCEPTION_MSG
     return 0;
@@ -1014,7 +1009,7 @@ cutils_cdar_DynamicArray_void_ptr_sort(cutils_cdar_DynamicArray_void_ptr *dynarr
 #ifndef CDAR_OPT
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("sort")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "sort")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return; /* Cannot operate on nothing */
@@ -1023,7 +1018,7 @@ cutils_cdar_DynamicArray_void_ptr_sort(cutils_cdar_DynamicArray_void_ptr *dynarr
 #endif /* CDAR_OPT */
     if (!dynarr->used)
     {
-        #define EXCEPTION_MSG CEXC_MSG_EMPTY("sort")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "sort")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return;
@@ -1044,21 +1039,22 @@ cutils_cdar_DynamicArray_void_ptr_sortsub(cutils_cdar_DynamicArray_void_ptr *dyn
 #ifndef CDAR_OPT
     if (!dynarr)
     {
-        #define EXCEPTION_MSG CEXC_MSG_NOT_INIT("sortsub")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "sortsub")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return; /* Cannot operate on nothing */
     }
     else if (!dynarr->used)
     {
-        #define EXCEPTION_MSG CEXC_MSG_EMPTY("sortsub")
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "sortsub")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return;
     }
     else if (index >= dynarr->used)
     {
-        #define EXCEPTION_MSG CEXC_MSG_ARGUMENT_OUTOF("sortsub", "2nd", index)
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "sortsub", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
         #undef EXCEPTION_MSG
         return;
@@ -1077,18 +1073,70 @@ cutils_cdar_DynamicArray_void_ptr_sortsub(cutils_cdar_DynamicArray_void_ptr *dyn
 
 
 /*----------------------------------------------------------------------------*/
-char *
+void
+cutils_cdar_DynamicArray_void_ptr_map(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                      size_t index,
+                                      size_t count,
+                                      void (*function)())
+{
+#ifndef CDAR_OPT
+    if (!dynarr)
+    {
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "map")
+        cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
+        #undef EXCEPTION_MSG
+        return; /* Cannot operate on nothing */
+    }
+    else if (!dynarr->used)
+    {
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "map")
+        cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
+        #undef EXCEPTION_MSG
+        return; /* Successfully did nothing */
+    }
+    else if (index >= dynarr->used)
+    {
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "map", "2nd", index)
+        cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
+        #undef EXCEPTION_MSG
+        return;
+    }
+    else if (!function)
+    {
+        #define EXCEPTION_MSG \
+            EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "map", "4th", function)
+        cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
+        #undef EXCEPTION_MSG
+        return; /* Cannot call NULL on items */
+    }
+#endif
+    /* CORE FUNCTIONALITY
+       Get/set/cast values */
+    char *data = (char *)dynarr->data;
+    size_t size = dynarr->size;
+    /* Limit count */
+    if ((index + count) >= dynarr->used)
+        count = dynarr->used - index;
+    /* Call function on each item in array */
+    for (size_t i=index; i<count; i++)
+        function(i, data + i*size);
+}
+
+
+/*----------------------------------------------------------------------------*/
+bool
 cutils_cdar_DynamicArray_void_ptr_format(const void *item,
                                          char **buffer,
                                          size_t *buffer_size)
 {
     /* buffer_size could be used to realloc buffer if
-       it is too small to contain the the formatted item */
+       it is too small to contain the formatted item */
     if (!*(char **)item)
-        snprintf(*buffer, *buffer_size, "<pointer to NULL>");
+        *buffer = REPRESENTATION_OF_NULL_POINTERS;
     else
-        snprintf(*buffer, *buffer_size, "<pointer to %p>", item);
-    return *buffer;
+        snprintf(*buffer, *buffer_size, REPRESENTATION_OF_REAL_POINTERS, item);
+    return true;
 }
 
 
@@ -1096,38 +1144,69 @@ cutils_cdar_DynamicArray_void_ptr_format(const void *item,
 void
 cutils_cdar_DynamicArray_void_ptr_print(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                         FILE *stream,
-                                        const char *name,
-                                        char *(*format)(const void*, char**, size_t*))
+                                        const char *sub_type,
+                                        bool(*format)())
+                                        // char *(*format)(const void*, char**, size_t*))
 {
-    /* If array is empty */
-    if (!dynarr->used)
-        fprintf(stream, "%s{}\n", name);
-    /* If array is filled */
-    else
+#ifndef CDAR_OPT
+    if (!dynarr)
     {
-        fprintf(stream, "%s{", name);
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "print")
+        cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
+        #undef EXCEPTION_MSG
+        fprintf(stream, REPRESENTATION_OF_NULL_POINTERS "\n");
+        return; /* Cannot operate on nothing */
+    }
+#endif
+    char *opening;
+
+    /* If object is "sub-typed" */
+    if (sub_type)
+        opening = TYPE_REPR "_%s{";
+    else
+        opening = TYPE_REPR "{";
+
+    fprintf(stream, opening, sub_type);
+    /* If array is filled */
+    if (dynarr->used)
+    {
+        /* Create a dynamically allocated buffer for representation */
         size_t buffer_size = 128;
         char *buffer = malloc(buffer_size);
         if (!buffer)
         {
-            #define EXCEPTION_MSG CEXC_MSG_ALLOC_FAIL("print")
+            #define EXCEPTION_MSG EXCEPTION_MESSAGE_ALLOC_FAIL(TYPE_REPR, "print")
             cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
             #undef EXCEPTION_MSG
             fprintf(stream, "...}\n");
             return;
         }
+        /* Create/get/set/cast essentaial values */
         char *data = (char *)dynarr->data;
         size_t size = dynarr->size;
-        /* Print first item */
-        fprintf(stream, "%s", format(data, &buffer, &buffer_size));
+        char **buffer_ptr = &buffer;
         /* Print all remaining items, with leading comma */
-        for (size_t i=1; i<dynarr->used; i++)
+        for (size_t i=0; i<dynarr->used; i++)
         {
-            fprintf(stream, ", %s", format(data + size*i, &buffer, &buffer_size));
+            /* If not the first item */
+            if (i) fprintf(stream, ", ");
+            /* If formatting representation was successful */
+            if (!format(data + size*i, buffer_ptr, &buffer_size))
+            {
+                #define EXCEPTION_MSG \
+                    EXCEPTION_MESSAGE_REALLOC_FAIL(TYPE_REPR, "print")
+                cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
+                #undef EXCEPTION_MSG
+                fprintf(stream, "...");
+                break;
+            }
+            /* Print representation and re-set buffer pointer */
+            fprintf(stream, "%s", *buffer_ptr);
+            *buffer_ptr = buffer;
         }
         free(buffer);
-        fprintf(stream, "}\n");
     }
+    fprintf(stream, "}\n");
 }
 
 /*----------------------------------------------------------------------------*/
@@ -1152,8 +1231,8 @@ size_t cutils_cdar_DynamicArray_char_sub(cutils_cdar_DynamicArray_char*d,size_t 
 char cutils_cdar_DynamicArray_char_get(cutils_cdar_DynamicArray_char*d,size_t i){return *(char*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_char_find(cutils_cdar_DynamicArray_char*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_char_findall(cutils_cdar_DynamicArray_char*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_char_format(const void*i,char**b,size_t*s){cutils_fmtc_repr(*b,*s,(char*)i,1);return *b;}
-bool cutils_cdar_DynamicArray_char_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1, p2, s);}
+bool cutils_cdar_DynamicArray_char_format(const char*i,char**b,size_t*s){cutils_fmtc_repr(*b,*s,i,1);return true;}
+bool cutils_cdar_DynamicArray_char_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_char_del)(cutils_cdar_DynamicArray_char*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_char_len)(cutils_cdar_DynamicArray_char*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_char_size)(cutils_cdar_DynamicArray_char*)=cutils_cdar_DynamicArray_void_ptr_size;
@@ -1163,7 +1242,8 @@ bool(*cutils_cdar_DynamicArray_char_reverse)(cutils_cdar_DynamicArray_char*)=cut
 size_t(*cutils_cdar_DynamicArray_char_pull)(cutils_cdar_DynamicArray_char*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_char_truncate)(cutils_cdar_DynamicArray_char*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_char_clear)(cutils_cdar_DynamicArray_char*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_char_print)(cutils_cdar_DynamicArray_char*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_char_map)(cutils_cdar_DynamicArray_char*,size_t,size_t,void(*)(size_t,char*))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_char_print)(cutils_cdar_DynamicArray_char*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_signed_char;
 bool cutils_cdar_DynamicArray_signed_char_new(cutils_cdar_DynamicArray_signed_char**d,size_t c,signed char*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(signed char),c,a);}
@@ -1177,8 +1257,8 @@ size_t cutils_cdar_DynamicArray_signed_char_sub(cutils_cdar_DynamicArray_signed_
 signed char cutils_cdar_DynamicArray_signed_char_get(cutils_cdar_DynamicArray_signed_char*d,size_t i){return *(signed char*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_signed_char_find(cutils_cdar_DynamicArray_signed_char*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_signed_char_findall(cutils_cdar_DynamicArray_signed_char*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_signed_char_format(const void*i,char**b,size_t*s){snprintf(*b,*s,"%c",*(signed char*)i);return *b;}
-bool cutils_cdar_DynamicArray_signed_char_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1, p2, s);}
+bool cutils_cdar_DynamicArray_signed_char_format(const signed char*i,char**b,size_t*s){snprintf(*b,*s,"%c",*i);return true;}
+bool cutils_cdar_DynamicArray_signed_char_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_signed_char_del)(cutils_cdar_DynamicArray_signed_char*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_signed_char_len)(cutils_cdar_DynamicArray_signed_char*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_signed_char_size)(cutils_cdar_DynamicArray_signed_char*)=cutils_cdar_DynamicArray_void_ptr_size;
@@ -1188,7 +1268,8 @@ bool(*cutils_cdar_DynamicArray_signed_char_reverse)(cutils_cdar_DynamicArray_sig
 size_t(*cutils_cdar_DynamicArray_signed_char_pull)(cutils_cdar_DynamicArray_signed_char*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_signed_char_truncate)(cutils_cdar_DynamicArray_signed_char*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_signed_char_clear)(cutils_cdar_DynamicArray_signed_char*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_signed_char_print)(cutils_cdar_DynamicArray_signed_char*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_signed_char_map)(cutils_cdar_DynamicArray_signed_char*,size_t,size_t,void(*)(size_t,signed char*))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_signed_char_print)(cutils_cdar_DynamicArray_signed_char*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_unsigned_char;
 bool cutils_cdar_DynamicArray_unsigned_char_new(cutils_cdar_DynamicArray_unsigned_char**d,size_t c,unsigned char*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned char),c,a);}
@@ -1202,8 +1283,8 @@ size_t cutils_cdar_DynamicArray_unsigned_char_sub(cutils_cdar_DynamicArray_unsig
 unsigned char cutils_cdar_DynamicArray_unsigned_char_get(cutils_cdar_DynamicArray_unsigned_char*d,size_t i){return *(unsigned char*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_unsigned_char_find(cutils_cdar_DynamicArray_unsigned_char*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_unsigned_char_findall(cutils_cdar_DynamicArray_unsigned_char*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_unsigned_char_format(const void*i,char**b,size_t*s){snprintf(*b,*s,"%u",*(unsigned char*)i);return *b;}
-bool cutils_cdar_DynamicArray_unsigned_char_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1, p2, s);}
+bool cutils_cdar_DynamicArray_unsigned_char_format(const unsigned char*i,char**b,size_t*s){snprintf(*b,*s,"%u",*i);return true;}
+bool cutils_cdar_DynamicArray_unsigned_char_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_unsigned_char_del)(cutils_cdar_DynamicArray_unsigned_char*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_unsigned_char_len)(cutils_cdar_DynamicArray_unsigned_char*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_unsigned_char_size)(cutils_cdar_DynamicArray_unsigned_char*)=cutils_cdar_DynamicArray_void_ptr_size;
@@ -1213,7 +1294,8 @@ bool(*cutils_cdar_DynamicArray_unsigned_char_reverse)(cutils_cdar_DynamicArray_u
 size_t(*cutils_cdar_DynamicArray_unsigned_char_pull)(cutils_cdar_DynamicArray_unsigned_char*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_unsigned_char_truncate)(cutils_cdar_DynamicArray_unsigned_char*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_unsigned_char_clear)(cutils_cdar_DynamicArray_unsigned_char*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_unsigned_char_print)(cutils_cdar_DynamicArray_unsigned_char*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_unsigned_char_map)(cutils_cdar_DynamicArray_unsigned_char*,size_t,size_t,void(*)(size_t,unsigned char*))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_unsigned_char_print)(cutils_cdar_DynamicArray_unsigned_char*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_char_ptr;
 bool cutils_cdar_DynamicArray_char_ptr_new(cutils_cdar_DynamicArray_char_ptr**d,size_t c,char**a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(char*),c,a);}
@@ -1227,11 +1309,9 @@ size_t cutils_cdar_DynamicArray_char_ptr_sub(cutils_cdar_DynamicArray_char_ptr*d
 char* cutils_cdar_DynamicArray_char_ptr_get(cutils_cdar_DynamicArray_char_ptr*d,size_t i){return *(char**)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_char_ptr_find(cutils_cdar_DynamicArray_char_ptr*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_char_ptr_findall(cutils_cdar_DynamicArray_char_ptr*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_char_ptr_format(const void*i,char**b,size_t*s){char *c=*(char**)i;size_t l=strlen(c);
-if(*s<l*2+3){char *n=realloc(*b,l*2+3);if(!n){strncpy(*b,
-"<ERROR: INTERNAL REALLOCATION FAILED>",*s);return *b;}
-*s=l*2+3;*b=n;}cutils_fmtc_repr(*b,*s,c,l);return *b;}
-bool cutils_cdar_DynamicArray_char_ptr_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1, p2, s);}
+bool cutils_cdar_DynamicArray_char_ptr_format(const char**i,char**b,size_t*s){size_t l=strlen(*i);if(*s<l+3)if(!(*b=realloc(*b,(*s=l*2+3))))
+return false;cutils_fmtc_repr(*b,*s,*i,l);return true;}
+bool cutils_cdar_DynamicArray_char_ptr_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_char_ptr_del)(cutils_cdar_DynamicArray_char_ptr*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_char_ptr_len)(cutils_cdar_DynamicArray_char_ptr*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_char_ptr_size)(cutils_cdar_DynamicArray_char_ptr*)=cutils_cdar_DynamicArray_void_ptr_size;
@@ -1241,7 +1321,8 @@ bool(*cutils_cdar_DynamicArray_char_ptr_reverse)(cutils_cdar_DynamicArray_char_p
 size_t(*cutils_cdar_DynamicArray_char_ptr_pull)(cutils_cdar_DynamicArray_char_ptr*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_char_ptr_truncate)(cutils_cdar_DynamicArray_char_ptr*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_char_ptr_clear)(cutils_cdar_DynamicArray_char_ptr*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_char_ptr_print)(cutils_cdar_DynamicArray_char_ptr*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_char_ptr_map)(cutils_cdar_DynamicArray_char_ptr*,size_t,size_t,void(*)(size_t,char**))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_char_ptr_print)(cutils_cdar_DynamicArray_char_ptr*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_short;
 bool cutils_cdar_DynamicArray_short_new(cutils_cdar_DynamicArray_short**d,size_t c,short*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(short),c,a);}
@@ -1255,8 +1336,8 @@ size_t cutils_cdar_DynamicArray_short_sub(cutils_cdar_DynamicArray_short*d,size_
 short cutils_cdar_DynamicArray_short_get(cutils_cdar_DynamicArray_short*d,size_t i){return *(short*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_short_find(cutils_cdar_DynamicArray_short*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_short_findall(cutils_cdar_DynamicArray_short*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_short_format(const void*i,char**b,size_t*s){snprintf(*b,*s,"%hd",*(short*)i);return *b;}
-bool cutils_cdar_DynamicArray_short_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1, p2, s);}
+bool cutils_cdar_DynamicArray_short_format(const short*i,char**b,size_t*s){snprintf(*b,*s,"%hd",*i);return true;}
+bool cutils_cdar_DynamicArray_short_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_short_del)(cutils_cdar_DynamicArray_short*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_short_len)(cutils_cdar_DynamicArray_short*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_short_size)(cutils_cdar_DynamicArray_short*)=cutils_cdar_DynamicArray_void_ptr_size;
@@ -1266,7 +1347,8 @@ bool(*cutils_cdar_DynamicArray_short_reverse)(cutils_cdar_DynamicArray_short*)=c
 size_t(*cutils_cdar_DynamicArray_short_pull)(cutils_cdar_DynamicArray_short*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_short_truncate)(cutils_cdar_DynamicArray_short*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_short_clear)(cutils_cdar_DynamicArray_short*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_short_print)(cutils_cdar_DynamicArray_short*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_short_map)(cutils_cdar_DynamicArray_short*,size_t,size_t,void(*)(size_t,short*))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_short_print)(cutils_cdar_DynamicArray_short*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_unsigned_short;
 bool cutils_cdar_DynamicArray_unsigned_short_new(cutils_cdar_DynamicArray_unsigned_short**d,size_t c,unsigned short*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned short),c,a);}
@@ -1280,8 +1362,8 @@ size_t cutils_cdar_DynamicArray_unsigned_short_sub(cutils_cdar_DynamicArray_unsi
 unsigned short cutils_cdar_DynamicArray_unsigned_short_get(cutils_cdar_DynamicArray_unsigned_short*d,size_t i){return *(unsigned short*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_unsigned_short_find(cutils_cdar_DynamicArray_unsigned_short*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_unsigned_short_findall(cutils_cdar_DynamicArray_unsigned_short*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_unsigned_short_format(const void*i,char**b,size_t*s){snprintf(*b,*s,"%hu",*(unsigned short*)i);return *b;}
-bool cutils_cdar_DynamicArray_unsigned_short_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1, p2, s);}
+bool cutils_cdar_DynamicArray_unsigned_short_format(const unsigned short*i,char**b,size_t*s){snprintf(*b,*s,"%hu",*i);return true;}
+bool cutils_cdar_DynamicArray_unsigned_short_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_unsigned_short_del)(cutils_cdar_DynamicArray_unsigned_short*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_unsigned_short_len)(cutils_cdar_DynamicArray_unsigned_short*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_unsigned_short_size)(cutils_cdar_DynamicArray_unsigned_short*)=cutils_cdar_DynamicArray_void_ptr_size;
@@ -1291,7 +1373,8 @@ bool(*cutils_cdar_DynamicArray_unsigned_short_reverse)(cutils_cdar_DynamicArray_
 size_t(*cutils_cdar_DynamicArray_unsigned_short_pull)(cutils_cdar_DynamicArray_unsigned_short*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_unsigned_short_truncate)(cutils_cdar_DynamicArray_unsigned_short*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_unsigned_short_clear)(cutils_cdar_DynamicArray_unsigned_short*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_unsigned_short_print)(cutils_cdar_DynamicArray_unsigned_short*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_unsigned_short_map)(cutils_cdar_DynamicArray_unsigned_short*,size_t,size_t,void(*)(size_t,unsigned short*))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_unsigned_short_print)(cutils_cdar_DynamicArray_unsigned_short*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_int;
 bool cutils_cdar_DynamicArray_int_new(cutils_cdar_DynamicArray_int**d,size_t c,int*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(int),c,a);}
@@ -1305,8 +1388,8 @@ size_t cutils_cdar_DynamicArray_int_sub(cutils_cdar_DynamicArray_int*d,size_t i,
 int cutils_cdar_DynamicArray_int_get(cutils_cdar_DynamicArray_int*d,size_t i){return *(int*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_int_find(cutils_cdar_DynamicArray_int*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_int_findall(cutils_cdar_DynamicArray_int*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_int_format(const void*i,char**b,size_t*s){snprintf(*b,*s,"%d",*(int*)i);return *b;}
-bool cutils_cdar_DynamicArray_int_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1, p2, s);}
+bool cutils_cdar_DynamicArray_int_format(const int*i,char**b,size_t*s){snprintf(*b,*s,"%d",*i);return true;}
+bool cutils_cdar_DynamicArray_int_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_int_del)(cutils_cdar_DynamicArray_int*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_int_len)(cutils_cdar_DynamicArray_int*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_int_size)(cutils_cdar_DynamicArray_int*)=cutils_cdar_DynamicArray_void_ptr_size;
@@ -1316,7 +1399,8 @@ bool(*cutils_cdar_DynamicArray_int_reverse)(cutils_cdar_DynamicArray_int*)=cutil
 size_t(*cutils_cdar_DynamicArray_int_pull)(cutils_cdar_DynamicArray_int*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_int_truncate)(cutils_cdar_DynamicArray_int*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_int_clear)(cutils_cdar_DynamicArray_int*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_int_print)(cutils_cdar_DynamicArray_int*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_int_map)(cutils_cdar_DynamicArray_int*,size_t,size_t,void(*)(size_t,int*))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_int_print)(cutils_cdar_DynamicArray_int*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_unsigned_int;
 bool cutils_cdar_DynamicArray_unsigned_int_new(cutils_cdar_DynamicArray_unsigned_int**d,size_t c,unsigned int*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned int),c,a);}
@@ -1330,8 +1414,8 @@ size_t cutils_cdar_DynamicArray_unsigned_int_sub(cutils_cdar_DynamicArray_unsign
 unsigned int cutils_cdar_DynamicArray_unsigned_int_get(cutils_cdar_DynamicArray_unsigned_int*d,size_t i){return *(unsigned int*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_unsigned_int_find(cutils_cdar_DynamicArray_unsigned_int*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_unsigned_int_findall(cutils_cdar_DynamicArray_unsigned_int*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_unsigned_int_format(const void*i,char**b,size_t*s){snprintf(*b,*s,"%u",*(unsigned int*)i);return *b;}
-bool cutils_cdar_DynamicArray_unsigned_int_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1, p2, s);}
+bool cutils_cdar_DynamicArray_unsigned_int_format(const unsigned int*i,char**b,size_t*s){snprintf(*b,*s,"%u",*i);return true;}
+bool cutils_cdar_DynamicArray_unsigned_int_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_unsigned_int_del)(cutils_cdar_DynamicArray_unsigned_int*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_unsigned_int_len)(cutils_cdar_DynamicArray_unsigned_int*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_unsigned_int_size)(cutils_cdar_DynamicArray_unsigned_int*)=cutils_cdar_DynamicArray_void_ptr_size;
@@ -1341,7 +1425,8 @@ bool(*cutils_cdar_DynamicArray_unsigned_int_reverse)(cutils_cdar_DynamicArray_un
 size_t(*cutils_cdar_DynamicArray_unsigned_int_pull)(cutils_cdar_DynamicArray_unsigned_int*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_unsigned_int_truncate)(cutils_cdar_DynamicArray_unsigned_int*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_unsigned_int_clear)(cutils_cdar_DynamicArray_unsigned_int*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_unsigned_int_print)(cutils_cdar_DynamicArray_unsigned_int*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_unsigned_int_map)(cutils_cdar_DynamicArray_unsigned_int*,size_t,size_t,void(*)(size_t,unsigned int*))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_unsigned_int_print)(cutils_cdar_DynamicArray_unsigned_int*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_long;
 bool cutils_cdar_DynamicArray_long_new(cutils_cdar_DynamicArray_long**d,size_t c,long*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(long),c,a);}
@@ -1355,8 +1440,8 @@ size_t cutils_cdar_DynamicArray_long_sub(cutils_cdar_DynamicArray_long*d,size_t 
 long cutils_cdar_DynamicArray_long_get(cutils_cdar_DynamicArray_long*d,size_t i){return *(long*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_long_find(cutils_cdar_DynamicArray_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_long_findall(cutils_cdar_DynamicArray_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_long_format(const void*i,char**b,size_t*s){snprintf(*b,*s,"%ld",*(long*)i);return *b;}
-bool cutils_cdar_DynamicArray_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1, p2, s);}
+bool cutils_cdar_DynamicArray_long_format(const long*i,char**b,size_t*s){snprintf(*b,*s,"%ld",*i);return true;}
+bool cutils_cdar_DynamicArray_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_long_del)(cutils_cdar_DynamicArray_long*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_long_len)(cutils_cdar_DynamicArray_long*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_long_size)(cutils_cdar_DynamicArray_long*)=cutils_cdar_DynamicArray_void_ptr_size;
@@ -1366,7 +1451,8 @@ bool(*cutils_cdar_DynamicArray_long_reverse)(cutils_cdar_DynamicArray_long*)=cut
 size_t(*cutils_cdar_DynamicArray_long_pull)(cutils_cdar_DynamicArray_long*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_long_truncate)(cutils_cdar_DynamicArray_long*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_long_clear)(cutils_cdar_DynamicArray_long*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_long_print)(cutils_cdar_DynamicArray_long*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_long_map)(cutils_cdar_DynamicArray_long*,size_t,size_t,void(*)(size_t,long*))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_long_print)(cutils_cdar_DynamicArray_long*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_unsigned_long;
 bool cutils_cdar_DynamicArray_unsigned_long_new(cutils_cdar_DynamicArray_unsigned_long**d,size_t c,unsigned long*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned long),c,a);}
@@ -1380,8 +1466,8 @@ size_t cutils_cdar_DynamicArray_unsigned_long_sub(cutils_cdar_DynamicArray_unsig
 unsigned long cutils_cdar_DynamicArray_unsigned_long_get(cutils_cdar_DynamicArray_unsigned_long*d,size_t i){return *(unsigned long*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_unsigned_long_find(cutils_cdar_DynamicArray_unsigned_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_unsigned_long_findall(cutils_cdar_DynamicArray_unsigned_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_unsigned_long_format(const void*i,char**b,size_t*s){snprintf(*b,*s,"%lu",*(unsigned long*)i);return *b;}
-bool cutils_cdar_DynamicArray_unsigned_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1, p2, s);}
+bool cutils_cdar_DynamicArray_unsigned_long_format(const unsigned long*i,char**b,size_t*s){snprintf(*b,*s,"%lu",*i);return true;}
+bool cutils_cdar_DynamicArray_unsigned_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_unsigned_long_del)(cutils_cdar_DynamicArray_unsigned_long*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_unsigned_long_len)(cutils_cdar_DynamicArray_unsigned_long*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_unsigned_long_size)(cutils_cdar_DynamicArray_unsigned_long*)=cutils_cdar_DynamicArray_void_ptr_size;
@@ -1391,7 +1477,8 @@ bool(*cutils_cdar_DynamicArray_unsigned_long_reverse)(cutils_cdar_DynamicArray_u
 size_t(*cutils_cdar_DynamicArray_unsigned_long_pull)(cutils_cdar_DynamicArray_unsigned_long*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_unsigned_long_truncate)(cutils_cdar_DynamicArray_unsigned_long*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_unsigned_long_clear)(cutils_cdar_DynamicArray_unsigned_long*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_unsigned_long_print)(cutils_cdar_DynamicArray_unsigned_long*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_unsigned_long_map)(cutils_cdar_DynamicArray_unsigned_long*,size_t,size_t,void(*)(size_t,unsigned long*))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_unsigned_long_print)(cutils_cdar_DynamicArray_unsigned_long*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_long_long;
 bool cutils_cdar_DynamicArray_long_long_new(cutils_cdar_DynamicArray_long_long**d,size_t c,long long*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(long long),c,a);}
@@ -1405,8 +1492,8 @@ size_t cutils_cdar_DynamicArray_long_long_sub(cutils_cdar_DynamicArray_long_long
 long long cutils_cdar_DynamicArray_long_long_get(cutils_cdar_DynamicArray_long_long*d,size_t i){return *(long long*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_long_long_find(cutils_cdar_DynamicArray_long_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_long_long_findall(cutils_cdar_DynamicArray_long_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_long_long_format(const void*i,char**b,size_t*s){snprintf(*b,*s,"%lld",*(long long*)i);return *b;}
-bool cutils_cdar_DynamicArray_long_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1, p2, s);}
+bool cutils_cdar_DynamicArray_long_long_format(const long long*i,char**b,size_t*s){snprintf(*b,*s,"%lld",*i);return true;}
+bool cutils_cdar_DynamicArray_long_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_long_long_del)(cutils_cdar_DynamicArray_long_long*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_long_long_len)(cutils_cdar_DynamicArray_long_long*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_long_long_size)(cutils_cdar_DynamicArray_long_long*)=cutils_cdar_DynamicArray_void_ptr_size;
@@ -1416,7 +1503,8 @@ bool(*cutils_cdar_DynamicArray_long_long_reverse)(cutils_cdar_DynamicArray_long_
 size_t(*cutils_cdar_DynamicArray_long_long_pull)(cutils_cdar_DynamicArray_long_long*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_long_long_truncate)(cutils_cdar_DynamicArray_long_long*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_long_long_clear)(cutils_cdar_DynamicArray_long_long*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_long_long_print)(cutils_cdar_DynamicArray_long_long*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_long_long_map)(cutils_cdar_DynamicArray_long_long*,size_t,size_t,void(*)(size_t,long long*))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_long_long_print)(cutils_cdar_DynamicArray_long_long*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_unsigned_long_long;
 bool cutils_cdar_DynamicArray_unsigned_long_long_new(cutils_cdar_DynamicArray_unsigned_long_long**d,size_t c,unsigned long long*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned long long),c,a);}
@@ -1430,8 +1518,8 @@ size_t cutils_cdar_DynamicArray_unsigned_long_long_sub(cutils_cdar_DynamicArray_
 unsigned long long cutils_cdar_DynamicArray_unsigned_long_long_get(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i){return *(unsigned long long*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_unsigned_long_long_find(cutils_cdar_DynamicArray_unsigned_long_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_unsigned_long_long_findall(cutils_cdar_DynamicArray_unsigned_long_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_unsigned_long_long_format(const void*i,char**b,size_t*s){snprintf(*b,*s,"%llu",*(unsigned long long*)i);return *b;}
-bool cutils_cdar_DynamicArray_unsigned_long_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1, p2, s);}
+bool cutils_cdar_DynamicArray_unsigned_long_long_format(const unsigned long long*i,char**b,size_t*s){snprintf(*b,*s,"%llu",*i);return true;}
+bool cutils_cdar_DynamicArray_unsigned_long_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_unsigned_long_long_del)(cutils_cdar_DynamicArray_unsigned_long_long*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_unsigned_long_long_len)(cutils_cdar_DynamicArray_unsigned_long_long*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_unsigned_long_long_size)(cutils_cdar_DynamicArray_unsigned_long_long*)=cutils_cdar_DynamicArray_void_ptr_size;
@@ -1441,7 +1529,8 @@ bool(*cutils_cdar_DynamicArray_unsigned_long_long_reverse)(cutils_cdar_DynamicAr
 size_t(*cutils_cdar_DynamicArray_unsigned_long_long_pull)(cutils_cdar_DynamicArray_unsigned_long_long*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_unsigned_long_long_truncate)(cutils_cdar_DynamicArray_unsigned_long_long*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_unsigned_long_long_clear)(cutils_cdar_DynamicArray_unsigned_long_long*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_unsigned_long_long_print)(cutils_cdar_DynamicArray_unsigned_long_long*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_unsigned_long_long_map)(cutils_cdar_DynamicArray_unsigned_long_long*,size_t,size_t,void(*)(size_t,unsigned long long*))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_unsigned_long_long_print)(cutils_cdar_DynamicArray_unsigned_long_long*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_float;
 bool cutils_cdar_DynamicArray_float_new(cutils_cdar_DynamicArray_float**d,size_t c,float*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(float),c,a);}
@@ -1455,7 +1544,7 @@ size_t cutils_cdar_DynamicArray_float_sub(cutils_cdar_DynamicArray_float*d,size_
 float cutils_cdar_DynamicArray_float_get(cutils_cdar_DynamicArray_float*d,size_t i){return *(float*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_float_find(cutils_cdar_DynamicArray_float*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_float_findall(cutils_cdar_DynamicArray_float*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_float_format(const void*i,char**b,size_t*s){snprintf(*b,*s,"%f",*(float*)i);return *b;}
+bool cutils_cdar_DynamicArray_float_format(const float*i,char**b,size_t*s){snprintf(*b,*s,"%f",*i);return true;}
 bool cutils_cdar_DynamicArray_float_compare(const void*p1,const void*p2,size_t s){return cutils_fcmp_float_compare(*(float*)p1,*(float*)p2);}
 void(*cutils_cdar_DynamicArray_float_del)(cutils_cdar_DynamicArray_float*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_float_len)(cutils_cdar_DynamicArray_float*)=cutils_cdar_DynamicArray_void_ptr_len;
@@ -1466,7 +1555,8 @@ bool(*cutils_cdar_DynamicArray_float_reverse)(cutils_cdar_DynamicArray_float*)=c
 size_t(*cutils_cdar_DynamicArray_float_pull)(cutils_cdar_DynamicArray_float*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_float_truncate)(cutils_cdar_DynamicArray_float*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_float_clear)(cutils_cdar_DynamicArray_float*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_float_print)(cutils_cdar_DynamicArray_float*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_float_map)(cutils_cdar_DynamicArray_float*,size_t,size_t,void(*)(size_t,float*))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_float_print)(cutils_cdar_DynamicArray_float*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_double;
 bool cutils_cdar_DynamicArray_double_new(cutils_cdar_DynamicArray_double**d,size_t c,double*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(double),c,a);}
@@ -1480,7 +1570,7 @@ size_t cutils_cdar_DynamicArray_double_sub(cutils_cdar_DynamicArray_double*d,siz
 double cutils_cdar_DynamicArray_double_get(cutils_cdar_DynamicArray_double*d,size_t i){return *(double*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_double_find(cutils_cdar_DynamicArray_double*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_double_findall(cutils_cdar_DynamicArray_double*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_double_format(const void*i,char**b,size_t*s){snprintf(*b,*s,"%lf",*(double*)i);return *b;}
+bool cutils_cdar_DynamicArray_double_format(const double*i,char**b,size_t*s){snprintf(*b,*s,"%lf",*i);return true;}
 bool cutils_cdar_DynamicArray_double_compare(const void*p1,const void*p2,size_t s){return cutils_fcmp_double_compare(*(double*)p1,*(double*)p2);}
 void(*cutils_cdar_DynamicArray_double_del)(cutils_cdar_DynamicArray_double*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_double_len)(cutils_cdar_DynamicArray_double*)=cutils_cdar_DynamicArray_void_ptr_len;
@@ -1491,7 +1581,8 @@ bool(*cutils_cdar_DynamicArray_double_reverse)(cutils_cdar_DynamicArray_double*)
 size_t(*cutils_cdar_DynamicArray_double_pull)(cutils_cdar_DynamicArray_double*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_double_truncate)(cutils_cdar_DynamicArray_double*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_double_clear)(cutils_cdar_DynamicArray_double*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_double_print)(cutils_cdar_DynamicArray_double*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_double_map)(cutils_cdar_DynamicArray_double*,size_t,size_t,void(*)(size_t,double*))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_double_print)(cutils_cdar_DynamicArray_double*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_long_double;
 bool cutils_cdar_DynamicArray_long_double_new(cutils_cdar_DynamicArray_long_double**d,size_t c,long double*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(long double),c,a);}
@@ -1505,7 +1596,7 @@ size_t cutils_cdar_DynamicArray_long_double_sub(cutils_cdar_DynamicArray_long_do
 long double cutils_cdar_DynamicArray_long_double_get(cutils_cdar_DynamicArray_long_double*d,size_t i){return *(long double*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_long_double_find(cutils_cdar_DynamicArray_long_double*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_long_double_findall(cutils_cdar_DynamicArray_long_double*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_long_double_format(const void*i,char**b,size_t*s){snprintf(*b,*s,"%Lf",*(long double*)i);return *b;}
+bool cutils_cdar_DynamicArray_long_double_format(const long double*i,char**b,size_t*s){snprintf(*b,*s,"%Lf",*i);return true;}
 bool cutils_cdar_DynamicArray_long_double_compare(const void*p1,const void*p2,size_t s){return cutils_fcmp_long_double_compare(*(long double*)p1,*(long double*)p2);}
 void(*cutils_cdar_DynamicArray_long_double_del)(cutils_cdar_DynamicArray_long_double*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_long_double_len)(cutils_cdar_DynamicArray_long_double*)=cutils_cdar_DynamicArray_void_ptr_len;
@@ -1516,7 +1607,8 @@ bool(*cutils_cdar_DynamicArray_long_double_reverse)(cutils_cdar_DynamicArray_lon
 size_t(*cutils_cdar_DynamicArray_long_double_pull)(cutils_cdar_DynamicArray_long_double*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_long_double_truncate)(cutils_cdar_DynamicArray_long_double*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_long_double_clear)(cutils_cdar_DynamicArray_long_double*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_long_double_print)(cutils_cdar_DynamicArray_long_double*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_long_double_map)(cutils_cdar_DynamicArray_long_double*,size_t,size_t,void(*)(size_t,long double*))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_long_double_print)(cutils_cdar_DynamicArray_long_double*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_bool;
 bool cutils_cdar_DynamicArray_bool_new(cutils_cdar_DynamicArray_bool**d,size_t c,bool*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(bool),c,a);}
@@ -1530,8 +1622,8 @@ size_t cutils_cdar_DynamicArray_bool_sub(cutils_cdar_DynamicArray_bool*d,size_t 
 bool cutils_cdar_DynamicArray_bool_get(cutils_cdar_DynamicArray_bool*d,size_t i){return *(bool*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_bool_find(cutils_cdar_DynamicArray_bool*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_bool_findall(cutils_cdar_DynamicArray_bool*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_bool_format(const void*i,char**b,size_t*s){snprintf(*b,*s,"%s",(*(bool*)i)?"true":"false");return *b;}
-bool cutils_cdar_DynamicArray_bool_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1, p2, s);}
+bool cutils_cdar_DynamicArray_bool_format(const bool*i,char**b,size_t*s){snprintf(*b,*s,"%s",*i?"true":"false");return true;}
+bool cutils_cdar_DynamicArray_bool_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_bool_del)(cutils_cdar_DynamicArray_bool*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_bool_len)(cutils_cdar_DynamicArray_bool*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_bool_size)(cutils_cdar_DynamicArray_bool*)=cutils_cdar_DynamicArray_void_ptr_size;
@@ -1541,7 +1633,8 @@ bool(*cutils_cdar_DynamicArray_bool_reverse)(cutils_cdar_DynamicArray_bool*)=cut
 size_t(*cutils_cdar_DynamicArray_bool_pull)(cutils_cdar_DynamicArray_bool*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_bool_truncate)(cutils_cdar_DynamicArray_bool*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_bool_clear)(cutils_cdar_DynamicArray_bool*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_bool_print)(cutils_cdar_DynamicArray_bool*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_bool_map)(cutils_cdar_DynamicArray_bool*,size_t,size_t,void(*)(size_t,bool*))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_bool_print)(cutils_cdar_DynamicArray_bool*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_size_t;
 bool cutils_cdar_DynamicArray_size_t_new(cutils_cdar_DynamicArray_size_t**d,size_t c,size_t*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(size_t),c,a);}
@@ -1555,8 +1648,8 @@ size_t cutils_cdar_DynamicArray_size_t_sub(cutils_cdar_DynamicArray_size_t*d,siz
 size_t cutils_cdar_DynamicArray_size_t_get(cutils_cdar_DynamicArray_size_t*d,size_t i){return *(size_t*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_size_t_find(cutils_cdar_DynamicArray_size_t*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_size_t_findall(cutils_cdar_DynamicArray_size_t*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_size_t_format(const void*i,char**b,size_t*s){snprintf(*b,*s,"%zu",*(size_t*)i);return *b;}
-bool cutils_cdar_DynamicArray_size_t_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1, p2, s);}
+bool cutils_cdar_DynamicArray_size_t_format(const size_t*i,char**b,size_t*s){snprintf(*b,*s,"%zu",*i);return true;}
+bool cutils_cdar_DynamicArray_size_t_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_size_t_del)(cutils_cdar_DynamicArray_size_t*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_size_t_len)(cutils_cdar_DynamicArray_size_t*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_size_t_size)(cutils_cdar_DynamicArray_size_t*)=cutils_cdar_DynamicArray_void_ptr_size;
@@ -1566,7 +1659,8 @@ bool(*cutils_cdar_DynamicArray_size_t_reverse)(cutils_cdar_DynamicArray_size_t*)
 size_t(*cutils_cdar_DynamicArray_size_t_pull)(cutils_cdar_DynamicArray_size_t*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_size_t_truncate)(cutils_cdar_DynamicArray_size_t*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_size_t_clear)(cutils_cdar_DynamicArray_size_t*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_size_t_print)(cutils_cdar_DynamicArray_size_t*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_size_t_map)(cutils_cdar_DynamicArray_size_t*,size_t,size_t,void(*)(size_t,size_t*))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_size_t_print)(cutils_cdar_DynamicArray_size_t*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_ptrdiff_t;
 bool cutils_cdar_DynamicArray_ptrdiff_t_new(cutils_cdar_DynamicArray_ptrdiff_t**d,size_t c,ptrdiff_t*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(ptrdiff_t),c,a);}
@@ -1580,8 +1674,8 @@ size_t cutils_cdar_DynamicArray_ptrdiff_t_sub(cutils_cdar_DynamicArray_ptrdiff_t
 ptrdiff_t cutils_cdar_DynamicArray_ptrdiff_t_get(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t i){return *(ptrdiff_t*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_ptrdiff_t_find(cutils_cdar_DynamicArray_ptrdiff_t*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_ptrdiff_t_findall(cutils_cdar_DynamicArray_ptrdiff_t*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-char* cutils_cdar_DynamicArray_ptrdiff_t_format(const void*i,char**b,size_t*s){snprintf(*b,*s,"%td",*(ptrdiff_t*)i);return *b;}
-bool cutils_cdar_DynamicArray_ptrdiff_t_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1, p2, s);}
+bool cutils_cdar_DynamicArray_ptrdiff_t_format(const ptrdiff_t*i,char**b,size_t*s){snprintf(*b,*s,"%td",*i);return true;}
+bool cutils_cdar_DynamicArray_ptrdiff_t_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_ptrdiff_t_del)(cutils_cdar_DynamicArray_ptrdiff_t*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_ptrdiff_t_len)(cutils_cdar_DynamicArray_ptrdiff_t*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_ptrdiff_t_size)(cutils_cdar_DynamicArray_ptrdiff_t*)=cutils_cdar_DynamicArray_void_ptr_size;
@@ -1591,4 +1685,5 @@ bool(*cutils_cdar_DynamicArray_ptrdiff_t_reverse)(cutils_cdar_DynamicArray_ptrdi
 size_t(*cutils_cdar_DynamicArray_ptrdiff_t_pull)(cutils_cdar_DynamicArray_ptrdiff_t*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_ptrdiff_t_truncate)(cutils_cdar_DynamicArray_ptrdiff_t*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_ptrdiff_t_clear)(cutils_cdar_DynamicArray_ptrdiff_t*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_ptrdiff_t_print)(cutils_cdar_DynamicArray_ptrdiff_t*,FILE*,const char*,char*(*)(const void*,char**,size_t*))=cutils_cdar_DynamicArray_void_ptr_print;
+void(*cutils_cdar_DynamicArray_ptrdiff_t_map)(cutils_cdar_DynamicArray_ptrdiff_t*,size_t,size_t,void(*)(size_t,ptrdiff_t*))=cutils_cdar_DynamicArray_void_ptr_map;
+void(*cutils_cdar_DynamicArray_ptrdiff_t_print)(cutils_cdar_DynamicArray_ptrdiff_t*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;

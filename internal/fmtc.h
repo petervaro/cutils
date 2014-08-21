@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.80.068 (20140721)                       **
+**                       Version: 0.8.90.563 (20140820)                       **
 **                                                                            **
 **                           File: internal/fmtc.h                            **
 **                                                                            **
@@ -22,16 +22,18 @@
 static inline void
 cutils_fmtc_repr(char *buffer,
                  size_t buffer_size,
-                 char *string,
+                 const char *string,
                  size_t string_size)
 {
     #undef SPECIAL_CHARS
     #undef ESCAPED_CHARS
-    #define SPECIAL_CHARS(S) {S, '\n' , '\t' , '\r' , '\v' , '\a' , '\b' , '\f' }
-    #define ESCAPED_CHARS(S) {S, "\\n", "\\t", "\\r", "\\v", "\\a", "\\b", "\\f"}
+    #define SPECIAL_CHARS(...) \
+        {'\\',   '\n' , '\t' , '\r' , '\v' , '\a' , '\b' , '\f' , ## __VA_ARGS__}
+    #define ESCAPED_CHARS(...) \
+        {"\\\\", "\\n", "\\t", "\\r", "\\v", "\\a", "\\b", "\\f", ## __VA_ARGS__}
 
-    static const char  special_chr[] = SPECIAL_CHARS('\'');
-    static const char *escaped_chr[] = ESCAPED_CHARS("\\'");
+    static const char  special_chr[] = SPECIAL_CHARS('\'' , '\0');
+    static const char *escaped_chr[] = ESCAPED_CHARS("\\'", "\\0");
     static const char  special_str[] = SPECIAL_CHARS('"');
     static const char *escaped_str[] = ESCAPED_CHARS("\\\"");
     static const size_t spec_chr_len = sizeof special_chr;
@@ -70,7 +72,7 @@ cutils_fmtc_repr(char *buffer,
         size_t k = 0;
         buffer[k++] = '"';
         /* If k is smaller than buffer_size - (escaped character representation,
-          closing quote, and null character at the end) */
+           closing quote, and null character at the end) */
         for (i=0; i<string_size && k<(buffer_size - 4); i++)
         {
             chr = string[i];

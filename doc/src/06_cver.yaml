@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.90.506 (20140819)                       ##
 ##                                                                            ##
 ##                         File: doc/src/06_cver.yaml                         ##
 ##                                                                            ##
@@ -35,7 +35,7 @@ INFO:
 
 #------------------------------------------------------------------------------#
 USER:
-  - - usage
+  - - Usage
     - name: Command Line Tool
       info: "`cver` doesn't take any arguments."
       examples:

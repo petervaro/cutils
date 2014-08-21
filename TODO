@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.80.313 (20140726)                       ##
+##                       Version: 0.8.90.684 (20140821)                       ##
 ##                                                                            ##
 ##                                 File: TODO                                 ##
 ##                                                                            ##
@@ -14,31 +14,10 @@
 ##                                                                            ##
 ######################################################################## INFO ##
 
-#---------------------------- 11 POSTS IN 6 FILES -----------------------------#
+#---------------------------- 11 POSTS IN 7 FILES -----------------------------#
 FIXME:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
-  - file: clic.py
-    line: 32
-    note: |
-          if modules cannot be found?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 2
-  - file: clic.py
-    line: 152
-    note: |
-          what if none of the files changed only INFO has been updated?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 3
-  - file: clic.py
-    line: 165
-    note: |
-          make it more generic than ./ -- what if ../../?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 4
   - file: doc/src/05_ccom.yaml
     line: 90
     note: |
@@ -47,21 +26,70 @@ FIXME:
           instead of this simple struct
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 5
+  # 2
   - file: internal/generator.py
-    line: 130
+    line: 131
     note: |
           better guard ending and meaningful comment
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 6
+  # 3
   - file: internal/generator.py
-    line: 149
+    line: 150
     note: |
           strip whitespaces
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 4
+  - file: ccom.py
+    line: 169
+    note: |
+          for some reason, if a comment-type ever existed in the TODO
+          file, but after a while its posts are all gone, the keyword
+          still remains there, according to the current TODO file,
+          which still have the "QUESTIONS" keyword, and comment
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 5
+  - file: clic.py
+    line: 32
+    note: |
+          if modules cannot be found?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 6
+  - file: clic.py
+    line: 164
+    note: |
+          what if none of the files changed only INFO has been updated?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 7
+  - file: clic.py
+    line: 178
+    note: |
+          make it more generic than ./ -- what if ../../?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 8
+  - file: cdoc.py
+    line: 132
+    note: |
+          replace newline only if newline character is
+          the first token in that line or it is after
+          a similar token (prevent: \\\n)
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 9
+  - file: cdoc.py
+    line: 249
+    note: |
+          if external file changed -> change the whole file
+          check for all special features and find out how
+          to store them properly in the cache files
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 10
   - file: internal/dynamic_array.py
     line: 102
     note: |
@@ -71,45 +99,18 @@ FIXME:
           bool(*)(const type*,...) --> bool(*)(const void*,...)
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 8
-  - file: cdoc.py
-    line: 130
-    note: |
-          replace newline only if newline character is
-          the first token in that line or it is after
-          a similar token (prevent: \\\n)
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 9
-  - file: cdoc.py
-    line: 247
-    note: |
-          if external file changed -> change the whole file
-          check for all special features and find out how
-          to store them properly in the cache files
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 10
-  - file: cdoc.py
-    line: 743
-    note: |
-          pre check files, because if a new file added,
-          the TOC won't be regenerated for the old files
-          also: what happens when the order changes?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 11
-  - file: ccom.py
-    line: 160
+  - file: internal/singly_linked_list.py
+    line: 105
     note: |
-          for some reason, if a comment-type ever existed in the TODO
-          file, but after a while its posts are all gone, the keyword
-          still remains there, according to the current TODO file,
-          which still have the "QUESTIONS" keyword, and comment
+          try to make both find and findall type-safe
+          by replacing the const void* to type specific pointer
+          the main problem is, cannot pass
+          bool(*)(const type*,...) --> bool(*)(const void*,...)
 
 
 
-#---------------------------- 57 POSTS IN 19 FILES ----------------------------#
+#---------------------------- 61 POSTS IN 23 FILES ----------------------------#
 TODO:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
@@ -120,15 +121,6 @@ TODO:
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 2
-  - file: cexc.h
-    line: 145
-    note: |
-          OPTION 1: catch returns 1 if error, else 0, CON: if func removed by macro?
-          OPTION 2: use ccatch for that? (the callback does what the
-                    `if (catch())` would have done) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 3
   - file: cfps.h
     line: 22
     note: |
@@ -138,16 +130,236 @@ TODO:
           a getter function which can also implement the printing functionality 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 3
+  - file: doc/src/23_call.yaml
+    line: 25
+    note: |
+          write about defining flags and CUTILS_NAMESPACE before call.h
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 4
+  - file: cbug.h
+    line: 20
+    note: |
+          sdebug() -> expands to string literal or
+          debugexc(func, msg, len) -> calls raise() or ccraise() 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 5
+  - file: internal/pre_commit.py
+    line: 21
+    note: |
+          generate documentation to some better place, maybe /tmp ?
+          after committed, change the branch copy the content and
+          then commit changed to the gh-pages branch and switch
+          back to master branch
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 6
+  - file: internal/pre_commit.py
+    line: 26
+    note: |
+          Make error messages and reports of cver/cdoc/ccom/clic similar!
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 7
+  - file: ccom.py
+    line: 78
+    note: |
+          consider: can <space> be anything?
+          Like this example:
+          some line of code # tag: starts here
+                            #      another line goes here
+                            #      and the third here..
+          the code goes on...
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 8
+  - file: ccom.py
+    line: 166
+    note: |
+          Make hidden files OS independent, probably using
+          https://docs.python.org/3.4/library/tempfile.html ?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 9
+  - file: ccom.py
+    line: 174
+    note: |
+          Add explicit-remove/browsing capabilities of the .*_cache files
+          (for example: if git reverted changes --> remove hash from cache file)
+          The best solution would be a complete CLI tool, to read and manage
+          and use the cutils command line tools
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 10
   - file: cver.py
-    line: 63
+    line: 68
     note: |
           ask for folder or file input
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 5
+  # 11
+  - file: clic.py
+    line: 49
+    note: |
+          Add special exception variable; maybe simply: 'cutils' as a dir?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 12
+  - file: call.h
+    line: 20
+    note: |
+          rename this to 'cutils.h'? 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 13
+  - file: cref.h
+    line: 24
+    note: |
+          renmae this: cref.c => cref.h 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 14
+  - file: cref.h
+    line: 347
+    note: |
+          %ju and %lf and %td and %hd and %hu
+          http://www.mekong.net/tech/printf.htm
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 15
+  - file: cexc.h
+    line: 145
+    note: |
+          OPTION 1: catch returns 1 if error, else 0, CON: if func removed by macro?
+          OPTION 2: use ccatch for that? (the callback does what the
+                    `if (catch())` would have done) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 16
+  - file: internal/dynamic_array.c
+    line: 17
+    note: |
+          add String to cdar
+          DynamicArray_String: String
+          DynamicArray_string: char * 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 17
+  - file: internal/dynamic_array.c
+    line: 21
+    note: |
+          add DynamicArray to cdar
+          DynamicArray_DynamicArray: nested arrays 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 18
+  - file: internal/dynamic_array.c
+    line: 24
+    note: |
+          implement: reverses count number of sub data starts at index
+          void
+          darv_reversesub(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                          size_t index,
+                          size_t count) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 19
+  - file: internal/dynamic_array.c
+    line: 30
+    note: |
+          Implement `swapto`
+          #define swapto(dar_ptr_src, dar_ptr_dst, index_src, index_dst, count) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 20
+  - file: internal/dynamic_array.c
+    line: 33
+    note: |
+          Implement `appendto` (or `concatanate` or `add` or `extend`)
+          #define appendto(dar_ptr_dst, dar_ptr_src)
+              do {
+                  if (!dar_ptr_src) break;
+                  append(dar_ptr_dst, len(dar_ptr_src), raw(dar_ptr_src));
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 21
+  - file: internal/dynamic_array.c
+    line: 40
+    note: |
+          Implement `insertto`
+          #define insertto(dar_ptr_dst, index, dar_ptr_src)
+              do {
+                  if (!dar_ptr_src) break;
+                  insert(dar_ptr_dst, index, len(dar_ptr_src), raw(dar_ptr_src));
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 22
+  - file: internal/dynamic_array.c
+    line: 47
+    note: |
+          Implement `setto`
+          #define setto(dar_ptr_dst, index, dar_ptr_dst)
+              do {
+                  if (!dar_ptr_dst) break;
+                  set(dar_ptr_dst, index, len(dar_ptr_dst), raw(dar_ptr_dst));
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 23
+  - file: internal/dynamic_array.c
+    line: 54
+    note: |
+          Implement `popto`
+          #define popto(dar_ptr_dst, index, count, dar_ptr_src)
+              do {
+                  void *temp = malloc((size(dar_ptr_dst) / len(dar_ptr_dst)) * count);
+                  if (!temp) break;
+                  pop(dar_ptr_src, index, count, temp);
+                  append(dar_ptr_dst, count, temp);
+                  free(temp);
+              } while (0) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 24
+  - file: internal/dynamic_array.c
+    line: 64
+    note: |
+          copy() => new(&darf2, len(darf1), raw(darf1)); 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 25
+  - file: internal/dynamic_array.c
+    line: 66
+    note: |
+          slice() => creates a new DynamicArray_type from sub of array 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 26
+  - file: internal/dynamic_array.c
+    line: 68
+    note: |
+          findmax() => find the first n appereances of an item, where n<=max
+          
+          /* TODO: #define at(dar_ptr, index, data_ptr) get(dar_ptr, index, 1, data_ptr)
+          #define pop(dar_ptr, data_ptr) pull(dar_ptr, len(dar_ptr) - 1, 1, data_ptr)
+          #define append(dar_ptr, data_ptr) push(data_ptr, len(dar_ptr) - 1, 1, data_ptr) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 27
+  - file: internal/dynamic_array.c
+    line: 412
+    note: |
+          change behaviour: return false, instead of limiting,
+          just like in csll; also: correct the documentation 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 28
   - file: doc/src/16_cstr.yaml
-    line: 42
+    line: 43
     note: |
           Implement cstr: dynamic null-terminated char array (char *)
           format(string)
@@ -161,124 +373,52 @@ TODO:
                   printf(str,  12);
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 6
+  # 29
   - file: doc/src/19_cmap.yaml
-    line: 41
+    line: 42
     note: |
           Implement cmap: Hash Map
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 7
-  - file: doc/src/23_call.yaml
-    line: 25
-    note: |
-          write about defining flags and CUTILS_NAMESPACE before call.h
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 8
-  - file: cref.c
-    line: 24
-    note: |
-          renmae this: cref.c => cref.h 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 9
-  - file: cref.c
-    line: 347
-    note: |
-          %ju and %lf and %td and %hd and %hu
-          http://www.mekong.net/tech/printf.htm
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 10
-  - file: internal/dynamic_array.py
-    line: 127
-    note: |
-          is there a way to make this inline?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 11
-  - file: internal/dynamic_array.py
-    line: 129
-    note: |
-          change this const void* --> const {2}* ?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 12
-  - file: internal/dynamic_array.py
-    line: 131
-    note: |
-          add all suffixes of numbers (eg.: unsigned long long 1ull)
-          and update the examples of the documentation
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 13
-  - file: internal/dynamic_array.py
-    line: 143
-    note: |
-          is there a way to make this inline?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 14
-  - file: internal/dynamic_array.py
-    line: 204
-    note: |
-          is there a way to make this inline?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 15
-  - file: capi.h
-    line: 94
-    note: |
-          generate these two automatically 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 16
-  - file: capi.h
-    line: 254
-    note: |
-          consider to use #define instead of typedefs 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 17
-  - file: cbug.h
-    line: 20
-    note: |
-          sdebug() -> expands to string literal or
-          debugexc(func, msg, len) -> calls raise() or ccraise() 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 18
+  # 30
   - file: cdoc.py
-    line: 72
+    line: 18
     note: |
-          REGEX fix func5 <- number should not be matched
+          add 'since' to indicate which version the given feature is availbe from
+          like:   since: version 3.14
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 19
+  # 31
   - file: cdoc.py
-    line: 508
+    line: 510
     note: |
           support formatted TODO import
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 20
+  # 32
   - file: cdoc.py
-    line: 568
+    line: 570
     note: |
           add `members` support in TYPE
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 21
+  # 33
   - file: cdoc.py
-    line: 649
+    line: 654
+    note: |
+          Implement a Schema validator for better user-feedback
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 34
+  - file: cdoc.py
+    line: 656
     note: |
           add FOOT key
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 22
+  # 35
   - file: cdoc.py
-    line: 651
+    line: 658
     note: |
           add TEXT key -- only with 'text' and 'code'
           something like:
@@ -288,211 +428,28 @@ TODO:
                     #incude <multline_code.h>
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 23
+  # 36
   - file: cdoc.py
-    line: 729
+    line: 757
     note: |
-          collect 'reserved' names
+          do we really need a separate OrderedDict for pages ???
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 24
+  # 37
   - file: cdoc.py
-    line: 776
+    line: 817
     note: |
           add 'external CSS path' argument
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 25
+  # 38
   - file: cdoc.py
-    line: 778
+    line: 819
     note: |
           add -reset flags which will remove the cache files
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 26
-  - file: doc/src/15_cdar.yaml
-    line: 17
-    note: |
-          update all samples --> add error checking wether
-          method() was successful (new, append, etc.)
-          
-              bool check;
-              check = method(...);
-              if (!check) return EXIT_FAILURE;
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 27
-  - file: doc/src/15_cdar.yaml
-    line: 49
-    note: |
-          finish dependings
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 28
-  - file: internal/dynamic_array.c
-    line: 17
-    note: |
-          add String to cdar
-          DynamicArray_String: String
-          DynamicArray_string: char * 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 29
-  - file: internal/dynamic_array.c
-    line: 21
-    note: |
-          add DynamicArray to cdar
-          DynamicArray_DynamicArray: nested arrays 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 30
-  - file: internal/dynamic_array.c
-    line: 24
-    note: |
-          implement: reverses count number of sub data starts at index
-          void
-          darv_reversesub(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                          size_t index,
-                          size_t count) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 31
-  - file: internal/dynamic_array.c
-    line: 30
-    note: |
-          consider if an iterator method is necessary or not
-          IterObject
-          iter(cutils_cdar_DynamicArray_void_ptr *dynarr,
-               size_t index);
-          void *
-          next(IterObject *iterator); 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 32
-  - file: internal/dynamic_array.c
-    line: 37
-    note: |
-          Implement `copy`
-          #define copy(dar_ptr_src, dar_ptr_dst)
-              do {
-                  if (dar_ptr_dst) del(dar_ptr_src);
-                  new(dar_ptr_dst, len(dar_ptr_src), raw(dar_ptr_src));
-              } while (0) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 33
-  - file: internal/dynamic_array.c
-    line: 44
-    note: |
-          Implement `swapto`
-          #define swapto(dar_ptr_src, dar_ptr_dst, index_src, index_dst, count) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 34
-  - file: internal/dynamic_array.c
-    line: 47
-    note: |
-          Implement `appendto`
-          #define appendto(dar_ptr_dst, dar_ptr_src)
-              do {
-                  if (!dar_ptr_src) break;
-                  append(dar_ptr_dst, len(dar_ptr_src), raw(dar_ptr_src));
-              } while (0) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 35
-  - file: internal/dynamic_array.c
-    line: 55
-    note: |
-          Implement `insertto`
-          #define insertto(dar_ptr_dst, index, dar_ptr_src)
-              do {
-                  if (!dar_ptr_src) break;
-                  insert(dar_ptr_dst, index, len(dar_ptr_src), raw(dar_ptr_src));
-              } while (0) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 36
-  - file: internal/dynamic_array.c
-    line: 62
-    note: |
-          Implement `setto`
-          #define setto(dar_ptr_dst, index, dar_ptr_dst)
-              do {
-                  if (!dar_ptr_dst) break;
-                  set(dar_ptr_dst, index, len(dar_ptr_dst), raw(dar_ptr_dst));
-              } while (0) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 37
-  - file: internal/dynamic_array.c
-    line: 69
-    note: |
-          Implement `popto`
-          #define popto(dar_ptr_dst, index, count, dar_ptr_src)
-              do {
-                  void *temp = malloc((size(dar_ptr_dst) / len(dar_ptr_dst)) * count);
-                  if (!temp) break;
-                  pop(dar_ptr_src, index, count, temp);
-                  append(dar_ptr_dst, count, temp);
-                  free(temp);
-              } while (0) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 38
-  - file: internal/dynamic_array.c
-    line: 79
-    note: |
-          copy() => new(&darf2, len(darf1), raw(darf1)); 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 39
-  - file: internal/dynamic_array.c
-    line: 81
-    note: |
-          slice() => creates a new DynamicArray_type from sub of array 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 40
-  - file: internal/dynamic_array.c
-    line: 83
-    note: |
-          findmax() => find the first n appereances of an item, where n<=max
-          
-          /* TODO: #define at(dar_ptr, index, data_ptr) get(dar_ptr, index, 1, data_ptr)
-          #define pop(dar_ptr, data_ptr) pull(dar_ptr, len(dar_ptr) - 1, 1, data_ptr)
-          #define append(dar_ptr, data_ptr) push(data_ptr, len(dar_ptr) - 1, 1, data_ptr) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 41
-  - file: internal/dynamic_array.c
-    line: 89
-    note: |
-          include only the needed types
-          #if !defined CDAR_char && !defined CDAR_signed_char && !defined CDAR_unsigned_char
-          #define CDAR_char
-          #define CDAR_signed_char
-          #define CDAR_unsigned_char
-          #endif 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 42
-  - file: internal/dynamic_array.c
-    line: 458
-    note: |
-          change behaviour: return false, instead of limiting,
-          just like in csll; also: correct the documentation 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 43
-  - file: cdar.c
-    line: 382
-    note: |
-          change behaviour: return false, instead of limiting,
-          just like in csll; also: correct the documentation 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 44
   - file: doc/src/00_cutils.yaml
     line: 42
     note: |
@@ -500,37 +457,37 @@ TODO:
           which modules are ready and which are WIP
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 45
+  # 40
   - file: doc/src/00_cutils.yaml
     line: 45
     note: |
           consider changing `clic` -> `ccom` and `ccom` -> `ctag`
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 46
+  # 41
   - file: doc/src/00_cutils.yaml
     line: 47
     note: |
           create a proper makefile
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 47
+  # 42
   - file: doc/src/00_cutils.yaml
-    line: 53
+    line: 55
     note: |
           create call - which will include all the header files available
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 48
+  # 43
   - file: doc/src/00_cutils.yaml
-    line: 71
+    line: 73
     note: |
           add EXEC to cdoc to add "interactive" python snippets to code
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 49
+  # 44
   - file: doc/src/00_cutils.yaml
-    line: 79
+    line: 81
     note: |
           write article about modern interfaces
           drawbacks[1]: macro(((cast){1, 2, 3}))
@@ -553,7 +510,107 @@ TODO:
                      method decides which object's method to use
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 45
+  - file: internal/dynamic_array.py
+    line: 127
+    note: |
+          is there a way to make this inline?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 46
+  - file: internal/dynamic_array.py
+    line: 129
+    note: |
+          change this const void* --> const {2}* ?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 47
+  - file: internal/dynamic_array.py
+    line: 131
+    note: |
+          add all suffixes of numbers (eg.: unsigned long long 1ull)
+          and update the examples of the documentation
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 48
+  - file: internal/dynamic_array.py
+    line: 141
+    note: |
+          is there a way to make this inline?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 49
+  - file: internal/dynamic_array.py
+    line: 208
+    note: |
+          is there a way to make this inline?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 50
+  - file: capi.h
+    line: 104
+    note: |
+          generate these two automatically 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 51
+  - file: internal/singly_linked_list.py
+    line: 130
+    note: |
+          is there a way to make this inline?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 52
+  - file: internal/singly_linked_list.py
+    line: 132
+    note: |
+          change this const void* --> const {2}* ?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 53
+  - file: internal/singly_linked_list.py
+    line: 134
+    note: |
+          add all suffixes of numbers (eg.: unsigned long long 1ull)
+          and update the examples of the documentation
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 54
+  - file: internal/singly_linked_list.py
+    line: 144
+    note: |
+          is there a way to make this inline?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 55
+  - file: internal/singly_linked_list.py
+    line: 202
+    note: |
+          is there a way to make this inline?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 56
+  - file: cdar.c
+    line: 358
+    note: |
+          change behaviour: return false, instead of limiting,
+          just like in csll; also: correct the documentation 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 57
+  - file: csll.c
+    line: 699
+    note: |
+          pop() has only three extra statements compared to pull()
+          1) else if (!destination) ...
+          2) char *dest = (char *)destination;
+          3) memcpy(dest + (count - counter)*item_size, node_curr->data, item_size);
+          try to "merge" these two together -- with a macro?
+          also sub() has the same lines except no popping and freeing
+          (and their error message "names" differes of course) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 58
   - file: internal/singly_linked_list.c
     line: 17
     note: |
@@ -566,18 +623,9 @@ TODO:
           the total number of nodes (length + reserved_length) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 51
+  # 59
   - file: internal/singly_linked_list.c
-    line: 46
-    note: |
-          change this exception to:
-          CEXC_MSG_NULL_POINTER passed pointer to NULL
-          in DynamicArray and doumentation as well 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 52
-  - file: internal/singly_linked_list.c
-    line: 717
+    line: 704
     note: |
           pop() has only three extra statements compared to pull()
           1) else if (!destination) ...
@@ -588,55 +636,27 @@ TODO:
           (and their error message "names" differes of course) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 53
-  - file: ccom.py
-    line: 69
+  # 60
+  - file: doc/src/15_cdar.yaml
+    line: 17
     note: |
-          consider: can <space> be anything?
-          Like this example:
-          some line of code # tag: starts here
-                            #      another line goes here
-                            #      and the third here..
-          the code goes on...
+          update all samples --> add error checking wether
+          method() was successful (new, append, etc.)
+          
+              bool check;
+              check = method(...);
+              if (!check) return EXIT_FAILURE;
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 54
-  - file: ccom.py
-    line: 157
+  # 61
+  - file: doc/src/15_cdar.yaml
+    line: 50
     note: |
-          Make hidden files OS independent, probably using
-          https://docs.python.org/3.4/library/tempfile.html ?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 55
-  - file: ccom.py
-    line: 165
-    note: |
-          Add explicit-remove/browsing capabilities of the .*_cache files
-          (for example: if git reverted changes --> remove hash from cache file)
-          The best solution would be a complete CLI tool, to read and manage
-          and use the cutils command line tools
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 56
-  - file: internal/pre_commit.py
-    line: 21
-    note: |
-          generate documentation to some better place, maybe /tmp ?
-          after committed, change the branch copy the content and
-          then commit changed to the gh-pages branch and switch
-          back to master branch
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 57
-  - file: internal/pre_commit.py
-    line: 26
-    note: |
-          Make error messages and reports of cver/cdoc/ccom/clic similar!
+          finish dependings
 
 
 
-#----------------------------- 3 POSTS IN 2 FILES -----------------------------#
+#----------------------------- 4 POSTS IN 4 FILES -----------------------------#
 HACK:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
@@ -651,21 +671,29 @@ HACK:
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 2
-  - file: capi.h
-    line: 247
+  - file: internal/generator.py
+    line: 155
     note: |
-          Define type to make _Generic() work 
+          make the supporter types way more generic
+          create a better definition-structure!
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 3
-  - file: capi.h
-    line: 394
+  - file: ccom.py
+    line: 38
     note: |
-          Define type to make _Generic() work 
+          to make it work as a local module, fix it ASAP
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 4
+  - file: clic.py
+    line: 34
+    note: |
+          to make it work as a local module, fix it ASAP
 
 
 
-#----------------------------- 7 POSTS IN 4 FILES -----------------------------#
+#----------------------------- 8 POSTS IN 5 FILES -----------------------------#
 NOTE:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
@@ -702,13 +730,15 @@ NOTE:
     line: 49
     note: |
           Timing: 1) CSLL
-                  2) CMAP
-                  3) C11
+                  2) CCOL
+                  3) makefile (static library) + test on Win & Linux
+                  4) C11
+                  5) update doc -> menu: fork me, etc.
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 6
   - file: doc/src/00_cutils.yaml
-    line: 55
+    line: 57
     note: |
           Why the error-signal of functions on success is a value that can be
           evaluated to 'true' and if 'false' if failes? Wouldn't it be easier
@@ -728,8 +758,16 @@ NOTE:
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 7
+  - file: csll.c
+    line: 1168
+    note: |
+          maybe rename const void *item --> const void *target ?
+          if it will be done, de the same in DynamicArray methods as well 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 8
   - file: internal/singly_linked_list.c
-    line: 1177
+    line: 1173
     note: |
           maybe rename const void *item --> const void *target ?
           if it will be done, de the same in DynamicArray methods as well 
@@ -747,17 +785,17 @@ ALERT:
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 2
-  - file: capi.h
-    line: 447
-    note: |
-          D O N ' T   R E M O V E   T H E   N E X T   C O M M E N T !!! 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 3
   - file: internal/singly_linked_list.h
     line: 17
     note: |
           DON NOT ADD GUARD TO THIS FILE !!! 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 3
+  - file: capi.h
+    line: 524
+    note: |
+          D O N ' T   R E M O V E   T H E   N E X T   C O M M E N T !!! 
 
 
 

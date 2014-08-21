@@ -1,0 +1,88 @@
+func: append
+vargs:
+  - - - $object$_type *
+      - $variable$
+    - - type *
+      - item
+
+  - - - $object$_type *
+      - $variable$
+    - - size_t
+      - item_count
+    - - type *
+      - items
+
+return:
+  - - bool
+    - Indicates if the addition was successful or not.
+  - - true
+    - if item(s) was/were successfully appended to the $type$
+  - - false
+    - if $type$ is a pointer to `NULL`
+  - - false
+    - if internal reallocation failed
+
+info: >
+      `append` is a type-generic function-like macro, which takes a pointer
+      to a type-specific $object$ and a pointer to a single item or the
+      number of items and a pointer to the items and appends the item(s) at
+      the end of the $type$.
+
+exceptions:
+  - FILE: const/exception_null_ptr.yaml
+  - - 3rd argument is `NULL`
+    - if the `item`/`items` pointer pointing to `NULL`
+  - FILE: const/exception_realloc.yaml
+
+examples:
+  - - >
+      First append two items, then a single one to an initially empty $type$
+      of `char`s
+    - |
+      /* Create $type$ */
+      $object$_char *$shortvar$;
+      new(&$shortvar$);
+      \\n
+      /* Append to $type$ */
+      print($shortvar$);
+      append($shortvar$, 2, ((char[]){'u', 'v'}));
+      print($shortvar$);
+      append($shortvar$, (&(char){'w'}));
+      print($shortvar$);
+      \\n
+      /* Delete $type$ */
+      del($shortvar$);
+
+  - - OUTPUT
+    - |
+      \\OFF
+      $object$_char{}
+      $object$_char{'u', 'v'}
+      $object$_char{'u', 'v', 'w'}
+
+  - - Adding pointers to `NULL` to `$object$_void_ptr`
+    - |
+      /* Base values */
+      int   i, j, k;
+      float l, m;
+      \\n
+      /* Create a $type$ from a pointer to NULL and pointers to int */
+      $object$_void_ptr *$shortvar$;
+      new(&$shortvar$, sizeof(void*), 4, ((void *[]){NULL, &i, &j, &k}));
+      \\n
+      /* Append a single pointer to NULL */
+      append($shortvar$, (&(void *){NULL}));
+      print($shortvar$);
+      \\n
+      /* Append two more pointers to floats */
+      append($shortvar$, 2, ((void*[]){&l, &m}));
+      print($shortvar$);
+      \\n
+      /* Delete $type$ */
+      del($shortvar$);
+
+  - - OUTPUT
+    - |
+      \\OFF
+      $object$_void_ptr{<pointer to NULL>, <pointer to 0x7f8c30d00048>, <pointer to 0x7f8c30d00058>, <pointer to 0x7f8c30d00068>, <pointer to NULL>}
+      $object$_void_ptr{<pointer to NULL>, <pointer to 0x7f8c30d00048>, <pointer to 0x7f8c30d00058>, <pointer to 0x7f8c30d00068>, <pointer to NULL>, <pointer to 0x7f8c30d00108>, <pointer to 0x7f8c30d00118>}

@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.85.379 (20140812)                       ##
 ##                                                                            ##
 ##                               File: cver.py                                ##
 ##                                                                            ##
@@ -39,10 +39,13 @@ def version(sub_max, rev_max, build_max, main=0, sub=1, rev=0, build=0):
                 # Increase values if necessary
                 build += 1
                 if build > build_max:
+                    build = 0
                     rev += 1
                     if rev > rev_max:
+                        rev = 0
                         sub += 1
                         if sub > sub_max:
+                            sub = 0
                             main += 1
                 # Write changes back to file
                 file.seek(0)
@@ -57,6 +60,8 @@ def version(sub_max, rev_max, build_max, main=0, sub=1, rev=0, build=0):
     except FileNotFoundError:
         with open(_VERSION, 'w') as file:
             file.write(FORMAT.format(main, sub, rev, build, DATETIME))
+    # Return current version
+    return main, sub, rev, build, DATETIME
 
 #------------------------------------------------------------------------------#
 if __name__ == '__main__':

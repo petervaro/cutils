@@ -1,0 +1,70 @@
+func: set
+vargs:
+  - - - $object$_type *
+      - $variable$
+    - - size_t
+      - index
+    - - type *
+      - item
+
+  - - - $object$_type *
+      - $variable$
+    - - size_t
+      - index
+    - - size_t
+      - item_count
+    - - type *
+      - items
+
+return:
+  - - bool
+    - Indicates if the settings was successful or not.
+  - - true
+    - if all items were set
+  - - false
+    - if pointer to $type$ is `NULL`
+  - - false
+    - if `item`/`items` is pointing to `NULL`
+  - - false
+    - if `index` is out of range
+
+info: >
+      `set` is a type-generic function-like macro, which takes a pointer
+      to a type-specific $object$, and index, a pointer to type as
+      source and optionally the number of items. It sets the item/items
+      at/starts from the given index in $type$.
+
+exceptions:
+  - FILE: const/exception_null_ptr.yaml
+  - - 4th argument is `NULL`
+    - if the `item`/`items` pointer pointing to `NULL`
+  - FILE: const/exception_empty.yaml
+  - - 2nd argument is out of range
+    - if the `index` argument is out of range
+
+examples:
+  - - >
+      Set a single item, and then three other items in the $type$
+    - |
+      /* Create $type$ */
+      $object$_int *$shortvar$;
+      new(&$shortvar$, 7, ((int[]){0, 7, 2, 0, 2, 1, 6}));
+      print($shortvar$);
+      \\n
+      /* Set second item in $type$ */
+      set($shortvar$, 1, (&(int){1}));
+      print($shortvar$);
+      \\n
+      /* Set three items starting from the third item in $type$ */
+      set($shortvar$, 3, 3, ((int[]){3, 4, 5}));
+      print($shortvar$);
+      \\n
+      /* Delete $type$ */
+      del($shortvar$);
+
+  - - OUTPUT
+    - |
+      \\OFF
+      $object$_int{0, 7, 2, 0, 2, 1, 6}
+      $object$_int{0, 1, 2, 0, 2, 1, 6}
+      $object$_int{0, 1, 2, 3, 4, 5, 6}

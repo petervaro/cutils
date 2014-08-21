@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.80.307 (20140726)                       ##
+##                       Version: 0.8.90.545 (20140820)                       ##
 ##                                                                            ##
 ##                        File: doc/src/00_cutils.yaml                        ##
 ##                                                                            ##
@@ -47,8 +47,10 @@ INFO:
 # TODO: create a proper makefile
 
 # NOTE: Timing: 1) CSLL
-#               2) CMAP
-#               3) C11
+#               2) CCOL
+#               3) makefile (static library) + test on Win & Linux
+#               4) C11
+#               5) update doc -> menu: fork me, etc.
 
 # TODO: create call - which will include all the header files available
 

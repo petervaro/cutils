@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.80.144 (20140721)                       **
+**                       Version: 0.8.90.461 (20140819)                       **
 **                                                                            **
 **                       File: internal/dynamic_array.h                       **
 **                                                                            **
@@ -17,7 +17,7 @@
 /* !!! DON NOT ADD GUARD TO THIS FILE !!! */
 
 #define FILE_STARTS_HERE
-#include <stdio.h>    /* size_t */
+#include <stdlib.h>   /* size_t */
 #include <stdbool.h>  /* bool */
 
 /*----------------------------------------------------------------------------*/
@@ -104,13 +104,13 @@ extern void *
 cutils_cdar_DynamicArray_void_ptr_get(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                       size_t index);
 /*----------------------------------------------------------------------------*/
-bool
+extern bool
 cutils_cdar_DynamicArray_void_ptr_find(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                        bool (*compare)(const void*, const void*, size_t),
                                        const void *item,
                                        size_t *index);
 /*----------------------------------------------------------------------------*/
-size_t
+extern size_t
 cutils_cdar_DynamicArray_void_ptr_findall(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                           bool (*compare)(const void*, const void*, size_t),
                                           const void *item,
@@ -126,7 +126,13 @@ cutils_cdar_DynamicArray_void_ptr_sortsub(cutils_cdar_DynamicArray_void_ptr *dyn
                                           size_t count,
                                           int (*compare)(const void*, const void*));
 /*----------------------------------------------------------------------------*/
-extern char *
+extern void
+cutils_cdar_DynamicArray_void_ptr_map(cutils_cdar_DynamicArray_void_ptr *dynarr,
+                                      size_t index,
+                                      size_t count,
+                                      void (*function)());
+/*----------------------------------------------------------------------------*/
+extern bool
 cutils_cdar_DynamicArray_void_ptr_format(const void *item,
                                          char **buffer,
                                          size_t *buffer_size);
@@ -134,8 +140,8 @@ cutils_cdar_DynamicArray_void_ptr_format(const void *item,
 extern void
 cutils_cdar_DynamicArray_void_ptr_print(cutils_cdar_DynamicArray_void_ptr *dynarr,
                                         FILE *stream,
-                                        const char *name,
-                                        char *(*format)(const void*, char**, size_t*));
+                                        const char *sub_type,
+                                        bool(*format)());
 /*----------------------------------------------------------------------------*/
 extern bool
 cutils_cdar_DynamicArray_void_ptr_compare(const void *item1,

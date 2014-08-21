@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.365 (20140711)                       **
+**                       Version: 0.8.90.484 (20140819)                       **
 **                                                                            **
 **                                File: cexc.h                                **
 **                                                                            **
@@ -146,7 +146,7 @@ cutils_cexc_set_exception_handling_custom_raise(void (*callback)(void*))
          OPTION 2: use ccatch for that? (the callback does what the
                    `if (catch())` would have done) */
 #ifdef CEXC_LOG
-  #define cutils_cexc_catch()
+  #define cutils_cexc_catch(...)
 #else
 static inline void
 cutils_cexc_catch(void)
@@ -204,7 +204,7 @@ cutils_cexc_raise(const char *message,
 
 /*----------------------------------------------------------------------------*/
 #ifdef CEXC_LOG
-  #define cutils_cexc_ccatch()
+  #define cutils_cexc_ccatch(...)
 #else
 static inline void
 cutils_cexc_ccatch(void)

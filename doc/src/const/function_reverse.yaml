@@ -1,0 +1,42 @@
+func: reverse
+args:
+  - - $object$_type *
+    - $variable$
+
+return:
+  - - bool
+    - Indicates if the reversing was successful or not.
+  - - true
+    - if $type$ has been successfully reversed
+  - - false
+    - if $type$ is a pointer to `NULL`
+
+info: >
+      `reverse` is a type-generic function-like macro, which takes a pointer
+      to a type-specific $object$ and reverses the content of the $type$.
+
+exceptions:
+  - FILE: const/exception_null_ptr.yaml
+  - FILE: const/exception_empty.yaml
+
+examples:
+  - - Reversing an $type$ of `size_t`s
+    - |
+      /* Create $type$ */
+      $object$_size_t *$shortvar$;
+      new(&$shortvar$, 6, ((size_t[]){0, 5, 10, 15, 20, 25}));
+      \\n
+      /* Reverse $type$ */
+      print($shortvar$);
+      reverse($shortvar$);
+      print($shortvar$);
+      \\n
+      /* Delete $type$ */
+      del($shortvar$);
+      return 0;
+
+  - - OUTPUT
+    - |
+      \\OFF
+      $object$_size_t{0, 5, 10, 15, 20, 25}
+      $object$_size_t{25, 20, 15, 10, 5, 0}

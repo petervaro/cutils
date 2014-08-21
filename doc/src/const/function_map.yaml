@@ -1,0 +1,66 @@
+func: map
+vargs:
+  - - - $object$_type *
+      - $variable$
+    - - void (*
+      - function
+      - )(size_t, type*)
+
+  - - - $object$_type *
+      - $variable$
+    - - size_t
+      - index
+    - - size_t
+      - count
+    - - void (*
+      - function
+      - )(size_t, type*)
+
+info: >
+      `map` is a type-generic function-like macro, which takes a pointer
+      to a type-specific $object$ and a function. It will call the
+      function on every item in the $type$. It can also take two more
+      optional arguments: an `index` which is where the mapping starts from,
+      and a `count` which indicates how many items the function will be
+      called on.
+
+exceptions:
+  - FILE: const/exception_null_ptr.yaml
+  - FILE: const/exception_empty.yaml
+  - - 2nd argument is out of range
+    - if the `index` argument is greater than the length of the $type$
+  - - 4th argument is out of range
+    - if the `function` argument is pointing to `NULL`
+
+examples:
+  - - '*Rotate* all characters by 13 in the $type$'
+    - |
+      static void
+      rot13(size_t index, char *letter)
+      {
+          int upper = toupper(*letter);
+          if (upper >= 'A' && upper <= 'M')
+              *letter += 13;
+          else if (upper >= 'N' && upper <= 'Z')
+              *letter -= 13;
+      }
+      \\n
+      \\n
+      \\n
+      int main(void)
+      {
+          $object$_char *$shortvar$;
+          new(&$shortvar$, 5, ((char[]){'a', 'b', 'c', 'd', 'e'}));
+          print($shortvar$);
+          \\n
+          map($shortvar$, rot13);
+          print($shortvar$);
+          \\n
+          return 0;
+      }
+
+  - - OUTPUT
+    - |
+      \\OFF
+      $object$_char{'a', 'b', 'c', 'd', 'e'}
+      $object$_char{'n', 'o', 'p', 'q', 'r'}

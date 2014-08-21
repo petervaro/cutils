@@ -1,3 +1,2 @@
-- Dependencies
-- name: DynamicArray
-  info: '[CDAR | DynamicArray](cdar.html)'
+name: DynamicArray
+info: '[CDAR | DynamicArray](cdar.html)'

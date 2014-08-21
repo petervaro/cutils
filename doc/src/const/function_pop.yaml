@@ -1,0 +1,83 @@
+func: pop
+vargs:
+  - - - $object$_type *
+      - $variable$
+    - - size_t
+      - index
+    - - type *
+      - destination
+
+  - - - $object$_type *
+      - $variable$
+    - - size_t
+      - index
+    - - size_t
+      - item_count
+    - - type *
+      - destination
+
+return:
+  - - size_t
+    - Indicates the number of items has been successfully popped.
+  - - 0
+    - if pointer to $type$ is `NULL`
+  - - 0
+    - if pointer destination is `NULL`
+  - - 0
+    - if $type$ is empty
+  - - 0
+    - if `index` is out of range
+
+info: >
+      `pop` is a type-generic function-like macro, which takes a pointer
+      to a type-specific $object$, an index, a pointer to type of
+      destination and optionally the number of items to pop. It will remove
+      the items specified by the index from the $type$ and copy it to the
+      destination.
+
+exceptions:
+  - FILE: const/exception_null_ptr.yaml
+  - - 4th argument is `NULL`
+    - if the `item`/`items` pointer pointing to `NULL`
+  - FILE: const/exception_empty.yaml
+  - - 2nd argument is out of range
+    - if the `index` argument is out of range
+
+examples:
+  - - >
+      Pop out a single item, and then another two from the $type$
+    - |
+      /* Create $type$ */
+      $object$_double *$shortvar$;
+      new(&$shortvar$, 5, ((double[]){23.974624, 10., 86.666667, 3.14, .56}));
+      print($shortvar$);
+      \\n
+      /* Create destination storages */
+      #define NUMS 3
+      double number;
+      double numbers[NUMS];
+      \\n
+      /* Pop a single item from $type$ to destination */
+      pop($shortvar$, 0, &number);
+      print($shortvar$);
+      printf("popped: %lf\n", number);
+      \\n
+      /* Pop a multiple items from $type$ to destination */
+      pop($shortvar$, 1, NUMS, numbers);
+      print($shortvar$);
+      for (size_t i=0; i<NUMS; i++)
+          printf("popped [%zu] %lf\n", i, numbers[i]);
+      \\n
+      /* Delete $type$ */
+      del($shortvar$);
+
+  - - OUTPUT
+    - |
+      \\OFF
+      $object$_double{23.974624, 10.000000, 86.666667, 3.140000, 0.560000}
+      $object$_double{10.000000, 10.000000, 86.666667, 3.140000}
+      popped: 23.974624
+      $object$_double{10.000000}
+      popped [0] 10.000000
+      popped [1] 86.666667
+      popped [2] 3.140000

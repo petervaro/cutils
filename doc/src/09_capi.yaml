@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.80.090 (20140721)                       ##
+##                       Version: 0.8.90.536 (20140820)                       ##
 ##                                                                            ##
 ##                         File: doc/src/09_capi.yaml                         ##
 ##                                                                            ##
@@ -35,7 +35,7 @@ INFO:
 #------------------------------------------------------------------------------#
 USER:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - - Depends:
+  - - Dependencies
     - name: carg.h
       info: |
             `capi` heavily uses `carg.h`'s `vargs` macro to dispatch between

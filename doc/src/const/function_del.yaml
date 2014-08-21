@@ -1,0 +1,9 @@
+func: del
+args:
+  - - $object$_type *
+    - $variable$
+
+info: >
+      `del` is a type-generic function-like macro, which takes a pointer
+      to a type-specific $object$ and deletes the object and all of its
+      content.
