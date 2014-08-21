@@ -5,9 +5,9 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.537 (20140820)                       ##
+##                       Version: 0.8.90.730 (20140821)                       ##
 ##                                                                            ##
-##                               File: cdoc.py                                ##
+##                       File: pycutils/cutils/cdoc.py                        ##
 ##                                                                            ##
 ##           Designed and written by Peter Varo. Copyright (c) 2014           ##
 ##             License agreement is provided in the LICENSE file              ##
@@ -53,8 +53,8 @@ if __name__ == '__main__':
         from yaml import yaml_Loader
 
 # Import cutils modules
-from internal.check import Checker as check_Checker
-from internal.table import Dict2D as table_Dict2D
+from cutils.internal.check import Checker as check_Checker
+from cutils.internal.table import Dict2D as table_Dict2D
 
 #------------------------------------------------------------------------------#
 # Module level constants
@@ -183,15 +183,15 @@ nowrap;overflow:hidden;text-overflow:ellipsis}.code_functions,.code_keywords,
 .code_types{color:#a8a8a8}.code_numbers,.code_macros{color:#d8af00}
 .code_constants::selection,.code_numbers::selection,.code_macros::selection{
 color:#000}.title{border-top:1.5pt solid #d8d8d8;padding-top:15pt;padding-bottom:
-15pt}.entity{border-top:1pt solid #e8e8e8;padding-top:15pt}.return_values{
-margin-left:45pt;line-height:1.5}.return_case{margin-right:5pt}.exception_message
-{margin-left:45pt;line-height:1.5}.exception_note{margin-left:60pt;line-height:
-1.5}.arg_comma,.arg_name,.arg_paren,.name{font-size:15pt}.arg_type{font-size:
-13pt}.info{margin-left:30pt;line-height:1.5}.arg_comma,.arg_paren,.label,.name{
-font-weight:700}.arg_comma,.arg_paren,.arg_type,.label,.note{font-style:italic}
-i{font-style:italic}b{font-weight:700}a.inline_link{background:#ededed;margin:0;
-padding:0 3pt;border-bottom:1.5pt solid #dddddd}a.inline_link:hover{background:
-#e0e0e0;border-bottom:1.5pt solid #d0d0d0}
+15pt}.anonym_entity,.entity{padding-top:15pt}.entity{border-top:1pt solid
+#e8e8e8;}.return_values{margin-left:45pt;line-height:1.5}.return_case{
+margin-right:5pt}.exception_message{margin-left:45pt;line-height:1.5}
+.exception_note{margin-left:60pt;line-height:1.5}.arg_comma,.arg_name,.arg_paren,
+.name{font-size:15pt}.arg_type{font-size:13pt}.info{margin-left:30pt;line-height:
+1.5}.arg_comma,.arg_paren,.label,.name{font-weight:700}.arg_comma,.arg_paren,
+.arg_type,.label,.note{font-style:italic}i{font-style:italic}b{font-weight:700}
+a.inline_link{background:#ededed;margin:0;padding:0 3pt;border-bottom:1.5pt solid
+#dddddd}a.inline_link:hover{background:#e0e0e0;border-bottom:1.5pt solid #d0d0d0}
 """
 
 #------------------------------------------------------------------------------#
@@ -505,6 +505,39 @@ def _indx_format(sidebar, selfname, sources):
 
 
 #------------------------------------------------------------------------------#
+# Generic section-text-code blocks
+def _text_format(sidebar, content, source):
+    # If new named section
+    try:
+        section = source['section']
+        ref = 'text_{}'.format(_ref(section))
+        new(sidebar, 'a', href='#' + ref, class_='toc', string=section)
+        text = new(content, 'div', id=ref, class_='entity')
+        new(text, 'p', class_='name', string=section)
+    # If new anonym section
+    except KeyError:
+        text = new(content, 'div', class_='anonym_entity')
+    # If section has text
+    try:
+        source_text = source['text']
+        new(text, 'br')
+        p = new(text, 'p', class_='info')
+        _str(p, source_text)
+    except KeyError:
+        pass
+    # If section has code
+    try:
+        source_code = source['code']
+        new(text, 'br')
+        pre = new(text, 'pre', class_='info')
+        c = new(pre, 'code', class_='snippet')
+        _code(c, source_code)
+    except KeyError:
+        pass
+    new(text, 'br')
+
+
+#------------------------------------------------------------------------------#
 # User-defined schema formatter
 def _user_format(sidebar, content, source):
     # TODO: support formatted TODO import
@@ -616,7 +649,7 @@ def _build(sources, outfolder, gentoc, toc):
         # Get essentail values
         filename, depends = toc[pagename]
         # Constants
-        SECTIONS = 6
+        SECTIONS = 7
         # Build basic structure
         column1 = new(SOUP.body, 'div', id='column1')
         column2 = new(SOUP.body, 'div', id='column2')
@@ -658,16 +691,42 @@ def _build(sources, outfolder, gentoc, toc):
         # TODO: add TEXT key -- only with 'text' and 'code'
         #       something like:
         #       TEXT:
-        #         - text: normal text, nothing special
-        #         - code: |
+        #         - section: title
+        #           text: normal text, nothing special
+        #           code: |
         #                 #incude <multline_code.h>
 
+        # TODO: add EXEC to cdoc to add "interactive" python snippets to code
+        # EXEC: |
+        #   with open('VERSION') as file:
+        #       # Insert to USER:About
+        #       DOC[USER][0].insert(0, {'name': 'Version', 'info': file.read()})
+
+        # OPTIONAL: text and code
+        try:
+            blocks = source['TEXT']
+            for block in blocks:
+                # Get the first element of the list as the section name
+                try:
+                    section = string_capwords(block[0])
+                except IndexError:
+                    continue
+                sidebar_text = new(sidebar, 'div')
+                new(sidebar_text, 'p', class_='label',
+                                       string='{}:'.format(section))
+                new(sidebar_text, 'br')
+                content_text = new(content, 'div')
+                new(content_text, 'h2', class_='title', string=section)
+                for user in block[1:]:
+                    _text_format(sidebar_text, content_text, user)
+                new(sidebar, 'br')
+        except KeyError:
+            SECTIONS -= 1
         # OPTIONAL: user defined
         try:
             userdefs = source['USER']
             for userdef in userdefs:
-                # Get the first element of the list
-                # as the section name
+                # Get the first element of the list as the section name
                 try:
                     section = string_capwords(userdef[0])
                 except IndexError:
@@ -732,7 +791,7 @@ def _build(sources, outfolder, gentoc, toc):
 
 
 #------------------------------------------------------------------------------#
-def _process(file, filepath, pages, loader, counter):
+def _process(infolder, file, filepath, pages, loader, counter):
     with open(filepath, encoding='utf-8') as f:
         depends = set()
         pagedata = _import(loader(f.read()), infolder, loader, depends)
@@ -770,7 +829,7 @@ def document(infolder, outfolder, extension, loader, generate_toc=None):
                 if checker.ischanged(filepath):
                     # Regenerate file
                     filename, pagename, depends = \
-                        _process(file, filepath, pages, loader, anonym)
+                        _process(infolder, file, filepath, pages, loader, anonym)
                 # If file hasn't been changed
                 else:
                     # If file has been cached before
@@ -784,13 +843,13 @@ def document(infolder, outfolder, extension, loader, generate_toc=None):
                             if checker.ischanged(dependency):
                                 # Regenerate file
                                 filename, pagename, depends = \
-                                    _process(file, filepath, pages, loader, anonym)
+                                    _process(infolder, file, filepath, pages, loader, anonym)
                                 break
                     # If file is new and hasn't been cached before
                     except KeyError:
                         # Generate it for the first time
                         filename, pagename, depends = \
-                            _process(file, filepath, pages, loader, anonym)
+                            _process(infolder, file, filepath, pages, loader, anonym)
                 # Store new values
                 new_toc[pagename:filepath] = filename, depends
 

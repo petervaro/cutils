@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.545 (20140820)                       ##
+##                       Version: 0.8.90.733 (20140821)                       ##
 ##                                                                            ##
 ##                        File: doc/src/00_cutils.yaml                        ##
 ##                                                                            ##
@@ -14,7 +14,10 @@
 ##                                                                            ##
 ######################################################################## INFO ##
 
-# NOTE: The Dark Knight 67 Crane Warns...
+# TODO: consider changing `clic` -> `ccom` and `ccom` -> `ctag`
+
+# NOTE: Timing: 1) CCOL
+#               2) update doc -> menu: fork me, etc.
 
 #------------------------------------------------------------------------------#
 PAGE: CUTILS
@@ -30,76 +33,153 @@ INFO:
     - string: 'C Utilities'
   - - br
   - - p
+    - class: info
     - string: |
               `cutils` *(C Utilities)* is a collection of simple, modern and
               truly powerful tools to make one's life a little easier when
               programming in C. The utilities were created mostly to fulfill the
               personal needs of the author, however he hopes and believes many
               will find the tools just as useful and essential as he does.
+  - - br
+  - - p
+    - class: info
+    - string: '**Current version:** `0.8.90`'
+  - - br
+  - - p
+    - class: info
+    - string: |
+              `cutils` is under heavy development, although it is regularly
+              tested under Windows, Mac OS and Linux as well. The status of the
+              project can be seen in the following progress-bars:
+  - - br
+  - - img
+    - alt: progress bars
+    - title: project progress
+    - src: img/progress.svg
+    - style: 'display: inline; padding-left: 24pt; padding-bottom: 24pt;'
 
-# NOTE: "The best way to predict the future is to invent it." -- Alan Kay
+#------------------------------------------------------------------------------#
+TEXT:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - - Getting Started
+    - section: Setup/Configure
+      text: |
+            To use the tools of `cutils`, one has to configure the `makefile` of
+            the project. It is quite easy though, one has to set eight variables
+            and that is all.
+            \\n\\n
+            The usage of the first four variables are self explanatory: if one
+            of the options needs to be active -- for convenience -- a `true`
+            value needs to be set to the variable.
+            \\n\\n
+            `IS_OPTIMISED` means, that all the bound-checking, exception
+            handling, and *extra* features will be turned off, and the library
+            will be be compiled at `-O3` optimisation level.
+            \\n\\n
+            `USE_JEMALLOC` means, that `cutils` will use `jemalloc` (it is a 3rd
+            party dependency, needs to be installed separately) during all the
+            memory allocation processes it has.
+            \\n\\n
+            `EXCEPTION_LOG` means, that the raised exceptions won't be stored
+            separately in the handler object and won't be available through the
+            calling of the `catch` function, instead all exceptions right after
+            they had been raised will be written to the file-stream defined by
+            the `start_exception_handling` function.
+            \\n\\n
+            `DYNAMIC_LIB` means, that a `.dll` on Windows, a `.dylib` on a Mac
+            and a `.so` on a Linux will be compiled instead of a static object
+            archive (`.a`).
+            \\n\\n
+            *Example configuration:*
+      code: |
+            \\OFF
+            IS_OPTIMISED=
+            USE_JEMALLOC=true
+            EXCEPTION_LOG=true
+            DYNAMIC_LIB=
 
-# TODO: add progressbar to front-page representing
-#       which modules are ready and which are WIP
+    - text: |
+            The following variables will set the places where the header files
+            and libraries will be copied.
+            \\n\\n
+            *Example configuration:*
+      code: |
+            \\OFF
+            INCLUDE_FOLDER=/usr/local/include
+            LIBRARY_FOLDER=/usr/local/lib
 
-# TODO: consider changing `clic` -> `ccom` and `ccom` -> `ctag`
+    - text: |
+            The following variables will set which compiler and which python
+            executable to use to build `cutils`.
+            \\n\\n
+            *Example configuration:*
+      code: |
+            \\OFF
+            CC=gcc
+            PYTHON=/usr/local/bin/python3
 
-# TODO: create a proper makefile
+    - section: Install
+      text: >
+            Now, that everything is setup, there is only one step left: invoke
+            the `makefile`
+      code: \\OFF$ make install
 
-# NOTE: Timing: 1) CSLL
-#               2) CCOL
-#               3) makefile (static library) + test on Win & Linux
-#               4) C11
-#               5) update doc -> menu: fork me, etc.
+    - section: Write test
+      code: |
+            #include <stdio.h>        /* stdout */
+            #define CEXC_SET
+            #include <cutils/call.h>
+            \\n
+            int main(void)
+            {
+                start_exception_handling(stdout);
+                \\n
+                DynamicArray_char_ptr *dynarr;
+                new(&dynarr, 3, ((char*[]){"The best way to predict the"
+                                           " future is to invent it.",
+                                           "--", "Alan Kay"}));
+                \\n
+                for (size_t i=0; i<len(dynarr); i++)
+                    printf("%s\n", get(dynarr, i));
+                \\n
+                del(dynarr);
+                stop_exception_handling();
+                \\n
+                return 0;
+            }
 
-# TODO: create call - which will include all the header files available
+    - section: Run test
+      code: >
+            \\OFF$ cc -Wall -g -v -std=c11 -I<include path> -L<library path>
+            -lcutils -o <source file>.c
 
-# NOTE: Why the error-signal of functions on success is a value that can be
-#       evaluated to 'true' and if 'false' if failes? Wouldn't it be easier
-#       to write the explicit error checking like:
-#
-#           if (some_method) return EXIT_FAILURE;
-#
-#       instead of:
-#
-#           if (!some_method) return EXIT_FAILURE; ???
-#
-#       Answer: 1) Most of the container-manipulation methods return the number
-#       of items they have manipulated, which evaluates to 'true' on success and
-#       'false' on fail. So it makes more convenient and straightforward to use
-#       this kind of pattern in all cutils functions and methods 2) it is more
-#       intuitive to return 'false' on failure than 'true'
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  - - Important notes
+    - section: Error signals
+      text: |
+            Why the error-signal of functions on success is a value that can be
+            evaluated to 'true' and if 'false' if failes? Wouldn't it be easier
+            to write the explicit error checking like:
+      code: if (some_method) return EXIT_FAILURE;
 
-# TODO: add EXEC to cdoc to add "interactive" python snippets to code
-EXEC: |
-  with open('VERSION') as file:
-      # Insert to USER:About
-      DOC[USER][0].insert(0, {'name': 'Version', 'info': file.read()})
+    - text: 'instead of:'
+      code: if (!some_method) return EXIT_FAILURE;
+
+    - text: |
+            1) Most of the container-manipulation methods return the number
+            of items they have manipulated, which evaluates to 'true' on success
+            and 'false' on fail. So it makes more convenient and straightforward
+            to use this kind of pattern in all cutils functions and methods
+            \\n\\n
+            2) it is more intuitive to return 'false' on failure than 'true'
 
 #------------------------------------------------------------------------------#
 USER:
-  # TODO: write article about modern interfaces
-  #       drawbacks[1]: macro(((cast){1, 2, 3}))
-  #                           ^
-  #                   extra parenthesis
-  #       drawbacks[2]: one has to write/exzend the interface header
-  #                     if one wants to use the same generic macro
-  #       drawbacks[3]: -std=c11
-  #
-  #       advantage: OOP => instance.method(args...)
-  #                                         ^
-  #                     instance passed implicitly as first argument
-  #
-  #                  before: object_method(instance, args...)
-  #                            ^              ^
-  #              name space is token name   instance passed explicitly
-  #
-  #                  now: method(instance, args...)
-  #                          ^
-  #                  method decides which object's method to use
   - - About
     - name: LICENSE
       info: |
+            `cutils` is and always will be a free a software.
+            \\n\\n
             Copyright © 2014 Peter Varo
             \\n\\n
             Permission is hereby granted, free of charge, to any person

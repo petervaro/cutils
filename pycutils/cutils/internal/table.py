@@ -4,9 +4,9 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.497 (20140819)                       ##
+##                       Version: 0.8.90.725 (20140821)                       ##
 ##                                                                            ##
-##                          File: internal/table.py                           ##
+##                  File: pycutils/cutils/internal/table.py                   ##
 ##                                                                            ##
 ##           Designed and written by Peter Varo. Copyright (c) 2014           ##
 ##             License agreement is provided in the LICENSE file              ##

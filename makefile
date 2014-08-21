@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.488 (20140819)                       ##
+##                       Version: 0.8.90.731 (20140821)                       ##
 ##                                                                            ##
 ##                               File: makefile                               ##
 ##                                                                            ##
@@ -14,15 +14,20 @@
 ##                                                                            ##
 ######################################################################## INFO ##
 
+#------------------------------------------------------------------------------#
 # User flags
 IS_OPTIMISED=
 USE_JEMALLOC=
 EXCEPTION_LOG=
-IS_STATIC=true
+DYNAMIC_LIB=
+INCLUDE_FOLDER=
+LIBRARY_FOLDER=
+CC=clang
+PYTHON=/usr/local/bin/python3
+#------------------------------------------------------------------------------#
 
 # Filename of library
 cutils_NAME=libcutils
-
 
 # Output dirs
 cutils_BUILD_OUT_DIR=build
@@ -38,6 +43,9 @@ cutils_LIBRARY_DIRS=/usr/local/lib
 cutils_LIBRARIES=
 cutils_FRAMEWORKS=
 
+# Operating system
+UNAME=$(shell uname)
+
 # If use the jemalloc library
 ifdef USE_JEMALLOC
 cutils_LIBRARIES+=jemalloc
@@ -48,7 +56,12 @@ endif
 ifdef IS_OPTIMISED
 CFLAGS+=-O3 -DCDAR_OPT -D CSLL_OPT
 else
-CFLAGS+=-Wall -v -g -fmacro-backtrace-limit=0
+CFLAGS+=-Wall -v -g
+endif
+
+# If compiler is gcc
+ifeq ($(CC), clang)
+CFLAGS+=-fmacro-backtrace-limit=0
 endif
 
 ifdef EXCEPTION_LOG
@@ -59,8 +72,6 @@ CFLAGS+=-std=c11 $(foreach dir, $(cutils_INCLUDES), -I$(dir))
 LDFLAGS=$(foreach libdir, $(cutils_LIBRARY_DIRS), -L$(libdir))
 LDFLAGS+=$(foreach library, $(cutils_LIBRARIES), -l$(library))
 
-cutils_PYTHON=/usr/local/bin/python3
-
 # Rules
 .PHONY: all clean
 
@@ -70,6 +81,7 @@ $(cutils_BUILD_TMP_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 build_static: $(cutils_C_OBJECTS)
+	$(PYTHON) setup.py install
 	ar -c -r -s -v $(cutils_BUILD_OUT_DIR)/$(cutils_NAME).a $(cutils_C_OBJECTS)
 
 # $(cutils_BUILD_TMP_DIR)/%.o: %.c

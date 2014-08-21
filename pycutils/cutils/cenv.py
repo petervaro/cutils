@@ -4,9 +4,9 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.90.725 (20140821)                       ##
 ##                                                                            ##
-##                               File: cenv.py                                ##
+##                       File: pycutils/cutils/cenv.py                        ##
 ##                                                                            ##
 ##           Designed and written by Peter Varo. Copyright (c) 2014           ##
 ##             License agreement is provided in the LICENSE file              ##

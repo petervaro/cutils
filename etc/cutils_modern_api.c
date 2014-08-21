@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.72.552 (20140718)                       **
+**                       Version: 0.8.90.725 (20140821)                       **
 **                                                                            **
 **                       File: etc/cutils_modern_api.c                        **
 **                                                                            **
@@ -95,7 +95,21 @@ int main(void)
         bool : func_bool((bool)o, ## __VA_ARGS__), \
         float: func_float((float)o, ## __VA_ARGS__))
 
-/* 1) DESIGN   | the API first
-   2) HACK     | the solution to see if working
-   3) PRETTOFY | to make it idiomatic
-   4) OPTIMISE | profile it and optimise if necessary */
+/*  drawbacks[1]: macro(((cast){1, 2, 3}))
+                       ^
+               extra parenthesis
+    drawbacks[2]: one has to write/exzend the interface header
+                 if one wants to use the same generic macro
+    drawbacks[3]: -std=c11
+
+    advantage: OOP => instance.method(args...)
+                                     ^
+                 instance passed implicitly as first argument
+
+              before: object_method(instance, args...)
+                        ^              ^
+          name space is token name   instance passed explicitly
+
+              now: method(instance, args...)
+                      ^
+              method decides which object's method to use */

@@ -5,9 +5,9 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.85.374 (20140731)                       ##
+##                       Version: 0.8.90.725 (20140821)                       ##
 ##                                                                            ##
-##                               File: ccom.py                                ##
+##                       File: pycutils/cutils/ccom.py                        ##
 ##                                                                            ##
 ##           Designed and written by Peter Varo. Copyright (c) 2014           ##
 ##             License agreement is provided in the LICENSE file              ##
@@ -35,21 +35,12 @@ from pickle import (dump as pickle_dump,
                     HIGHEST_PROTOCOL as pickle_HIGHEST_PROTOCOL)
 
 # Import cutils modules
-# HACK: to make it work as a local module, fix it ASAP
-if __name__ == '__main__':
-    from internal.table import Table as table_Table
-    from internal.check import Checker as check_Checker
-    from internal.comment import (LINE as comment_LINE,
-                                  BLOCK as comment_BLOCK,
-                                  escape as comment_escape,
-                                  block_comments as comment_block_comments)
-else:
-    from .internal.table import Table as table_Table
-    from .internal.check import Checker as check_Checker
-    from .internal.comment import (LINE as comment_LINE,
-                                   BLOCK as comment_BLOCK,
-                                   escape as comment_escape,
-                                   block_comments as comment_block_comments)
+from cutils.internal.table import Table as table_Table
+from cutils.internal.check import Checker as check_Checker
+from cutils.internal.comment import (LINE as comment_LINE,
+                               BLOCK as comment_BLOCK,
+                               escape as comment_escape,
+                               block_comments as comment_block_comments)
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 # Special tags to look for

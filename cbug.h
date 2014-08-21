@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.80.201 (20140723)                       **
+**                       Version: 0.8.90.725 (20140821)                       **
 **                                                                            **
 **                                File: cbug.h                                **
 **                                                                            **
@@ -26,8 +26,8 @@
 #include "carg.h"    /* vargs() */
 
 /* Make macro variables available */
-#undef __s
-#undef __t
+#undef __space
+#undef __tab
 #undef __debug0
 #undef __debug1
 #undef __debug2
@@ -45,19 +45,19 @@ __debug_9802738545513323(const char *file_name,
 }
 
 /* White spaces */
-#define __s " "
-#define __t __s __s __s __s
+#define __space " "
+#define __tab __space __space __space __space
 
 /* Generic debug information */
 #define __debug0() (__debug_9802738545513323(__FILE__, __LINE__, __func__))
 
 /* Generic debug information + simple string */
 #define __debug1(str) \
-    do { __debug0(); fprintf(stderr, __t #str "\n"); } while(0)
+    do { __debug0(); fprintf(stderr, __tab #str "\n"); } while(0)
 
 /* Generic debug information + formatted string */
 #define __debug2(fmt, ...) \
-    do { __debug0(); fprintf(stderr, __t #fmt "\n", __VA_ARGS__); } while (0)
+    do { __debug0(); fprintf(stderr, __tab #fmt "\n", __VA_ARGS__); } while (0)
 
 /* Debug dispatcher */
 #define cutils_cbug_debug(...) cutils_carg_vargs(__VA_ARGS__)(64)(__VA_ARGS__, \
