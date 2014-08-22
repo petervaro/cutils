@@ -1,5 +1,105 @@
-<html><!-- www.cutils.org | Peter Varo | 2014 --><head><link href="http://www.cutils.org/favicon.ico" rel="shortcut icon" type="image/x-icon"/><link href="http://www.cutils.org/favicon.ico" rel="icon" type="image/x-icon"/><title>CARG Variadic Argument Macro</title><meta charset="utf-8"/><link href="css/cdoc.css" rel="stylesheet" type="text/css"/></head><body><div id="column1"><div id="generic"><img src="img/cutils.svg"/><br/><h2><span>MODERN AND LIGHTWEIGHT C UTILITIES</span></h2><p><span>&mdash;</span></p><p><span>DESIGNED BY</span></p><p><span>PETER VARO &copy;2014</span></p><p><span>&mdash;</span></p><br/></div><div id="sidebar"><div><p class="label">Modules:</p></div><br/><a class="toc" href="index.html">CUTILS</a><a class="toc" href="c11.html">C11 Syntax Highlighter</a><a class="toc" href="cref.html">CREF Quick Reference</a><a class="toc" href="cenv.html">CENV Environment Generator</a><a class="toc" href="cdep.html">CDEP Dependeny Graph</a><a class="toc" href="ccom.html">CCOM Comment Scanner</a><a class="toc" href="cver.html">CVER Versioning</a><a class="toc" href="clic.html">CLIC License Comment Generator</a><a class="toc" href="cres.html">CRES External Resources Packer</a><a class="toc" href="capi.html">CAPI Interface</a><a class="toc toc_current" href="#">CARG Variadic Argument Macro</a><a class="toc" href="cbug.html">CBUG Debugging &amp; Logging</a><a class="toc" href="cexc.html">CEXC Exception Handling</a><a class="toc" href="cpro.html">CPRO Profiling</a><a class="toc" href="cutt.html">CUTT Unit Testing Tools</a><a class="toc" href="cdar.html">CDAR Dynamic Array</a><a class="toc" href="cstr.html">CSTR Strings</a><a class="toc" href="csll.html">CSLL Singly Linked List</a><a class="toc" href="cdll.html">CDLL Doubly Linked List</a><a class="toc" href="cmap.html">CMAP HashMap</a><a class="toc" href="cfps.html">CFPS Frame Per Second</a><a class="toc" href="ccol.html">CCOL Color Helper</a><a class="toc" href="cdoc.html">CDOC Documenting Tool</a><a class="toc" href="call.html">CALL Include All</a><br/></div></div><div id="column2"><div id="content"><h1><span>CARG | Variadic Argument Macro</span></h1><br/><p><span>This single-header module contains a single helper macro called
+<html><!-- www.cutils.org | Peter Varo | 2014 --><head><link href="http://www.cutils.org/favicon.ico" rel="shortcut icon" type="image/x-icon"/><link href="http://www.cutils.org/favicon.ico" rel="icon" type="image/x-icon"/><title>CARG Variadic Argument Macro</title><meta charset="utf-8"/><link href="css/cdoc.css" rel="stylesheet" type="text/css"/></head><body><div id="column1"><div id="generic"><img src="img/cutils.svg"/><br/><h2><span>MODERN AND LIGHTWEIGHT C UTILITIES</span></h2><p><span>&mdash;</span></p><p><span>DESIGNED BY</span></p><p><span>PETER VARO &copy;2014</span></p><p><span>&mdash;</span></p><br/></div><div id="sidebar"><div><p class="label">Modules:</p></div><br/><a class="toc" href="index.html">CUTILS</a><a class="toc" href="c11.html">C11 Syntax Highlighter</a><a class="toc" href="cref.html">CREF Quick Reference</a><a class="toc" href="cenv.html">CENV Environment Generator</a><a class="toc" href="cdep.html">CDEP Dependeny Graph</a><a class="toc" href="ccom.html">CCOM Comment Scanner</a><a class="toc" href="cver.html">CVER Versioning</a><a class="toc" href="clic.html">CLIC License Comment Generator</a><a class="toc" href="cres.html">CRES External Resources Packer</a><a class="toc" href="capi.html">CAPI Interface</a><a class="toc toc_current" href="#">CARG Variadic Argument Macro</a><a class="toc" href="cbug.html">CBUG Debugging &amp; Logging</a><a class="toc" href="cexc.html">CEXC Exception Handling</a><a class="toc" href="cpro.html">CPRO Profiling</a><a class="toc" href="cutt.html">CUTT Unit Testing Tools</a><a class="toc" href="cdar.html">CDAR Dynamic Array</a><a class="toc" href="cstr.html">CSTR Strings</a><a class="toc" href="csll.html">CSLL Singly Linked List</a><a class="toc" href="cdll.html">CDLL Doubly Linked List</a><a class="toc" href="cmap.html">CMAP HashMap</a><a class="toc" href="cfps.html">CFPS Frame Per Second</a><a class="toc" href="ccol.html">CCOL Color Helper</a><a class="toc" href="cdoc.html">CDOC Documenting Tool</a><a class="toc" href="call.html">CALL Include All</a><br/><div><p class="label">Options:</p><br/><a class="toc" href="#user_Name_Mangling">Name Mangling</a></div><br/><div><p class="label">Macros:</p><br/><a class="toc" href="#user_vargs">vargs</a><a class="toc" href="#user_zero">zero</a></div><br/></div></div><div id="column2"><div id="content"><h1><span>CARG | Variadic Argument Macro</span></h1><br/><p><span>This single-header module contains a single helper macro called
 </span><code>vargs</code><span>. Its aim is to simplify the implementation of variadic
 argument count based dispatching APIs in C which supports 0 or
 more arguments passed to the dispatcher.
-</span></p><br/></div></div></body></html>
+</span></p><br/><div><h2 class="title">Options</h2><div class="entity" id="user_Name_Mangling"><p class="name">Name Mangling</p><br/><p class="info"><span>However </span><code>cutils</code><span> uses very short and expressive function names which
+are not confronting with any of the standard library's entities,
+sometimes one wants to use some of these function, macro or type
+names in one's own project for other purposes. To solve this problem
+</span><code>cutils</code><span> provides a macro variable, a flag, to turn on or off the
+prefixes of the variable names. By default it is turned off.
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>Each public function or function-like macro, or type name will have the same </span><code>cutils_</code><span> prefix, as follows
+:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_functions">vargs</span><span>();  </span><span class="code_operators">=</span><span></span><span class="code_operators">=</span><span></span><span class="code_operators">=</span><span></span><span class="code_operators">&gt;</span><span>  </span><span class="code_functions">cutils_vargs</span><span>();
+</span></code></pre><br/><p class="info note"><span>One can compile all files or just some of it, defining the variable through the </span><code>-D</code><span> flag of the compiler, like this
+:</span></p><br/><pre class="info"><code class="snippet">cc -std=c11 -Wall -DCUTILS_NAMESPACE -c -o filename.o</code></pre><br/><p class="info note"><span>Or one can define this variable before the inclusion of the API header file
+:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>carg</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+</span><span class="code_macros">#define</span><span> CUTILS_NAMESPACE
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>capi</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+</span></code></pre><br/></div><div><h2 class="title">Macros</h2><div class="entity" id="user_vargs"><p class="name">vargs</p><br/><p class="info"><span>This macro helps implementing variadic argument based macros easily.
+It can handle 0 to 63 arguments, and it is capable of deciding which
+macro to call at compile time.
+</span><br/><span></span><br/><span>
+Using </span><code>vargs</code><span> may looks a bit tricky, as its functionality is very
+complex, and calling it once does not enough. One has to call it
+four times as the first example shows it, to make it work.
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>Syntax/Usage of </span><code>vargs</code><span>.
+</span><br/><span></span><br/><span>
+Note: In this example, </span><code>x</code><span> represents the name of function-like
+macros or functions. However, it is using indices as suffixes, it is
+doing that only to indicate the proper order of the tokens.
+Otherwise </span><code>x</code><span> can be any valid token-name.
+:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_functions">vargs</span><span>(__VA_ARGS__)(N)(__VA_ARGS__, x0, </span><span class="code_functions">x</span><span>(N </span><span class="code_operators">-</span><span> </span><span class="code_numbers">1</span><span>), </span><span class="code_operators">.</span><span></span><span class="code_operators">.</span><span></span><span class="code_operators">.</span><span>, x1)(__VA_ARGS__)
+</span><span class="code_comments">/*         ^       ^       ^        ^      ^          ^        ^
+ *         |       |       |        |      |          |        |
+ *      test if    |   dispatch     |      |     with lowest   |
+ *       empty     |                |      |      number of    |
+ *                 |             without   |      arguments    |
+ *              number of       arguments  |                   |
+ *          macros/functions               |                 passing
+ *                                with highest number       arguments
+ *                                    of arguments
+ */</span><span>
+</span></code></pre><br/><p class="info note"><span>This basic example demonstrates how to create a dispather using </span><code>vargs</code><span>, to choose which macro/function to call if 0, 1 or 2 arguments were passed
+:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>carg</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+</span><span class="code_macros">#include</span><span> </span><span class="code_operators">&lt;</span><span>cutils</span><span class="code_operators">/</span><span>capi</span><span class="code_operators">.</span><span>h</span><span class="code_operators">&gt;</span><span>
+</span><span class="code_macros">
+#define</span><span> </span><span class="code_functions">nil_arg</span><span>() </span><span class="code_functions">printf</span><span>(</span><span class="code_strings">"No arguments passed\n"</span><span>)
+
+</span><span class="code_keywords">static</span><span> </span><span class="code_types">int</span><span>
+</span><span class="code_functions">one_arg</span><span>(</span><span class="code_types">int</span><span> i)
+{
+    </span><span class="code_functions">printf</span><span>(</span><span class="code_strings">"One argument passed: %d\n"</span><span>, i);
+    </span><span class="code_keywords">return</span><span> </span><span class="code_operators">-</span><span></span><span class="code_operators">-</span><span>i;
+}
+
+</span><span class="code_keywords">static</span><span> </span><span class="code_types">int</span><span>
+</span><span class="code_functions">two_args</span><span>(</span><span class="code_keywords">const</span><span> </span><span class="code_types">char</span><span> </span><span class="code_operators">*</span><span>str1,
+         </span><span class="code_keywords">const</span><span> </span><span class="code_types">char</span><span> </span><span class="code_operators">*</span><span>str2)
+{
+    </span><span class="code_functions">printf</span><span>(</span><span class="code_strings">"Two arguments passed: '%s', '%s'\n"</span><span>, str1, str2);
+    </span><span class="code_keywords">return</span><span> </span><span class="code_numbers">0</span><span>;
+}
+
+</span><span class="code_comments">// Using vargs to select the proper macro/function to call:</span><span>
+</span><span class="code_macros">#define</span><span> </span><span class="code_functions">dispatch</span><span>(</span><span class="code_operators">.</span><span></span><span class="code_operators">.</span><span></span><span class="code_operators">.</span><span>) \
+    </span><span class="code_functions">vargs</span><span>(__VA_ARGS__)(</span><span class="code_numbers">3</span><span>)(__VA_ARGS__, nil_arg, two_args, one_arg)(__VA_ARGS__)
+
+</span><span class="code_types">int</span><span> </span><span class="code_functions">main</span><span>(</span><span class="code_types">void</span><span>)
+{
+    </span><span class="code_functions">dispatch</span><span>();
+    </span><span class="code_types">int</span><span> i </span><span class="code_operators">=</span><span> </span><span class="code_functions">dispatch</span><span>(</span><span class="code_numbers">12</span><span>);
+    </span><span class="code_functions">dispatch</span><span>(</span><span class="code_strings">"cutils"</span><span>, </span><span class="code_strings">"rocks!"</span><span>);
+    </span><span class="code_keywords">return</span><span> </span><span class="code_numbers">0</span><span>;
+}
+</span></code></pre><br/><p class="info note"><span>OUTPUT:</span></p><br/><pre class="info"><code class="snippet">No arguments passed
+One argument passed: 12
+Two arguments passed: 'cutils', 'rocks!'</code></pre><br/><div class="entity" id="user_zero"><p class="name">zero</p><br/><p class="info"><span>If the range is not complete &mdash; for example there are func1, func2
+and func5, but no func0, func3 and func4 &mdash; the best practice is to
+provide the function with the greater number of arguments as a
+replacement, so the compiler can warn the user if too few or too
+many arguments were passed to the dispatcher.
+</span><br/><span></span><br/><span>
+There is only one exception: since the compiler can't decide whether
+a the macro is called with a single or without any argument, the
+</span><code>carg</code><span> module provides a </span><code>zero</code><span> macro, which is aliasing a simple
+function, that is not doing anything, but needs a single argument.
+With this hack, the compiler will warn the user about passing too
+few arguments to this function-like macro
+</span></p><br/></div><p class="info label">Examples:</p><p class="info note"><span>Fill the missing functions with a "greater" one and use the </span><code>zero</code><span> to catch the "no arguments passed" calling
+:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_macros">#define</span><span> </span><span class="code_functions">func</span><span>(</span><span class="code_operators">.</span><span></span><span class="code_operators">.</span><span></span><span class="code_operators">.</span><span>)                                        \
+    </span><span class="code_functions">vargs</span><span>(__VA_ARGS__)(</span><span class="code_numbers">6</span><span>)(__VA_ARGS__, zero,             \
+                                       func5,            \
+                                       func5,            \
+                                       func5,            \
+                                       func2,            \
+                                       func1)(__VA_ARGS__)
+
+</span><span class="code_comments">/*    func()                   -&gt; too few arguments
+ *    func(a)                  -&gt; func1()
+ *    func(a, b)               -&gt; func2()
+ *    func(a, b, c)            -&gt; too few arguments
+ *    func(a, b, c, d)         -&gt; too few arguments
+ *    func(a, b, c, d, e)      -&gt; func5
+ *    func(a, b, c, d, e, ...) -&gt; too many arguments
+ */</span><span>
+</span></code></pre><br/></div></div></div></body></html>
