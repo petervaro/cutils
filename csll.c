@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.90.629 (20140820)                       **
+**                       Version: 0.8.90.749 (20140821)                       **
 **                                                                            **
 **                                File: csll.c                                **
 **                                                                            **
@@ -1491,7 +1491,7 @@ size_t cutils_csll_SinglyLinkedList_signed_char_sub(cutils_csll_SinglyLinkedList
 signed char cutils_csll_SinglyLinkedList_signed_char_get(cutils_csll_SinglyLinkedList_signed_char*l,size_t i){return *(signed char*)cutils_csll_SinglyLinkedList_void_ptr_get(l,i);}
 bool cutils_csll_SinglyLinkedList_signed_char_find(cutils_csll_SinglyLinkedList_signed_char*l,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_csll_SinglyLinkedList_void_ptr_find(l,f,p,i);}
 size_t cutils_csll_SinglyLinkedList_signed_char_findall(cutils_csll_SinglyLinkedList_signed_char*l,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_csll_SinglyLinkedList_void_ptr_findall(l,f,p,i);}
-bool cutils_csll_SinglyLinkedList_signed_char_format(const signed char*i,char**b,size_t*s){snprintf(*b,*s,"%d",*i);return true;}
+bool cutils_csll_SinglyLinkedList_signed_char_format(const signed char*i,char**b,size_t*s){snprintf(*b,*s,"%c",*i);return true;}
 bool cutils_csll_SinglyLinkedList_signed_char_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_csll_SinglyLinkedList_signed_char_del)(cutils_csll_SinglyLinkedList_signed_char*)=cutils_csll_SinglyLinkedList_void_ptr_del;
 size_t(*cutils_csll_SinglyLinkedList_signed_char_len)(cutils_csll_SinglyLinkedList_signed_char*)=cutils_csll_SinglyLinkedList_void_ptr_len;
@@ -1642,7 +1642,7 @@ size_t cutils_csll_SinglyLinkedList_unsigned_int_sub(cutils_csll_SinglyLinkedLis
 unsigned int cutils_csll_SinglyLinkedList_unsigned_int_get(cutils_csll_SinglyLinkedList_unsigned_int*l,size_t i){return *(unsigned int*)cutils_csll_SinglyLinkedList_void_ptr_get(l,i);}
 bool cutils_csll_SinglyLinkedList_unsigned_int_find(cutils_csll_SinglyLinkedList_unsigned_int*l,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_csll_SinglyLinkedList_void_ptr_find(l,f,p,i);}
 size_t cutils_csll_SinglyLinkedList_unsigned_int_findall(cutils_csll_SinglyLinkedList_unsigned_int*l,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_csll_SinglyLinkedList_void_ptr_findall(l,f,p,i);}
-bool cutils_csll_SinglyLinkedList_unsigned_int_format(const unsigned int*i,char**b,size_t*s){snprintf(*b,*s,"%u",*i);return true;}
+bool cutils_csll_SinglyLinkedList_unsigned_int_format(const unsigned int*i,char**b,size_t*s){snprintf(*b,*s,"%uu",*i);return true;}
 bool cutils_csll_SinglyLinkedList_unsigned_int_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_csll_SinglyLinkedList_unsigned_int_del)(cutils_csll_SinglyLinkedList_unsigned_int*)=cutils_csll_SinglyLinkedList_void_ptr_del;
 size_t(*cutils_csll_SinglyLinkedList_unsigned_int_len)(cutils_csll_SinglyLinkedList_unsigned_int*)=cutils_csll_SinglyLinkedList_void_ptr_len;
@@ -1667,7 +1667,7 @@ size_t cutils_csll_SinglyLinkedList_long_sub(cutils_csll_SinglyLinkedList_long*l
 long cutils_csll_SinglyLinkedList_long_get(cutils_csll_SinglyLinkedList_long*l,size_t i){return *(long*)cutils_csll_SinglyLinkedList_void_ptr_get(l,i);}
 bool cutils_csll_SinglyLinkedList_long_find(cutils_csll_SinglyLinkedList_long*l,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_csll_SinglyLinkedList_void_ptr_find(l,f,p,i);}
 size_t cutils_csll_SinglyLinkedList_long_findall(cutils_csll_SinglyLinkedList_long*l,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_csll_SinglyLinkedList_void_ptr_findall(l,f,p,i);}
-bool cutils_csll_SinglyLinkedList_long_format(const long*i,char**b,size_t*s){snprintf(*b,*s,"%ld",*i);return true;}
+bool cutils_csll_SinglyLinkedList_long_format(const long*i,char**b,size_t*s){snprintf(*b,*s,"%ldl",*i);return true;}
 bool cutils_csll_SinglyLinkedList_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_csll_SinglyLinkedList_long_del)(cutils_csll_SinglyLinkedList_long*)=cutils_csll_SinglyLinkedList_void_ptr_del;
 size_t(*cutils_csll_SinglyLinkedList_long_len)(cutils_csll_SinglyLinkedList_long*)=cutils_csll_SinglyLinkedList_void_ptr_len;
@@ -1692,7 +1692,7 @@ size_t cutils_csll_SinglyLinkedList_unsigned_long_sub(cutils_csll_SinglyLinkedLi
 unsigned long cutils_csll_SinglyLinkedList_unsigned_long_get(cutils_csll_SinglyLinkedList_unsigned_long*l,size_t i){return *(unsigned long*)cutils_csll_SinglyLinkedList_void_ptr_get(l,i);}
 bool cutils_csll_SinglyLinkedList_unsigned_long_find(cutils_csll_SinglyLinkedList_unsigned_long*l,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_csll_SinglyLinkedList_void_ptr_find(l,f,p,i);}
 size_t cutils_csll_SinglyLinkedList_unsigned_long_findall(cutils_csll_SinglyLinkedList_unsigned_long*l,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_csll_SinglyLinkedList_void_ptr_findall(l,f,p,i);}
-bool cutils_csll_SinglyLinkedList_unsigned_long_format(const unsigned long*i,char**b,size_t*s){snprintf(*b,*s,"%lu",*i);return true;}
+bool cutils_csll_SinglyLinkedList_unsigned_long_format(const unsigned long*i,char**b,size_t*s){snprintf(*b,*s,"%luul",*i);return true;}
 bool cutils_csll_SinglyLinkedList_unsigned_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_csll_SinglyLinkedList_unsigned_long_del)(cutils_csll_SinglyLinkedList_unsigned_long*)=cutils_csll_SinglyLinkedList_void_ptr_del;
 size_t(*cutils_csll_SinglyLinkedList_unsigned_long_len)(cutils_csll_SinglyLinkedList_unsigned_long*)=cutils_csll_SinglyLinkedList_void_ptr_len;
@@ -1717,7 +1717,7 @@ size_t cutils_csll_SinglyLinkedList_long_long_sub(cutils_csll_SinglyLinkedList_l
 long long cutils_csll_SinglyLinkedList_long_long_get(cutils_csll_SinglyLinkedList_long_long*l,size_t i){return *(long long*)cutils_csll_SinglyLinkedList_void_ptr_get(l,i);}
 bool cutils_csll_SinglyLinkedList_long_long_find(cutils_csll_SinglyLinkedList_long_long*l,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_csll_SinglyLinkedList_void_ptr_find(l,f,p,i);}
 size_t cutils_csll_SinglyLinkedList_long_long_findall(cutils_csll_SinglyLinkedList_long_long*l,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_csll_SinglyLinkedList_void_ptr_findall(l,f,p,i);}
-bool cutils_csll_SinglyLinkedList_long_long_format(const long long*i,char**b,size_t*s){snprintf(*b,*s,"%lld",*i);return true;}
+bool cutils_csll_SinglyLinkedList_long_long_format(const long long*i,char**b,size_t*s){snprintf(*b,*s,"%lldll",*i);return true;}
 bool cutils_csll_SinglyLinkedList_long_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_csll_SinglyLinkedList_long_long_del)(cutils_csll_SinglyLinkedList_long_long*)=cutils_csll_SinglyLinkedList_void_ptr_del;
 size_t(*cutils_csll_SinglyLinkedList_long_long_len)(cutils_csll_SinglyLinkedList_long_long*)=cutils_csll_SinglyLinkedList_void_ptr_len;
@@ -1742,7 +1742,7 @@ size_t cutils_csll_SinglyLinkedList_unsigned_long_long_sub(cutils_csll_SinglyLin
 unsigned long long cutils_csll_SinglyLinkedList_unsigned_long_long_get(cutils_csll_SinglyLinkedList_unsigned_long_long*l,size_t i){return *(unsigned long long*)cutils_csll_SinglyLinkedList_void_ptr_get(l,i);}
 bool cutils_csll_SinglyLinkedList_unsigned_long_long_find(cutils_csll_SinglyLinkedList_unsigned_long_long*l,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_csll_SinglyLinkedList_void_ptr_find(l,f,p,i);}
 size_t cutils_csll_SinglyLinkedList_unsigned_long_long_findall(cutils_csll_SinglyLinkedList_unsigned_long_long*l,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_csll_SinglyLinkedList_void_ptr_findall(l,f,p,i);}
-bool cutils_csll_SinglyLinkedList_unsigned_long_long_format(const unsigned long long*i,char**b,size_t*s){snprintf(*b,*s,"%llu",*i);return true;}
+bool cutils_csll_SinglyLinkedList_unsigned_long_long_format(const unsigned long long*i,char**b,size_t*s){snprintf(*b,*s,"%lluull",*i);return true;}
 bool cutils_csll_SinglyLinkedList_unsigned_long_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_csll_SinglyLinkedList_unsigned_long_long_del)(cutils_csll_SinglyLinkedList_unsigned_long_long*)=cutils_csll_SinglyLinkedList_void_ptr_del;
 size_t(*cutils_csll_SinglyLinkedList_unsigned_long_long_len)(cutils_csll_SinglyLinkedList_unsigned_long_long*)=cutils_csll_SinglyLinkedList_void_ptr_len;
@@ -1767,7 +1767,7 @@ size_t cutils_csll_SinglyLinkedList_float_sub(cutils_csll_SinglyLinkedList_float
 float cutils_csll_SinglyLinkedList_float_get(cutils_csll_SinglyLinkedList_float*l,size_t i){return *(float*)cutils_csll_SinglyLinkedList_void_ptr_get(l,i);}
 bool cutils_csll_SinglyLinkedList_float_find(cutils_csll_SinglyLinkedList_float*l,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_csll_SinglyLinkedList_void_ptr_find(l,f,p,i);}
 size_t cutils_csll_SinglyLinkedList_float_findall(cutils_csll_SinglyLinkedList_float*l,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_csll_SinglyLinkedList_void_ptr_findall(l,f,p,i);}
-bool cutils_csll_SinglyLinkedList_float_format(const float*i,char**b,size_t*s){snprintf(*b,*s,"%f",*i);return true;}
+bool cutils_csll_SinglyLinkedList_float_format(const float*i,char**b,size_t*s){snprintf(*b,*s,"%ff",*i);return true;}
 bool cutils_csll_SinglyLinkedList_float_compare(const void*p1,const void*p2,size_t s){return cutils_fcmp_float_compare(*(float*)p1,*(float*)p2);}
 void(*cutils_csll_SinglyLinkedList_float_del)(cutils_csll_SinglyLinkedList_float*)=cutils_csll_SinglyLinkedList_void_ptr_del;
 size_t(*cutils_csll_SinglyLinkedList_float_len)(cutils_csll_SinglyLinkedList_float*)=cutils_csll_SinglyLinkedList_void_ptr_len;

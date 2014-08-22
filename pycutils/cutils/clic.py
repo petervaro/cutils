@@ -116,7 +116,8 @@ def header(infolder,
            line=comment_LINE,
            block=comment_BLOCK,
            extensions=EXTENSIONS,
-           exceptions=EXCEPTIONS):
+           exceptions=EXCEPTIONS,
+           overwrite=False):
     # Compile regular expression pattern to match in scanned files
     pattern = re_compile(_COMMENT.format(r'|'.join(map(comment_escape, line)),
                                          *comment_block_comments(block)),
@@ -165,7 +166,7 @@ def header(infolder,
                     extension not in exceptions):
                     filepath = os_path_join(root, file)
                     # If file has been changed since last check
-                    if checker.ischanged(filepath):
+                    if checker.ischanged(filepath) and not overwrite:
                         values['SIZE'] = _size(os_path_getsize(filepath))
                         # FIXME: make it more generic than ./ -- what if ../../?
                         values['FILE'] = filepath[2:] if filepath.startswith('./') else filepath

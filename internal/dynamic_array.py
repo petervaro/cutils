@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.615 (20140820)                       ##
+##                       Version: 0.8.90.749 (20140821)                       ##
 ##                                                                            ##
 ##                      File: internal/dynamic_array.py                       ##
 ##                                                                            ##
@@ -26,24 +26,24 @@ PROTO = 'void_ptr'
 ARRAY = 'cutils_cdar_DynamicArray'
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-TYPES = (('char'              , 'c'  ),
-         ('signed char'       , 'c'  ),
-         ('unsigned char'     , 'u'  ),
-         ('char*'             , 's'  ),
-         ('short'             , 'hd' ),
-         ('unsigned short'    , 'hu' ),
-         ('int'               , 'd'  ),
-         ('unsigned int'      , 'u'  ),
-         ('long'              , 'ld' ),
-         ('unsigned long'     , 'lu' ),
-         ('long long'         , 'lld'),
-         ('unsigned long long', 'llu'),
-         ('float'             , 'f'  ),
-         ('double'            , 'lf' ),
-         ('long double'       , 'Lf' ),
-         ('bool'              , 'd'  ),
-         ('size_t'            , 'zu' ),
-         ('ptrdiff_t'         , 'td' ))
+TYPES = (('char'              , 'c'  , ''   ),
+         ('signed char'       , 'c'  , ''   ),
+         ('unsigned char'     , 'u'  , ''   ),
+         ('char*'             , 's'  , ''   ),
+         ('short'             , 'hd' , ''   ),
+         ('unsigned short'    , 'hu' , ''   ),
+         ('int'               , 'd'  , ''   ),
+         ('unsigned int'      , 'u'  , 'u'  ),
+         ('long'              , 'ld' , 'l'  ),
+         ('unsigned long'     , 'lu' , 'ul' ),
+         ('long long'         , 'lld', 'll' ),
+         ('unsigned long long', 'llu', 'ull'),
+         ('float'             , 'f'  , 'f'  ),
+         ('double'            , 'lf' , ''   ),
+         ('long double'       , 'Lf' , ''   ),
+         ('bool'              , 'd'  , ''   ),
+         ('size_t'            , 'zu' , ''   ),
+         ('ptrdiff_t'         , 'td' , ''   ))
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 ARG1_T = '{0}_{1}*'

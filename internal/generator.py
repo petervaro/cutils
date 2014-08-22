@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.85.326 (20140727)                       ##
+##                       Version: 0.8.90.749 (20140821)                       ##
 ##                                                                            ##
 ##                        File: internal/generator.py                         ##
 ##                                                                            ##
@@ -145,7 +145,7 @@ def methods(types, base_name, sub_typed=False, guard=None,
     methods_source = []
     proto_added = set()
     # For each standard type generate type specific functions
-    for name, fmt in types:
+    for name, fmt, sym in types:
         # Format with word-like only characters
         # FIXME: strip whitespaces
         word = name.replace(' ', '_').replace('*', '_ptr')
@@ -160,8 +160,8 @@ def methods(types, base_name, sub_typed=False, guard=None,
         # Create function wrappers and pointers
         for f, h, s in chain(zip(wrappers, repeat(_WRAPPED_HEADER), repeat(_WRAPPED_SOURCE)),
                              zip(pointers, repeat(_POINTER_HEADER), repeat(_POINTER_SOURCE))):
-            headers.append(h.format(base_name, *f).format(base_name, word, name, fmt, prototype, *f))
-            sources.append(_format(s, base_name, name, f).format(base_name, word, name, fmt, prototype, *f))
+            headers.append(h.format(base_name, *f).format(base_name, word, name, fmt+sym, prototype, *f))
+            sources.append(_format(s, base_name, name, f).format(base_name, word, name, fmt+sym, prototype, *f))
             # Store the values of the type generic expression
             func_name = f[1]
             generics = macros_dict.setdefault(func_name, [[], _CALLING])

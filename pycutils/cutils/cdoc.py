@@ -801,7 +801,7 @@ def _process(infolder, file, filepath, pages, loader, counter):
     return filename, pagename, depends
 
 #------------------------------------------------------------------------------#
-def document(infolder, outfolder, extension, loader, generate_toc=None):
+def document(infolder, outfolder, extension, loader, generate_toc=None, overwrite=False):
     # Get previously generated TOC object
     TOC = os_path_join(infolder, '.cdoc_toc')
     try:
@@ -826,7 +826,7 @@ def document(infolder, outfolder, extension, loader, generate_toc=None):
                 # Create full file path
                 filepath = os_path_join(infolder, file)
                 # If file has been changed since last check
-                if checker.ischanged(filepath):
+                if checker.ischanged(filepath) and not overwrite:
                     # Regenerate file
                     filename, pagename, depends = \
                         _process(infolder, file, filepath, pages, loader, anonym)
@@ -840,7 +840,7 @@ def document(infolder, outfolder, extension, loader, generate_toc=None):
                         pages[pagename] = None
                         # If any of the dependencies has changed
                         for dependency in depends:
-                            if checker.ischanged(dependency):
+                            if checker.ischanged(dependency) and not overwrite:
                                 # Regenerate file
                                 filename, pagename, depends = \
                                     _process(infolder, file, filepath, pages, loader, anonym)
@@ -872,17 +872,17 @@ def document(infolder, outfolder, extension, loader, generate_toc=None):
 #------------------------------------------------------------------------------#
 if __name__ == '__main__':
     print('- '*40)
-    # try:
-    # TODO: add 'external CSS path' argument
+    try:
+        # TODO: add 'external CSS path' argument
 
-    # TODO: add -reset flags which will remove the cache files
-    script, infolder, outfolder, *rest = sys_argv
-    # Create documentation
-    document(infolder=infolder,
-             outfolder=outfolder,
-             extension='.yaml',
-             loader=lambda s: yaml_load(s, Loader=yaml_Loader))
-    print('='*80)
-    print('CDOC: All documents has been successfully converted.\n')
-    # except ValueError:
-    #     print('CDOC: !!! Warning !!! No folder provided\n')
+        # TODO: add -reset flags which will remove the cache files
+        script, infolder, outfolder, *rest = sys_argv
+        # Create documentation
+        document(infolder=infolder,
+                 outfolder=outfolder,
+                 extension='.yaml',
+                 loader=lambda s: yaml_load(s, Loader=yaml_Loader))
+        print('='*80)
+        print('CDOC: All documents has been successfully converted.\n')
+    except ValueError:
+        print('CDOC: !!! Warning !!! No folder provided\n')

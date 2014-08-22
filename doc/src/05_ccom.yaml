@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.450 (20140713)                       ##
+##                       Version: 0.8.90.754 (20140822)                       ##
 ##                                                                            ##
 ##                         File: doc/src/05_ccom.yaml                         ##
 ##                                                                            ##
@@ -41,6 +41,7 @@ USER:
     - FILE: const/pyhash.yaml
       VARS:
         VAR_module: ccom
+
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - Usage
     - name: Command Line Tool

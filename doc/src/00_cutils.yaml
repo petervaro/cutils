@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.733 (20140821)                       ##
+##                       Version: 0.8.90.762 (20140822)                       ##
 ##                                                                            ##
 ##                        File: doc/src/00_cutils.yaml                        ##
 ##                                                                            ##
@@ -64,21 +64,21 @@ TEXT:
   - - Getting Started
     - section: Setup/Configure
       text: |
-            To use the tools of `cutils`, one has to configure the `makefile` of
-            the project. It is quite easy though, one has to set eight variables
-            and that is all.
+            To use the tools of `cutils`, you have to configure the `makefile`
+            of the project. It is a quite easy thing to do, all you have to do
+            is set eight variables and that is all.
             \\n\\n
-            The usage of the first four variables are self explanatory: if one
-            of the options needs to be active -- for convenience -- a `true`
-            value needs to be set to the variable.
+            The usage of the first four variables are pretty self explanatory:
+            if you want one of the options to be active -- for convenience -- a
+            `true` value needs to be set to the variable.
             \\n\\n
-            `IS_OPTIMISED` means, that all the bound-checking, exception
-            handling, and *extra* features will be turned off, and the library
+            `IS_OPTIMISED` means, that all the bound-checkings, exception
+            handlings, and *extra* features will be turned off, and the library
             will be be compiled at `-O3` optimisation level.
             \\n\\n
             `USE_JEMALLOC` means, that `cutils` will use `jemalloc` (it is a 3rd
-            party dependency, needs to be installed separately) during all the
-            memory allocation processes it has.
+            party dependency, you have to install it separately) during all the
+            memory allocation processes the library has.
             \\n\\n
             `EXCEPTION_LOG` means, that the raised exceptions won't be stored
             separately in the handler object and won't be available through the
@@ -87,8 +87,8 @@ TEXT:
             the `start_exception_handling` function.
             \\n\\n
             `DYNAMIC_LIB` means, that a `.dll` on Windows, a `.dylib` on a Mac
-            and a `.so` on a Linux will be compiled instead of a static object
-            archive (`.a`).
+            and a `.so` on a Linux dynamic library will be compiled instead of
+            the static object archive (`.a`).
             \\n\\n
             *Example configuration:*
       code: |
@@ -100,13 +100,15 @@ TEXT:
 
     - text: |
             The following variables will set the places where the header files
-            and libraries will be copied.
+            and libraries will be copied. Also specifies where the command-line
+            tools will be copied (sym-linked).
             \\n\\n
             *Example configuration:*
       code: |
             \\OFF
             INCLUDE_FOLDER=/usr/local/include
             LIBRARY_FOLDER=/usr/local/lib
+            BINARY_FOLDER=/usr/local/bin
 
     - text: |
             The following variables will set which compiler and which python
@@ -121,10 +123,31 @@ TEXT:
     - section: Install
       text: >
             Now, that everything is setup, there is only one step left: invoke
-            the `makefile`
-      code: \\OFF$ make install
+            the `makefile`. On some sytems you may need `super-user` privileges,
+            so you have to use the `sudo` before the commands if the system is
+            complaining about privileges.
+      code: |
+            \\OFF
+            $ make
+            $ make install
+
+    - section: Create environment
+      text: |
+            If everything went fine, not only the modules and libs, but also all
+            the command line utilities were installed as well. To test if that
+            is true, you have to navigate to your `Documents` folder (or any
+            other folder you prefer to build a project in) and run the following
+            commands:
+      code: |
+            \\OFF
+            $ cenv my_test_env my_test -cutils
+            $ cd my_test_env
 
     - section: Write test
+      text: >
+            Now you can open `my_test.c` inside the `my_test_env` folder with
+            your favourite text-editor of choice. Replace the automatically
+            generated code block with the following lines:
       code: |
             #include <stdio.h>        /* stdout */
             #define CEXC_SET
@@ -140,7 +163,7 @@ TEXT:
                                            "--", "Alan Kay"}));
                 \\n
                 for (size_t i=0; i<len(dynarr); i++)
-                    printf("%s\n", get(dynarr, i));
+                    debug("%s\n", get(dynarr, i));
                 \\n
                 del(dynarr);
                 stop_exception_handling();
@@ -149,9 +172,18 @@ TEXT:
             }
 
     - section: Run test
-      code: >
-            \\OFF$ cc -Wall -g -v -std=c11 -I<include path> -L<library path>
-            -lcutils -o <source file>.c
+      text: |
+            Now you can run this code with the generated `makefile`:
+      code: |
+            \\OFF
+            $ make
+            $ ./build/my_test
+
+
+
+            # THE INC AND LIB FOLDERS NEEDS TO BE WRITTEN TO THE CENV !!!
+
+
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - Important notes

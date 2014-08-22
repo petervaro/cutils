@@ -150,7 +150,8 @@ def collect(infolder,
             tags  = WORDS,
             marks = MARKS,
             extensions=EXTENSIONS,
-            exceptions=EXCEPTIONS):
+            exceptions=EXCEPTIONS,
+            overwrite=False):
     # Process block comment marks
     blocks_open, blocks_close = comment_block_comments(block)
 
@@ -200,7 +201,7 @@ def collect(infolder,
                     extension in extensions and
                     extension not in exceptions):
                     filepath = os_path_join(root, filename)[2:]
-                    if checker.ischanged(filepath):
+                    if checker.ischanged(filepath) and not overwrite:
                         with open(filepath, encoding='utf-8') as file:
                             _search(collected, pattern1, pattern2,
                                     file.read(), filepath, marks)

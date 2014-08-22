@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.397 (20140712)                       ##
+##                       Version: 0.8.90.754 (20140822)                       ##
 ##                                                                            ##
 ##                         File: doc/src/03_cenv.yaml                         ##
 ##                                                                            ##
@@ -39,8 +39,9 @@ USER:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - Dependencies
     - FILE: const/python.yaml
+
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - - usage
+  - - Usage
     - name: Command Line Tool
       info: |
             `cenv` is command line tool, and takes two arguments. The first is

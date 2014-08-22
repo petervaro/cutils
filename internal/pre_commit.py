@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.725 (20140821)                       ##
+##                       Version: 0.8.90.758 (20140822)                       ##
 ##                                                                            ##
 ##                        File: internal/pre_commit.py                        ##
 ##                                                                            ##
@@ -31,6 +31,9 @@ from cutils.cdoc import document
 from cutils.ccom import collect
 from cutils.clic import header
 
+# Module level constants
+OVERWRITE=0
+
 # TODO: generate documentation to some better place, maybe /tmp ?
 #       after committed, change the branch copy the content and
 #       then commit changed to the gh-pages branch and switch
@@ -38,16 +41,25 @@ from cutils.clic import header
 
 # TODO: Make error messages and reports of cver/cdoc/ccom/clic similar!
 
-version(sub_max=9,
+#------------------------------------------------------------------------------#
+# Increase version number
+version(infolder='.',
+        sub_max=9,
         rev_max=99,
         build_max=999)
 
-document(infolder='doc/src',
+# Process documents
+document(infolder='./doc/src',
          outfolder='../../../temporary_stuffs/cutils',
          extension='.yaml',
+         overwrite=OVERWRITE,
          loader=lambda s: yaml_load(s, Loader=yaml_Loader))
 
-collect('.')
-header('.')
+# Collect special comments
+collect('.', overwrite=OVERWRITE)
 
+# Generate license headers
+header('.', overwrite=OVERWRITE)
+
+# Feedback
 sys_exit('pre-commit: success\n')

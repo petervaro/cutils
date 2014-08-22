@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.725 (20140821)                       ##
+##                       Version: 0.8.90.752 (20140822)                       ##
 ##                                                                            ##
 ##                       File: pycutils/cutils/cver.py                        ##
 ##                                                                            ##
@@ -16,6 +16,7 @@
 ######################################################################## INFO ##
 
 # Import Python modules
+from os.path import join
 from datetime import datetime
 from re import (findall as re_findall,
                 compile as re_compile)
@@ -24,15 +25,17 @@ from re import (findall as re_findall,
 _VERSION  = 'VERSION'
 
 #------------------------------------------------------------------------------#
-def version(sub_max, rev_max, build_max, main=0, sub=1, rev=0, build=0):
+def version(infolder, sub_max, rev_max, build_max, main=0, sub=1, rev=0, build=0):
     # Funtion level constants
     DATETIME = datetime.now().strftime('%Y%m%d')
     REGEXP   = re_compile(r'^\s*(\d+)\.(\d+)\.(\d+)\.(\d+)\s*\(\d+\)\s*$')
     FORMAT   = '{{}}.{{:0{}d}}.{{:0{}d}}.{{:0{}d}} ({{}})'.format(
                     *map(lambda v: len(str(v)), (sub_max, rev_max, build_max)))
+    # Create filepath
+    filepath = join(infolder, _VERSION)
     # If file already exists open it
     try:
-        with open(_VERSION, 'r+') as file:
+        with open(filepath, 'r+') as file:
             try:
                 # Parse file and get values
                 main, sub, rev, build = map(int, re_findall(REGEXP, file.read())[0])
@@ -54,19 +57,21 @@ def version(sub_max, rev_max, build_max, main=0, sub=1, rev=0, build=0):
             # If version format in file is invalid
             except IndexError:
                 raise Exception('Invalid version format '
-                                'in {!r} file'.format(_VERSION)) from None
+                                'in {!r} file'.format(filepath)) from None
     # Create a new file to store version data
     # and write intial values
     except FileNotFoundError:
-        with open(_VERSION, 'w') as file:
+        with open(filepath, 'w') as file:
             file.write(FORMAT.format(main, sub, rev, build, DATETIME))
     # Return current version
     return main, sub, rev, build, DATETIME
 
 #------------------------------------------------------------------------------#
 if __name__ == '__main__':
-    # TODO: ask for folder or file input
-    version(sub_max=9,
+    from sys import argv
+    script, folder, *rest = argv
+    version(infolder=fodler,
+            sub_max=9,
             rev_max=99,
             build_max=999)
     print('='*80)

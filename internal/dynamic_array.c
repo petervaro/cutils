@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.90.484 (20140819)                       **
+**                       Version: 0.8.90.746 (20140821)                       **
 **                                                                            **
 **                       File: internal/dynamic_array.c                       **
 **                                                                            **
@@ -65,7 +65,7 @@
 
 /* TODO: slice() => creates a new DynamicArray_type from sub of array */
 
-/* TODO: findmax() => find the first n appereances of an item, where n<=max
+/* TODO: findmax() => find the first n appereances of an item, where n<=max */
 
 /* TODO: #define at(dar_ptr, index, data_ptr) get(dar_ptr, index, 1, data_ptr)
          #define pop(dar_ptr, data_ptr) pull(dar_ptr, len(dar_ptr) - 1, 1, data_ptr)

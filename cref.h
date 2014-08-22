@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.90.461 (20140819)                       **
+**                       Version: 0.8.90.746 (20140821)                       **
 **                                                                            **
 **                                File: cref.h                                **
 **                                                                            **
@@ -20,8 +20,6 @@
     http://www.stackoverflow.com
     http://en.cppreference.com
     http://en.wikipedia.org */
-
-/* TODO: renmae this: cref.c => cref.h */
 
 /*----------------------------------------------------------------------------*/
 // The macro language

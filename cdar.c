@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.90.629 (20140820)                       **
+**                       Version: 0.8.90.749 (20140821)                       **
 **                                                                            **
 **                                File: cdar.c                                **
 **                                                                            **
@@ -1414,7 +1414,7 @@ size_t cutils_cdar_DynamicArray_unsigned_int_sub(cutils_cdar_DynamicArray_unsign
 unsigned int cutils_cdar_DynamicArray_unsigned_int_get(cutils_cdar_DynamicArray_unsigned_int*d,size_t i){return *(unsigned int*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_unsigned_int_find(cutils_cdar_DynamicArray_unsigned_int*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_unsigned_int_findall(cutils_cdar_DynamicArray_unsigned_int*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_unsigned_int_format(const unsigned int*i,char**b,size_t*s){snprintf(*b,*s,"%u",*i);return true;}
+bool cutils_cdar_DynamicArray_unsigned_int_format(const unsigned int*i,char**b,size_t*s){snprintf(*b,*s,"%uu",*i);return true;}
 bool cutils_cdar_DynamicArray_unsigned_int_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_unsigned_int_del)(cutils_cdar_DynamicArray_unsigned_int*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_unsigned_int_len)(cutils_cdar_DynamicArray_unsigned_int*)=cutils_cdar_DynamicArray_void_ptr_len;
@@ -1440,7 +1440,7 @@ size_t cutils_cdar_DynamicArray_long_sub(cutils_cdar_DynamicArray_long*d,size_t 
 long cutils_cdar_DynamicArray_long_get(cutils_cdar_DynamicArray_long*d,size_t i){return *(long*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_long_find(cutils_cdar_DynamicArray_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_long_findall(cutils_cdar_DynamicArray_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_long_format(const long*i,char**b,size_t*s){snprintf(*b,*s,"%ld",*i);return true;}
+bool cutils_cdar_DynamicArray_long_format(const long*i,char**b,size_t*s){snprintf(*b,*s,"%ldl",*i);return true;}
 bool cutils_cdar_DynamicArray_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_long_del)(cutils_cdar_DynamicArray_long*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_long_len)(cutils_cdar_DynamicArray_long*)=cutils_cdar_DynamicArray_void_ptr_len;
@@ -1466,7 +1466,7 @@ size_t cutils_cdar_DynamicArray_unsigned_long_sub(cutils_cdar_DynamicArray_unsig
 unsigned long cutils_cdar_DynamicArray_unsigned_long_get(cutils_cdar_DynamicArray_unsigned_long*d,size_t i){return *(unsigned long*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_unsigned_long_find(cutils_cdar_DynamicArray_unsigned_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_unsigned_long_findall(cutils_cdar_DynamicArray_unsigned_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_unsigned_long_format(const unsigned long*i,char**b,size_t*s){snprintf(*b,*s,"%lu",*i);return true;}
+bool cutils_cdar_DynamicArray_unsigned_long_format(const unsigned long*i,char**b,size_t*s){snprintf(*b,*s,"%luul",*i);return true;}
 bool cutils_cdar_DynamicArray_unsigned_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_unsigned_long_del)(cutils_cdar_DynamicArray_unsigned_long*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_unsigned_long_len)(cutils_cdar_DynamicArray_unsigned_long*)=cutils_cdar_DynamicArray_void_ptr_len;
@@ -1492,7 +1492,7 @@ size_t cutils_cdar_DynamicArray_long_long_sub(cutils_cdar_DynamicArray_long_long
 long long cutils_cdar_DynamicArray_long_long_get(cutils_cdar_DynamicArray_long_long*d,size_t i){return *(long long*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_long_long_find(cutils_cdar_DynamicArray_long_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_long_long_findall(cutils_cdar_DynamicArray_long_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_long_long_format(const long long*i,char**b,size_t*s){snprintf(*b,*s,"%lld",*i);return true;}
+bool cutils_cdar_DynamicArray_long_long_format(const long long*i,char**b,size_t*s){snprintf(*b,*s,"%lldll",*i);return true;}
 bool cutils_cdar_DynamicArray_long_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_long_long_del)(cutils_cdar_DynamicArray_long_long*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_long_long_len)(cutils_cdar_DynamicArray_long_long*)=cutils_cdar_DynamicArray_void_ptr_len;
@@ -1518,7 +1518,7 @@ size_t cutils_cdar_DynamicArray_unsigned_long_long_sub(cutils_cdar_DynamicArray_
 unsigned long long cutils_cdar_DynamicArray_unsigned_long_long_get(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i){return *(unsigned long long*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_unsigned_long_long_find(cutils_cdar_DynamicArray_unsigned_long_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_unsigned_long_long_findall(cutils_cdar_DynamicArray_unsigned_long_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_unsigned_long_long_format(const unsigned long long*i,char**b,size_t*s){snprintf(*b,*s,"%llu",*i);return true;}
+bool cutils_cdar_DynamicArray_unsigned_long_long_format(const unsigned long long*i,char**b,size_t*s){snprintf(*b,*s,"%lluull",*i);return true;}
 bool cutils_cdar_DynamicArray_unsigned_long_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_unsigned_long_long_del)(cutils_cdar_DynamicArray_unsigned_long_long*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_unsigned_long_long_len)(cutils_cdar_DynamicArray_unsigned_long_long*)=cutils_cdar_DynamicArray_void_ptr_len;
@@ -1544,7 +1544,7 @@ size_t cutils_cdar_DynamicArray_float_sub(cutils_cdar_DynamicArray_float*d,size_
 float cutils_cdar_DynamicArray_float_get(cutils_cdar_DynamicArray_float*d,size_t i){return *(float*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
 bool cutils_cdar_DynamicArray_float_find(cutils_cdar_DynamicArray_float*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
 size_t cutils_cdar_DynamicArray_float_findall(cutils_cdar_DynamicArray_float*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_float_format(const float*i,char**b,size_t*s){snprintf(*b,*s,"%f",*i);return true;}
+bool cutils_cdar_DynamicArray_float_format(const float*i,char**b,size_t*s){snprintf(*b,*s,"%ff",*i);return true;}
 bool cutils_cdar_DynamicArray_float_compare(const void*p1,const void*p2,size_t s){return cutils_fcmp_float_compare(*(float*)p1,*(float*)p2);}
 void(*cutils_cdar_DynamicArray_float_del)(cutils_cdar_DynamicArray_float*)=cutils_cdar_DynamicArray_void_ptr_del;
 size_t(*cutils_cdar_DynamicArray_float_len)(cutils_cdar_DynamicArray_float*)=cutils_cdar_DynamicArray_void_ptr_len;

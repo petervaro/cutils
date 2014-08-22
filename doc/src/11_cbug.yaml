@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.80.207 (20140723)                       ##
+##                       Version: 0.8.90.754 (20140822)                       ##
 ##                                                                            ##
 ##                         File: doc/src/11_cbug.yaml                         ##
 ##                                                                            ##
@@ -36,10 +36,12 @@ INFO:
 
 #------------------------------------------------------------------------------#
 USER:
-  - FILE: const/name.yaml
-    VARS:
-      VAR_head: cbug
-      VAR_func: debug
+  - - Options
+    - FILE: const/name.yaml
+      VARS:
+        VAR_head: cbug
+        VAR_func: debug
+
   - - Flags
     - name: CBUG_OFF
       info: |

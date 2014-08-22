@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.680 (20140821)                       ##
+##                       Version: 0.8.90.754 (20140822)                       ##
 ##                                                                            ##
 ##                         File: doc/src/15_cdar.yaml                         ##
 ##                                                                            ##
@@ -13,13 +13,6 @@
 ##                 For more info visit: http://www.cutils.org                 ##
 ##                                                                            ##
 ######################################################################## INFO ##
-
-# TODO: update all samples --> add error checking wether
-#       method() was successful (new, append, etc.)
-#
-#           bool check;
-#           check = method(...);
-#           if (!check) return EXIT_FAILURE;
 
 #------------------------------------------------------------------------------#
 PAGE: CDAR Dynamic Array
@@ -41,14 +34,16 @@ INFO:
 
 #------------------------------------------------------------------------------#
 USER:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - Options
     - FILE: const/name.yaml
       VARS:
         VAR_head: cdar
         VAR_func: append
 
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # TODO: finish dependings
-  - - Depends
+  - - Dependencies
     - name: cexc.h
       info: >
             `cdar`'s methods can raise exceptions, if flag + h file provided
@@ -59,6 +54,7 @@ USER:
     - name: fcmp.h
       info: the internal floating point numbers compare functions
 
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - Compiler Flags
     - name: CDAR_JEM
       info: >

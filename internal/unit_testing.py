@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.580 (20140719)                       ##
+##                       Version: 0.8.90.749 (20140821)                       ##
 ##                                                                            ##
 ##                       File: internal/unit_testing.py                       ##
 ##                                                                            ##
@@ -37,7 +37,7 @@ WRAPPERS = (
 
 #------------------------------------------------------------------------------#
 def generate(folder, macros_dict):
-    methods(types=((ARG1_N, 'p'),),
+    methods(types=((ARG1_N, 'p', ''),),
             base_name='cutils_cutt_Tester',
             wrappers=WRAPPERS,
             macros_dict=macros_dict)

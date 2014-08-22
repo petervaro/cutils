@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.72.365 (20140711)                       ##
+##                       Version: 0.8.90.754 (20140822)                       ##
 ##                                                                            ##
 ##                         File: doc/src/12_cexc.yaml                         ##
 ##                                                                            ##
@@ -37,12 +37,16 @@ INFO:
 #------------------------------------------------------------------------------#
 USER:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - FILE: const/python.yaml
+  - - Dependemcies
+    - FILE: const/python.yaml
+
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  - FILE: const/name.yaml
-    VARS:
-      VAR_head: cexc
-      VAR_func: raise
+  - - Options
+    - FILE: const/name.yaml
+      VARS:
+        VAR_head: cexc
+        VAR_func: raise
+
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - Flags
     - name: CEXC_SET
