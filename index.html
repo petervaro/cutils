@@ -80,11 +80,7 @@ $ cd my_test_env</code></pre><br/></div><div class="entity" id="text_Write_test"
 }
 </span></code></pre><br/></div><div class="entity" id="text_Run_test"><p class="name">Run test</p><br/><p class="info"><span>Now you can run this code with the generated </span><code>makefile</code><span>:
 </span></p><br/><pre class="info"><code class="snippet">$ make
-$ ./build/my_test
-
-
-
-# THE INC AND LIB FOLDERS NEEDS TO BE WRITTEN TO THE CENV !!!</code></pre><br/></div></div><div><h2 class="title">Important Notes</h2><div class="entity" id="text_Error_signals"><p class="name">Error signals</p><br/><p class="info"><span>Why the error-signal of functions on success is a value that can be
+$ ./build/my_test</code></pre><br/></div></div><div><h2 class="title">Important Notes</h2><div class="entity" id="text_Error_signals"><p class="name">Error signals</p><br/><p class="info"><span>Why the error-signal of functions on success is a value that can be
 evaluated to 'true' and if 'false' if failes? Wouldn't it be easier
 to write the explicit error checking like:
 </span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_keywords">if</span><span> (some_method) </span><span class="code_keywords">return</span><span> </span><span class="code_constants">EXIT_FAILURE</span><span>;</span></code></pre><br/></div><div class="anonym_entity"><br/><p class="info"><span>instead of:</span></p><br/><pre class="info"><code class="snippet"><span></span><span class="code_keywords">if</span><span> (</span><span class="code_operators">!</span><span>some_method) </span><span class="code_keywords">return</span><span> </span><span class="code_constants">EXIT_FAILURE</span><span>;</span></code></pre><br/></div><div class="anonym_entity"><br/><p class="info"><span>1) Most of the container-manipulation methods return the number
