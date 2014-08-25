@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.762 (20140822)                       ##
+##                       Version: 0.8.90.784 (20140825)                       ##
 ##                                                                            ##
 ##                       File: pycutils/cutils/cenv.py                        ##
 ##                                                                            ##
@@ -22,9 +22,12 @@ from os.path import join
 from errno import EEXIST
 from traceback import extract_stack
 
+# TODO: Add makefile variable naming option:
+#       -prefix=myapp => myapp_NAME, myapp_C_SOURCES, etc.
+
 #------------------------------------------------------------------------------#
 # Module level constants
-MAKE = """
+MAKE = """\
 ## INFO ##
 ## INFO ##
 
@@ -61,10 +64,10 @@ LDFLAGS=$(foreach libdir, $(app_LIBRARY_DIRS), -L$(libdir))
 LDFLAGS+=$(foreach library, $(app_LIBRARIES), -l$(library))
 
 # Rules
-.PHONY: all clean makedirs
+.PHONY: all clean make_dirs
 
 ifdef USE_CUTILS
-all: call_cutils makedirs $(app_NAME)
+all: call_cutils make_dirs $(app_NAME)
 
 call_cutils:
     $(PYTHON) cver.py .
@@ -89,17 +92,17 @@ clean:
 \trm -f $(app_BUILD_OUT_DIR)/$(app_NAME)
 """
 
-C = """
-/* INFO *
- * INFO */
+C = """\
+/* INFO **
+** INFO */
 
+/* Include standard headers */
 #include <stdio.h>
 #include <stdlib.h>
 
 int main(void)
 {
-    printf("*** TEST ENVIRONMENT ***\\n");
-    printf("...\\n");
+    printf("\\n*** NEW ENVIRONMENT ***\\n\\n");
     return 0;
 }
 """
@@ -113,8 +116,18 @@ if __name__ == '__main__':
     try:
         script, folder, app, *options = argv
     except ValueError:
-        folder = 'testenv'
-        app    = 'main'
+        # Get/set folder name
+        try:
+            folder = argv[1]
+        except IndexError:
+            folder = 'testenv'
+        # Get/set app name
+        try:
+            app = argv[2]
+        except IndexError:
+            app = 'main'
+        # Create empty options
+        options = ()
 
     folder_name= folder
     for i in range(1, 1000):

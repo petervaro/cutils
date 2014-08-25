@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.758 (20140822)                       ##
+##                       Version: 0.8.90.784 (20140825)                       ##
 ##                                                                            ##
 ##                        File: internal/pre_commit.py                        ##
 ##                                                                            ##
@@ -14,9 +14,6 @@
 ##                 For more info visit: http://www.cutils.org                 ##
 ##                                                                            ##
 ######################################################################## INFO ##
-
-# import Python modules
-from sys import exit as sys_exit
 
 # Import yaml modules
 from yaml import load as yaml_load
@@ -62,4 +59,4 @@ collect('.', overwrite=OVERWRITE)
 header('.', overwrite=OVERWRITE)
 
 # Feedback
-sys_exit('pre-commit: success\n')
+print('pre-commit: success', end='\n'*2)

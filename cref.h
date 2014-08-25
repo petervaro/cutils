@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.90.746 (20140821)                       **
+**                       Version: 0.8.90.784 (20140825)                       **
 **                                                                            **
 **                                File: cref.h                                **
 **                                                                            **
@@ -581,6 +581,12 @@ typedef int _Bool;
 
 /*----------------------------------------------------------------------------*/
 #include <stdlib.h>
+
+#define EXIT_FAILURE
+#define EXIT_SUCCESS
+
+/* Terminates program */
+_Noreturn void exit(int exit_code);
 
 // Converts s to double
 double

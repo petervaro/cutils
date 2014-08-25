@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.730 (20140821)                       ##
+##                       Version: 0.8.90.784 (20140825)                       ##
 ##                                                                            ##
 ##                       File: pycutils/cutils/cdoc.py                        ##
 ##                                                                            ##
@@ -42,6 +42,7 @@ from sys import argv as sys_argv
 from pickle import (dump as pickle_dump,
                     load as pickle_load,
                     HIGHEST_PROTOCOL as pickle_HIGHEST_PROTOCOL)
+from shutil import copyfile
 
 # Import third party modules
 from bs4 import BeautifulSoup, FeatureNotFound
@@ -635,7 +636,7 @@ def _type_format(sidebar, content, source):
 
 
 #------------------------------------------------------------------------------#
-def _build(sources, outfolder, gentoc, toc):
+def _build(sources, outfolder, gentoc, toc, external_css):
     for pagename, source in sources.items():
         # If there is no valid source
         if source is None:
@@ -687,14 +688,6 @@ def _build(sources, outfolder, gentoc, toc):
         # TODO: Implement a Schema validator for better user-feedback
 
         # TODO: add FOOT key
-
-        # TODO: add TEXT key -- only with 'text' and 'code'
-        #       something like:
-        #       TEXT:
-        #         - section: title
-        #           text: normal text, nothing special
-        #           code: |
-        #                 #incude <multline_code.h>
 
         # TODO: add EXEC to cdoc to add "interactive" python snippets to code
         # EXEC: |
@@ -783,11 +776,16 @@ def _build(sources, outfolder, gentoc, toc):
     except OSError as e:
         if not (e.errno == errno_EEXIST and os_path_isdir(stylepath)):
             raise
-    # Rewrite CSS file
+    # Create CSS path
     stylesheet = os_path_join(stylepath, 'cdoc.css')
-    with open(stylesheet, 'w', encoding='utf-8') as file:
-        file.write(STYLE)
-        print('CDOC: {!r} processed'.format(stylesheet))
+    # If using the user created custom CSS
+    if external_css:
+        copyfile(external_css, stylesheet)
+    # If using the default CSS
+    else:
+        with open(stylesheet, 'w', encoding='utf-8') as file:
+            file.write(STYLE)
+            print('CDOC: {!r} processed'.format(stylesheet))
 
 
 #------------------------------------------------------------------------------#
@@ -801,7 +799,8 @@ def _process(infolder, file, filepath, pages, loader, counter):
     return filename, pagename, depends
 
 #------------------------------------------------------------------------------#
-def document(infolder, outfolder, extension, loader, generate_toc=None, overwrite=False):
+def document(infolder, outfolder, extension, loader, external_css=None,
+             generate_toc=None, overwrite=False):
     # Get previously generated TOC object
     TOC = os_path_join(infolder, '.cdoc_toc')
     try:
@@ -816,6 +815,21 @@ def document(infolder, outfolder, extension, loader, generate_toc=None, overwrit
     # TODO: do we really need a separate OrderedDict for pages ???
     pages = OrderedDict()
     anonym = iter_count()
+
+    # TODO: Create real dependency graphs
+    #       Document object:
+    #           parents  = set()  # other documents depending on this document
+    #           children = set()  # other documents this document depending on
+    #
+    #       If document changed:
+    #           set all parents of document => changed
+    #
+    #       If any of its children changed:
+    #           set all parents of child => changed
+    #
+    #       -- The loop should check if a document's change flag has already
+    #          been set. If not, hash file, and set flag, and notify all
+    #          dependencies (parents)
 
     # Load all pages
     with check_Checker(infolder, file='.cdoc_cache', lazy_update=True) as checker:
@@ -866,15 +880,13 @@ def document(infolder, outfolder, extension, loader, generate_toc=None, overwrit
     if generate_toc is None:
         generate_toc = len(new_toc) > 1
     # Create documents
-    _build(pages, outfolder, generate_toc, new_toc)
+    _build(pages, outfolder, generate_toc, new_toc, external_css)
 
 
 #------------------------------------------------------------------------------#
 if __name__ == '__main__':
     print('- '*40)
     try:
-        # TODO: add 'external CSS path' argument
-
         # TODO: add -reset flags which will remove the cache files
         script, infolder, outfolder, *rest = sys_argv
         # Create documentation

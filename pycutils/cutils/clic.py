@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.725 (20140821)                       ##
+##                       Version: 0.8.90.784 (20140825)                       ##
 ##                                                                            ##
 ##                       File: pycutils/cutils/clic.py                        ##
 ##                                                                            ##
@@ -45,6 +45,7 @@ EXCEPTION_SELF = 'clic.py', 'comment.py', 'check.py', 'table.py'
 EXTENSIONS = ('.h', '.c', '.fs', '.vs', '.py', '.yaml',
               'make', 'makefile', 'MAKE', 'MAKEFILE',
               'todo', 'TODO', 'readme', 'README')
+# Extend it with compiled types, such as '.a', '.o', etc. and '.pyc', '.pyo'
 EXCEPTIONS = ('.ccom_cache', '.ccom_todo',
               '.cdoc_cache', '.cdoc_toc',
               '.clic_cache')

@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.762 (20140822)                       ##
+##                       Version: 0.8.90.784 (20140825)                       ##
 ##                                                                            ##
 ##                               File: makefile                               ##
 ##                                                                            ##
@@ -70,7 +70,7 @@ else
 CFLAGS+=-Wall -v -g
 endif
 
-# If compiler is gcc
+# If compiler is clang
 ifeq ($(CC), clang)
 CFLAGS+=-fmacro-backtrace-limit=0
 endif

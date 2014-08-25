@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.768 (20140822)                       ##
+##                       Version: 0.8.90.787 (20140825)                       ##
 ##                                                                            ##
 ##                                 File: TODO                                 ##
 ##                                                                            ##
@@ -28,45 +28,6 @@ FIXME:
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 2
-  - file: pycutils/cutils/clic.py
-    line: 31
-    note: |
-          if modules cannot be found?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 3
-  - file: pycutils/cutils/clic.py
-    line: 156
-    note: |
-          what if none of the files changed only INFO has been updated?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 4
-  - file: pycutils/cutils/clic.py
-    line: 170
-    note: |
-          make it more generic than ./ -- what if ../../?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 5
-  - file: pycutils/cutils/cdoc.py
-    line: 132
-    note: |
-          replace newline only if newline character is
-          the first token in that line or it is after
-          a similar token (prevent: \\\n)
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 6
-  - file: pycutils/cutils/cdoc.py
-    line: 249
-    note: |
-          if external file changed -> change the whole file
-          check for all special features and find out how
-          to store them properly in the cache files
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 7
   - file: internal/c11.py
     line: 459
     note: |
@@ -75,7 +36,7 @@ FIXME:
                                    highlighted as number
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 8
+  # 3
   - file: internal/c11.py
     line: 463
     note: |
@@ -83,14 +44,14 @@ FIXME:
           amother_var
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 9
+  # 4
   - file: internal/c11.py
     line: 603
     note: |
           format prefixes: -= 0w.pmc
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 10
+  # 5
   - file: build/lib/cutils/ccom.py
     line: 160
     note: |
@@ -100,46 +61,28 @@ FIXME:
           which still have the "QUESTIONS" keyword, and comment
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 11
-  - file: build/lib/cutils/cdoc.py
-    line: 132
-    note: |
-          replace newline only if newline character is
-          the first token in that line or it is after
-          a similar token (prevent: \\\n)
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 12
-  - file: build/lib/cutils/cdoc.py
-    line: 249
-    note: |
-          if external file changed -> change the whole file
-          check for all special features and find out how
-          to store them properly in the cache files
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 13
+  # 6
   - file: build/lib/cutils/clic.py
     line: 31
     note: |
           if modules cannot be found?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 14
+  # 7
   - file: build/lib/cutils/clic.py
     line: 156
     note: |
           what if none of the files changed only INFO has been updated?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 15
+  # 8
   - file: build/lib/cutils/clic.py
     line: 170
     note: |
           make it more generic than ./ -- what if ../../?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 16
+  # 9
   - file: internal/dynamic_array.py
     line: 102
     note: |
@@ -149,21 +92,21 @@ FIXME:
           bool(*)(const type*,...) --> bool(*)(const void*,...)
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 17
+  # 10
   - file: internal/generator.py
     line: 131
     note: |
           better guard ending and meaningful comment
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 18
+  # 11
   - file: internal/generator.py
     line: 150
     note: |
           strip whitespaces
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 19
+  # 12
   - file: internal/singly_linked_list.py
     line: 105
     note: |
@@ -173,7 +116,7 @@ FIXME:
           bool(*)(const type*,...) --> bool(*)(const void*,...)
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 20
+  # 13
   - file: doc/src/05_ccom.yaml
     line: 91
     note: |
@@ -181,9 +124,66 @@ FIXME:
           "object" of cutils here
           instead of this simple struct
 
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 14
+  - file: build/lib/cutils/cdoc.py
+    line: 133
+    note: |
+          replace newline only if newline character is
+          the first token in that line or it is after
+          a similar token (prevent: \\\n)
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 15
+  - file: build/lib/cutils/cdoc.py
+    line: 250
+    note: |
+          if external file changed -> change the whole file
+          check for all special features and find out how
+          to store them properly in the cache files
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 16
+  - file: pycutils/cutils/cdoc.py
+    line: 133
+    note: |
+          replace newline only if newline character is
+          the first token in that line or it is after
+          a similar token (prevent: \\\n)
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 17
+  - file: pycutils/cutils/cdoc.py
+    line: 250
+    note: |
+          if external file changed -> change the whole file
+          check for all special features and find out how
+          to store them properly in the cache files
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 18
+  - file: pycutils/cutils/clic.py
+    line: 31
+    note: |
+          if modules cannot be found?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 19
+  - file: pycutils/cutils/clic.py
+    line: 158
+    note: |
+          what if none of the files changed only INFO has been updated?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 20
+  - file: pycutils/cutils/clic.py
+    line: 172
+    note: |
+          make it more generic than ./ -- what if ../../?
 
 
-#---------------------------- 71 POSTS IN 26 FILES ----------------------------#
+
+#---------------------------- 71 POSTS IN 28 FILES ----------------------------#
 TODO:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
@@ -314,94 +314,6 @@ TODO:
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 14
-  - file: pycutils/cutils/clic.py
-    line: 41
-    note: |
-          Add special exception variable; maybe simply: 'cutils' as a dir?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 15
-  - file: pycutils/cutils/cdoc.py
-    line: 18
-    note: |
-          add 'since' to indicate which version the given feature is availbe from
-          like:   since: version 3.14
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 16
-  - file: pycutils/cutils/cdoc.py
-    line: 543
-    note: |
-          support formatted TODO import
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 17
-  - file: pycutils/cutils/cdoc.py
-    line: 603
-    note: |
-          add `members` support in TYPE
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 18
-  - file: pycutils/cutils/cdoc.py
-    line: 687
-    note: |
-          Implement a Schema validator for better user-feedback
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 19
-  - file: pycutils/cutils/cdoc.py
-    line: 689
-    note: |
-          add FOOT key
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 20
-  - file: pycutils/cutils/cdoc.py
-    line: 691
-    note: |
-          add TEXT key -- only with 'text' and 'code'
-          something like:
-          TEXT:
-            - section: title
-              text: normal text, nothing special
-              code: |
-                    #incude <multline_code.h>
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 21
-  - file: pycutils/cutils/cdoc.py
-    line: 699
-    note: |
-          add EXEC to cdoc to add "interactive" python snippets to code
-          EXEC: |
-          with open('VERSION') as file:
-          # Insert to USER:About
-          DOC[USER][0].insert(0, {'name': 'Version', 'info': file.read()})
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 22
-  - file: pycutils/cutils/cdoc.py
-    line: 816
-    note: |
-          do we really need a separate OrderedDict for pages ???
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 23
-  - file: pycutils/cutils/cdoc.py
-    line: 876
-    note: |
-          add 'external CSS path' argument
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 24
-  - file: pycutils/cutils/cdoc.py
-    line: 878
-    note: |
-          add -reset flags which will remove the cache files
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 25
   - file: internal/c11.py
     line: 37
     note: |
@@ -419,14 +331,14 @@ TODO:
           This notation is a valid C syntax according to the standard.
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 26
+  # 15
   - file: internal/c11.py
     line: 297
     note: |
           enum ?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 27
+  # 16
   - file: build/lib/cutils/ccom.py
     line: 69
     note: |
@@ -438,7 +350,7 @@ TODO:
           the code goes on...
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 28
+  # 17
   - file: build/lib/cutils/ccom.py
     line: 157
     note: |
@@ -446,7 +358,7 @@ TODO:
           https://docs.python.org/3.4/library/tempfile.html ?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 29
+  # 18
   - file: build/lib/cutils/ccom.py
     line: 165
     note: |
@@ -456,110 +368,21 @@ TODO:
           and use the cutils command line tools
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 30
-  - file: build/lib/cutils/cdoc.py
-    line: 18
-    note: |
-          add 'since' to indicate which version the given feature is availbe from
-          like:   since: version 3.14
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 31
-  - file: build/lib/cutils/cdoc.py
-    line: 543
-    note: |
-          support formatted TODO import
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 32
-  - file: build/lib/cutils/cdoc.py
-    line: 603
-    note: |
-          add `members` support in TYPE
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 33
-  - file: build/lib/cutils/cdoc.py
-    line: 687
-    note: |
-          Implement a Schema validator for better user-feedback
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 34
-  - file: build/lib/cutils/cdoc.py
-    line: 689
-    note: |
-          add FOOT key
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 35
-  - file: build/lib/cutils/cdoc.py
-    line: 691
-    note: |
-          add TEXT key -- only with 'text' and 'code'
-          something like:
-          TEXT:
-            - section: title
-              text: normal text, nothing special
-              code: |
-                    #incude <multline_code.h>
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 36
-  - file: build/lib/cutils/cdoc.py
-    line: 699
-    note: |
-          add EXEC to cdoc to add "interactive" python snippets to code
-          EXEC: |
-          with open('VERSION') as file:
-          # Insert to USER:About
-          DOC[USER][0].insert(0, {'name': 'Version', 'info': file.read()})
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 37
-  - file: build/lib/cutils/cdoc.py
-    line: 816
-    note: |
-          do we really need a separate OrderedDict for pages ???
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 38
-  - file: build/lib/cutils/cdoc.py
-    line: 876
-    note: |
-          add 'external CSS path' argument
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 39
-  - file: build/lib/cutils/cdoc.py
-    line: 878
-    note: |
-          add -reset flags which will remove the cache files
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 40
+  # 19
   - file: build/lib/cutils/clic.py
     line: 41
     note: |
           Add special exception variable; maybe simply: 'cutils' as a dir?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 41
+  # 20
   - file: internal/convert.py
     line: 109
     note: |
           decide if we need `word-wrap: break-word;` or not?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 42
-  - file: cref.h
-    line: 345
-    note: |
-          %ju and %lf and %td and %hd and %hu
-          http://www.mekong.net/tech/printf.htm
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 43
+  # 21
   - file: internal/dynamic_array.c
     line: 17
     note: |
@@ -568,7 +391,7 @@ TODO:
           DynamicArray_string: char * 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 44
+  # 22
   - file: internal/dynamic_array.c
     line: 21
     note: |
@@ -576,7 +399,7 @@ TODO:
           DynamicArray_DynamicArray: nested arrays 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 45
+  # 23
   - file: internal/dynamic_array.c
     line: 24
     note: |
@@ -587,7 +410,7 @@ TODO:
                           size_t count) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 46
+  # 24
   - file: internal/dynamic_array.c
     line: 30
     note: |
@@ -595,7 +418,7 @@ TODO:
           #define swapto(dar_ptr_src, dar_ptr_dst, index_src, index_dst, count) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 47
+  # 25
   - file: internal/dynamic_array.c
     line: 33
     note: |
@@ -607,7 +430,7 @@ TODO:
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 48
+  # 26
   - file: internal/dynamic_array.c
     line: 40
     note: |
@@ -619,7 +442,7 @@ TODO:
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 49
+  # 27
   - file: internal/dynamic_array.c
     line: 47
     note: |
@@ -631,7 +454,7 @@ TODO:
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 50
+  # 28
   - file: internal/dynamic_array.c
     line: 54
     note: |
@@ -646,28 +469,28 @@ TODO:
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 51
+  # 29
   - file: internal/dynamic_array.c
     line: 64
     note: |
           copy() => new(&darf2, len(darf1), raw(darf1)); 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 52
+  # 30
   - file: internal/dynamic_array.c
     line: 66
     note: |
           slice() => creates a new DynamicArray_type from sub of array 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 53
+  # 31
   - file: internal/dynamic_array.c
     line: 68
     note: |
           findmax() => find the first n appereances of an item, where n<=max 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 54
+  # 32
   - file: internal/dynamic_array.c
     line: 70
     note: |
@@ -676,7 +499,7 @@ TODO:
           #define append(dar_ptr, data_ptr) push(data_ptr, len(dar_ptr) - 1, 1, data_ptr) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 55
+  # 33
   - file: internal/dynamic_array.c
     line: 412
     note: |
@@ -684,7 +507,7 @@ TODO:
           just like in csll; also: correct the documentation 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 56
+  # 34
   - file: cdar.c
     line: 358
     note: |
@@ -692,7 +515,7 @@ TODO:
           just like in csll; also: correct the documentation 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 57
+  # 35
   - file: csll.c
     line: 699
     note: |
@@ -705,21 +528,21 @@ TODO:
           (and their error message "names" differes of course) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 58
+  # 36
   - file: internal/dynamic_array.py
     line: 127
     note: |
           is there a way to make this inline?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 59
+  # 37
   - file: internal/dynamic_array.py
     line: 129
     note: |
           change this const void* --> const {2}* ?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 60
+  # 38
   - file: internal/dynamic_array.py
     line: 131
     note: |
@@ -727,35 +550,35 @@ TODO:
           and update the examples of the documentation
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 61
+  # 39
   - file: internal/dynamic_array.py
     line: 141
     note: |
           is there a way to make this inline?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 62
+  # 40
   - file: internal/dynamic_array.py
     line: 208
     note: |
           is there a way to make this inline?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 63
+  # 41
   - file: internal/singly_linked_list.py
     line: 130
     note: |
           is there a way to make this inline?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 64
+  # 42
   - file: internal/singly_linked_list.py
     line: 132
     note: |
           change this const void* --> const {2}* ?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 65
+  # 43
   - file: internal/singly_linked_list.py
     line: 134
     note: |
@@ -763,30 +586,134 @@ TODO:
           and update the examples of the documentation
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 66
+  # 44
   - file: internal/singly_linked_list.py
     line: 144
     note: |
           is there a way to make this inline?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 67
+  # 45
   - file: internal/singly_linked_list.py
     line: 202
     note: |
           is there a way to make this inline?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 68
+  # 46
   - file: doc/src/15_cdar.yaml
     line: 45
     note: |
           finish dependings
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 69
+  # 47
+  - file: cref.h
+    line: 345
+    note: |
+          %ju and %lf and %td and %hd and %hu
+          http://www.mekong.net/tech/printf.htm
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 48
+  - file: build/lib/cutils/cdoc.py
+    line: 18
+    note: |
+          add 'since' to indicate which version the given feature is availbe from
+          like:   since: version 3.14
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 49
+  - file: build/lib/cutils/cdoc.py
+    line: 544
+    note: |
+          support formatted TODO import
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 50
+  - file: build/lib/cutils/cdoc.py
+    line: 604
+    note: |
+          add `members` support in TYPE
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 51
+  - file: build/lib/cutils/cdoc.py
+    line: 688
+    note: |
+          Implement a Schema validator for better user-feedback
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 52
+  - file: build/lib/cutils/cdoc.py
+    line: 690
+    note: |
+          add FOOT key
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 53
+  - file: build/lib/cutils/cdoc.py
+    line: 692
+    note: |
+          add EXEC to cdoc to add "interactive" python snippets to code
+          EXEC: |
+          with open('VERSION') as file:
+          # Insert to USER:About
+          DOC[USER][0].insert(0, {'name': 'Version', 'info': file.read()})
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 54
+  - file: build/lib/cutils/cdoc.py
+    line: 815
+    note: |
+          do we really need a separate OrderedDict for pages ???
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 55
+  - file: build/lib/cutils/cdoc.py
+    line: 819
+    note: |
+          Create real dependency graphs
+          Document object:
+              parents  = set()  # other documents depending on this document
+              children = set()  # other documents this document depending on
+          
+          If document changed:
+              set all parents of document => changed
+          
+          If any of its children changed:
+              set all parents of child => changed
+          
+          -- The loop should check if a document's change flag has already
+             been set. If not, hash file, and set flag, and notify all
+             dependencies (parents)
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 56
+  - file: build/lib/cutils/cdoc.py
+    line: 890
+    note: |
+          add -reset flags which will remove the cache files
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 57
+  - file: build/lib/cutils/cenv.py
+    line: 25
+    note: |
+          Add makefile variable naming option:
+          -prefix=myapp => myapp_NAME, myapp_C_SOURCES, etc.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 58
+  - file: doc/src/00_cutils.yaml
+    line: 17
+    note: |
+          consider changing `clic` -> `ccom` and `ccom` -> `ctag`
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 59
   - file: internal/pre_commit.py
-    line: 37
+    line: 34
     note: |
           generate documentation to some better place, maybe /tmp ?
           after committed, change the branch copy the content and
@@ -794,18 +721,107 @@ TODO:
           back to master branch
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 70
+  # 60
   - file: internal/pre_commit.py
-    line: 42
+    line: 39
     note: |
           Make error messages and reports of cver/cdoc/ccom/clic similar!
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 71
-  - file: doc/src/00_cutils.yaml
-    line: 17
+  # 61
+  - file: pycutils/cutils/cdoc.py
+    line: 18
     note: |
-          consider changing `clic` -> `ccom` and `ccom` -> `ctag`
+          add 'since' to indicate which version the given feature is availbe from
+          like:   since: version 3.14
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 62
+  - file: pycutils/cutils/cdoc.py
+    line: 544
+    note: |
+          support formatted TODO import
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 63
+  - file: pycutils/cutils/cdoc.py
+    line: 604
+    note: |
+          add `members` support in TYPE
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 64
+  - file: pycutils/cutils/cdoc.py
+    line: 688
+    note: |
+          Implement a Schema validator for better user-feedback
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 65
+  - file: pycutils/cutils/cdoc.py
+    line: 690
+    note: |
+          add FOOT key
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 66
+  - file: pycutils/cutils/cdoc.py
+    line: 692
+    note: |
+          add EXEC to cdoc to add "interactive" python snippets to code
+          EXEC: |
+          with open('VERSION') as file:
+          # Insert to USER:About
+          DOC[USER][0].insert(0, {'name': 'Version', 'info': file.read()})
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 67
+  - file: pycutils/cutils/cdoc.py
+    line: 815
+    note: |
+          do we really need a separate OrderedDict for pages ???
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 68
+  - file: pycutils/cutils/cdoc.py
+    line: 819
+    note: |
+          Create real dependency graphs
+          Document object:
+              parents  = set()  # other documents depending on this document
+              children = set()  # other documents this document depending on
+          
+          If document changed:
+              set all parents of document => changed
+          
+          If any of its children changed:
+              set all parents of child => changed
+          
+          -- The loop should check if a document's change flag has already
+             been set. If not, hash file, and set flag, and notify all
+             dependencies (parents)
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 69
+  - file: pycutils/cutils/cdoc.py
+    line: 890
+    note: |
+          add -reset flags which will remove the cache files
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 70
+  - file: pycutils/cutils/cenv.py
+    line: 25
+    note: |
+          Add makefile variable naming option:
+          -prefix=myapp => myapp_NAME, myapp_C_SOURCES, etc.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 71
+  - file: pycutils/cutils/clic.py
+    line: 41
+    note: |
+          Add special exception variable; maybe simply: 'cutils' as a dir?
 
 
 

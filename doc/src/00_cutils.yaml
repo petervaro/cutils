@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.762 (20140822)                       ##
+##                       Version: 0.8.90.784 (20140825)                       ##
 ##                                                                            ##
 ##                        File: doc/src/00_cutils.yaml                        ##
 ##                                                                            ##
@@ -43,7 +43,10 @@ INFO:
   - - br
   - - p
     - class: info
-    - string: '**Current version:** `0.8.90`'
+    - string: |
+              **The current version is 0.8.90, which can be downloaded from the
+              [GitHub Repository](http://github.com/petervaro/cutils) of the
+              project.**
   - - br
   - - p
     - class: info
@@ -62,6 +65,11 @@ INFO:
 TEXT:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - Getting Started
+    - section: Dependencies
+      text: |
+            To setup and use cutils, you will need a C compiler which supports
+            the C11 standard and a Python 3.4.1+ installation.
+
     - section: Setup/Configure
       text: |
             To use the tools of `cutils`, you have to configure the `makefile`
@@ -125,7 +133,7 @@ TEXT:
             Now, that everything is setup, there is only one step left: invoke
             the `makefile`. On some sytems you may need `super-user` privileges,
             so you have to use the `sudo` before the commands if the system is
-            complaining about privileges.
+            complaining about permissions.
       code: |
             \\OFF
             $ make
@@ -178,12 +186,6 @@ TEXT:
             \\OFF
             $ make
             $ ./build/my_test
-
-
-
-            # THE INC AND LIB FOLDERS NEEDS TO BE WRITTEN TO THE CENV !!!
-
-
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   - - Important notes
