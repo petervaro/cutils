@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.784 (20140825)                       ##
+##                       Version: 0.8.95.809 (20140828)                       ##
 ##                                                                            ##
 ##                       File: pycutils/cutils/cenv.py                        ##
 ##                                                                            ##
@@ -59,14 +59,15 @@ CFLAGS+=-O3
 else
 CFLAGS+=-Wall -v -g
 endif
-CFLAGS+=-std=c11 $(foreach dir, $(app_INCLUDE_DIRS), -I$(dir))
-LDFLAGS=$(foreach libdir, $(app_LIBRARY_DIRS), -L$(libdir))
-LDFLAGS+=$(foreach library, $(app_LIBRARIES), -l$(library))
+CFLAGS+=-std=c11 $(addprefix -I, $(app_INCLUDE_DIRS))
+LDFLAGS=$(addprefix -L, $(app_LIBRARY_DIRS))
+LDFLAGS+=$(addprefix -l, $(app_LIBRARIES))
 
 # Rules
 .PHONY: all clean make_dirs
 
 ifdef USE_CUTILS
+.PHONY: call_cutils
 all: call_cutils make_dirs $(app_NAME)
 
 call_cutils:
@@ -88,8 +89,7 @@ make_dirs:
 \tmkdir -p $(app_BUILD_TMP_DIR)
 
 clean:
-\trm -f $(app_BUILD_TMP_DIR)/*.o
-\trm -f $(app_BUILD_OUT_DIR)/$(app_NAME)
+\trm -f -r $(app_BUILD_OUT_DIR)
 """
 
 C = """\
@@ -99,12 +99,12 @@ C = """\
 /* Include standard headers */
 #include <stdio.h>
 #include <stdlib.h>
-
+{INCLUDE_CUTILS}
 int main(void)
-{
+{{
     printf("\\n*** NEW ENVIRONMENT ***\\n\\n");
     return 0;
-}
+}}
 """
 
 #------------------------------------------------------------------------------#
@@ -146,18 +146,23 @@ if __name__ == '__main__':
         raise NoAvailableDirectoryName('Choose a different directory name')
 
     # Parse specified options
-    use_cutils = 'cutils' if '-cutils' in options else ''
+    if '-cutils' in options:
+        use_cutils = 'cutils'
+        include_cutils = '#include <cutils/call.h>\n'
+    else:
+        use_cutils = include_cutils = ''
 
     # Create makefile
     make = join(folder_name, 'makefile')
     with open(make, 'w', encoding='utf-8') as make_file:
-        make_file.write(MAKE.format(APP_NAME=app, CUTILS_LIB=use_cutils))
+        make_file.write(MAKE.format(APP_NAME=app,
+                                    CUTILS_LIB=use_cutils))
     print('Place {!r}'.format(make))
 
     # Create c file
     source = join(folder_name, app if app.endswith('.c') else app + '.c')
     with open(source, 'w', encoding='utf-8') as source_file:
-        source_file.write(C)
+        source_file.write(C.format(INCLUDE_CUTILS=include_cutils))
     print('Place {!r}'.format(source))
 
     # End script

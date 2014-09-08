@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.90.749 (20140821)                       **
+**                       Version: 0.8.96.219 (20140908)                       **
 **                                                                            **
 **                                File: cdar.c                                **
 **                                                                            **
@@ -15,7 +15,7 @@
 ************************************************************************ INFO */
 
 #include <stddef.h>         /* ptrdiff_t */
-#include <string.h>         /* strlen(), strncpy() */
+#include <string.h>         /* strlen() */
 #include "internal/fmtc.h"  /* cutils_fmtc_repr */
 #include "internal/fcmp.h"  /* cutils_fcmp_compare */
 #include <stdlib.h>   /* malloc(), realloc(), free() */
@@ -39,8 +39,22 @@
 /* Exception messages */
 #undef  TYPE_REPR
 #define TYPE_REPR "DynamicArray"
-/* A variable to construct the exception message in */
-#undef  EXCEPTION_MSG
+
+/*----------------------------------------------------------------------------*/
+/* Shorthands for this source */
+#undef _concat_underscore
+#undef concat_underscore
+#undef DYNAMIC_ARRAY
+#undef METHOD
+#undef SUPPORT
+#undef SUPPORT_METHOD
+#define _concat_underscore(token1, token2) token1##_##token2
+#define concat_underscore(token1, token2) _concat_underscore(token1, token2)
+#define DYNAMIC_ARRAY cutils_cdar_DynamicArray_void_ptr
+#define METHOD(func)  concat_underscore(DYNAMIC_ARRAY, func)
+#define SUPPORT(type) concat_underscore(DYNAMIC_ARRAY, type)
+#define SUPPORT_METHOD(type, func) concat_underscore(DYNAMIC_ARRAY, type##_##func)
+
 
 
 /*----------------------------------------------------------------------------*/
@@ -52,12 +66,13 @@ typedef struct
     size_t size;       /* Size of an item */
     void *data;        /* Pointer to the actual data */
 
-} cutils_cdar_DynamicArray_void_ptr;
+} DYNAMIC_ARRAY;
+
 
 
 /*----------------------------------------------------------------------------*/
 static bool
-__cdar_resize(cutils_cdar_DynamicArray_void_ptr *dynarr,
+__cdar_resize(DYNAMIC_ARRAY *dynarr,
               size_t item_size,
               size_t item_count)
 {
@@ -77,23 +92,23 @@ __cdar_resize(cutils_cdar_DynamicArray_void_ptr *dynarr,
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_new(cutils_cdar_DynamicArray_void_ptr **dynarr,
-                                      size_t item_size,
-                                      size_t count,
-                                      void *source)
+METHOD(new)(DYNAMIC_ARRAY **dynarr,
+            size_t item_size,
+            size_t count,
+            void *source)
 {
     /* Calculate allocation size based on item count */
-    size_t alloc_size = count ? 2 * count : 1;
+    size_t alloc_size = count ? 2*count : 1;
 
     /* Allocate space for array data */
-    void *data = malloc(alloc_size * item_size);
+    void *data = malloc(alloc_size*item_size);
     if (!data) goto Error_Array_Allocation_Failed;
 
     /* Allocate space for struct */
-    cutils_cdar_DynamicArray_void_ptr *_dynarr =
-        malloc(sizeof(cutils_cdar_DynamicArray_void_ptr));
+    DYNAMIC_ARRAY *_dynarr = malloc(sizeof(DYNAMIC_ARRAY));
     if (!_dynarr) goto Error_Struct_Allocation_Failed;
 
     /* Fill struct with values */
@@ -114,58 +129,76 @@ cutils_cdar_DynamicArray_void_ptr_new(cutils_cdar_DynamicArray_void_ptr **dynarr
     /* If everything went fine, return the new DynamicArray */
     return true;
 
-    /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     /* If some error occurred: */
     Error_Struct_Allocation_Failed:
         free(data);
-    /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
     Error_Array_Allocation_Failed:
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_ALLOC_FAIL(TYPE_REPR, "new")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
-        #ifndef CDAR_OPT
-        /* Set pointer to array to NULL, so all other methods of
-           DynamicArray won't break the code, just raise exceptions */
         *dynarr = NULL;
-        #endif
         return false;
 }
+
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(new_default3)(DYNAMIC_ARRAY **dynarr,
+                     size_t item_size,
+                     size_t count)
+{
+    return METHOD(new)(dynarr, item_size, count, NULL);
+}
+
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(new_default2)(DYNAMIC_ARRAY **dynarr,
+                     size_t item_size)
+{
+    return METHOD(new)(dynarr, item_size, 0, NULL);
+}
+
 
 
 /*----------------------------------------------------------------------------*/
 void
-cutils_cdar_DynamicArray_void_ptr_del(cutils_cdar_DynamicArray_void_ptr *dynarr)
+METHOD(del)(DYNAMIC_ARRAY *dynarr)
 {
 #ifndef CDAR_OPT
     /* If array initialised, free raw data too */
     if (dynarr)
+    {
 #endif
         free(dynarr->data);
-    free(dynarr);
+        free(dynarr);
+#ifndef CDAR_OPT
+    }
+#endif
 }
+
 
 
 /*----------------------------------------------------------------------------*/
 void *
-cutils_cdar_DynamicArray_void_ptr_data(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                       size_t *size,
-                                       size_t *count)
+METHOD(data)(DYNAMIC_ARRAY *dynarr,
+             size_t *size,
+             size_t *count)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "data")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return NULL; /* Cannot operate on nothing */
     }
     /* Invalid size */
     if (!size)
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "data", "2nd", size)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
     else
 #endif /* CDAR_OPT */
 
@@ -175,10 +208,10 @@ cutils_cdar_DynamicArray_void_ptr_data(cutils_cdar_DynamicArray_void_ptr *dynarr
 #ifndef CDAR_OPT
     /* Invalid count */
     if (!count)
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "data", "3rd", count)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
     else
 #endif /* CDAR_OPT */
 
@@ -188,17 +221,18 @@ cutils_cdar_DynamicArray_void_ptr_data(cutils_cdar_DynamicArray_void_ptr *dynarr
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 void *
-cutils_cdar_DynamicArray_void_ptr_raw(cutils_cdar_DynamicArray_void_ptr *dynarr)
+METHOD(raw)(DYNAMIC_ARRAY *dynarr)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "raw")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return NULL; /* Cannot operate on nothing */
     }
 #endif /* CDAR_OPT */
@@ -208,17 +242,18 @@ cutils_cdar_DynamicArray_void_ptr_raw(cutils_cdar_DynamicArray_void_ptr *dynarr)
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 size_t
-cutils_cdar_DynamicArray_void_ptr_len(cutils_cdar_DynamicArray_void_ptr *dynarr)
+METHOD(len)(DYNAMIC_ARRAY *dynarr)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "len")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
     }
 #endif /* CDAR_OPT */
@@ -228,17 +263,18 @@ cutils_cdar_DynamicArray_void_ptr_len(cutils_cdar_DynamicArray_void_ptr *dynarr)
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 size_t
-cutils_cdar_DynamicArray_void_ptr_size(cutils_cdar_DynamicArray_void_ptr *dynarr)
+METHOD(size)(DYNAMIC_ARRAY *dynarr)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "size")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
     }
 #endif /* CDAR_OPT */
@@ -248,17 +284,18 @@ cutils_cdar_DynamicArray_void_ptr_size(cutils_cdar_DynamicArray_void_ptr *dynarr
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 void
-cutils_cdar_DynamicArray_void_ptr_clear(cutils_cdar_DynamicArray_void_ptr *dynarr)
+METHOD(clear)(DYNAMIC_ARRAY *dynarr)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "clear")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Cannot operate on nothing */
     }
 #endif /* CDAR_OPT */
@@ -268,18 +305,19 @@ cutils_cdar_DynamicArray_void_ptr_clear(cutils_cdar_DynamicArray_void_ptr *dynar
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_resize(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                         size_t count)
+METHOD(resize)(DYNAMIC_ARRAY *dynarr,
+               size_t count)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "resize")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     else
@@ -295,29 +333,30 @@ cutils_cdar_DynamicArray_void_ptr_resize(cutils_cdar_DynamicArray_void_ptr *dyna
     /* Make it bigger */
     if (!__cdar_resize(dynarr, dynarr->size, count))
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_REALLOC_FAIL(TYPE_REPR, "resize")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* No place to grow */
     }
     return true; /* Successfully grew */
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_swap(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                       size_t index1,
-                                       size_t index2,
-                                       size_t count)
+METHOD(swap)(DYNAMIC_ARRAY *dynarr,
+             size_t index1,
+             size_t index2,
+             size_t count)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "swap")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     else
@@ -330,28 +369,28 @@ cutils_cdar_DynamicArray_void_ptr_swap(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Empty array */
     else if (!dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "swap")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return true; /* Successfully did nothing */
     }
 #ifndef CDAR_OPT
     /* Out of range */
     else if (index1 >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "swap", "2nd", index1)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Not valid index */
     }
     /* Out of range */
     else if (index2 >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "swap", "3rd", index2)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Not valid index */
     }
 
@@ -366,19 +405,19 @@ cutils_cdar_DynamicArray_void_ptr_swap(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Limit count size, if overlapping */
     if (smaller + count >= greater)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_OVERLAP(TYPE_REPR, "swap")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         count = greater - smaller;
     }
 
     /* Limit count size, if out of range */
     if ((greater + count) > dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "swap", "4th", count)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         count = dynarr->used - greater;
         if (!count) return true; /* Successfully did nothing */
     }
@@ -401,27 +440,37 @@ cutils_cdar_DynamicArray_void_ptr_swap(cutils_cdar_DynamicArray_void_ptr *dynarr
     return true; /* Successfully swapped items */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(swap_default3)(DYNAMIC_ARRAY *dynarr,
+                      size_t index1,
+                      size_t index2)
+{
+    return METHOD(swap)(dynarr, index1, index2, 1);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_reverse(cutils_cdar_DynamicArray_void_ptr *dynarr)
+METHOD(reverse)(DYNAMIC_ARRAY *dynarr)
 {
     size_t length;
 #ifndef CDAR_OPT
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "reverse")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     else
 #endif /* CDAR_OPT */
     if (!(length = dynarr->used))
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "reverse")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return true; /* Successfully did nothing */
     }
 
@@ -446,29 +495,30 @@ cutils_cdar_DynamicArray_void_ptr_reverse(cutils_cdar_DynamicArray_void_ptr *dyn
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_append(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                         size_t count,
-                                         void *source)
+METHOD(append)(DYNAMIC_ARRAY *dynarr,
+               size_t count,
+               void *source)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "append")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     /* Invalid source */
     else if (!source)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "append", "3rd", source)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return true; /* Successfully added nothing */
     }
     else
@@ -481,10 +531,10 @@ cutils_cdar_DynamicArray_void_ptr_append(cutils_cdar_DynamicArray_void_ptr *dyna
         size_t item_size = dynarr->size;
         if (!__cdar_resize(dynarr, item_size, count))
         {
+            #undef  EXCEPTION_MSG
             #define EXCEPTION_MSG \
                 EXCEPTION_MESSAGE_REALLOC_FAIL(TYPE_REPR, "append")
             cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-            #undef EXCEPTION_MSG
             return false; /* No place to append */
         }
         /* Extend array with data */
@@ -497,21 +547,30 @@ cutils_cdar_DynamicArray_void_ptr_append(cutils_cdar_DynamicArray_void_ptr *dyna
     return true; /* Successfully added 0 or more items */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(append_default2)(DYNAMIC_ARRAY *dynarr,
+                        void *source)
+{
+    return METHOD(append)(dynarr, 1, source);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_push(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                       size_t index,
-                                       size_t count,
-                                       void *source)
+METHOD(push)(DYNAMIC_ARRAY *dynarr,
+             size_t index,
+             size_t count,
+             void *source)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "push")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     /* Nothing to insert */
@@ -522,10 +581,10 @@ cutils_cdar_DynamicArray_void_ptr_push(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Invalid source */
     else if (!source)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "push", "4th", source)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return true; /* Successfully did nothing */
     }
 #else
@@ -538,9 +597,9 @@ cutils_cdar_DynamicArray_void_ptr_push(cutils_cdar_DynamicArray_void_ptr *dynarr
     size_t item_size = dynarr->size;
     if (!__cdar_resize(dynarr, item_size, count))
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_REALLOC_FAIL(TYPE_REPR, "push")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* No place to insert */
     }
     char *data = (char *)dynarr->data;
@@ -571,20 +630,30 @@ cutils_cdar_DynamicArray_void_ptr_push(cutils_cdar_DynamicArray_void_ptr *dynarr
     return true; /* Successfully inserted */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(push_default3)(DYNAMIC_ARRAY *dynarr,
+                      size_t index,
+                      void *source)
+{
+    return METHOD(push)(dynarr, index, 1, source);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 size_t
-cutils_cdar_DynamicArray_void_ptr_pull(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                       size_t index,
-                                       size_t count)
+METHOD(pull)(DYNAMIC_ARRAY *dynarr,
+             size_t index,
+             size_t count)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "pull")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
     }
     /* Nothing to remove */
@@ -595,18 +664,18 @@ cutils_cdar_DynamicArray_void_ptr_pull(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Empty array */
     else if (!dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "pull")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully removed nothing */
     }
     /* Out of range */
     else if (index >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "pull", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully removed nothing */
     }
 #else
@@ -637,21 +706,30 @@ cutils_cdar_DynamicArray_void_ptr_pull(cutils_cdar_DynamicArray_void_ptr *dynarr
     return count; /* Successfully removed */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+size_t
+METHOD(pull_default2)(DYNAMIC_ARRAY *dynarr,
+                      size_t index)
+{
+    return METHOD(pull)(dynarr, index, 1);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 size_t
-cutils_cdar_DynamicArray_void_ptr_pop(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                      size_t index,
-                                      size_t count,
-                                      void *destination)
+METHOD(pop)(DYNAMIC_ARRAY *dynarr,
+            size_t index,
+            size_t count,
+            void *destination)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "pop")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0;
     }
     /* Nothing to pop */
@@ -662,27 +740,27 @@ cutils_cdar_DynamicArray_void_ptr_pop(cutils_cdar_DynamicArray_void_ptr *dynarr,
     /* Invalid destination */
     else if (!destination)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "pop", "4th", destination)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully popped nothing */
     }
     /* Empty array */
     else if (!dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "pop")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully popped nothing */
     }
     /* Out of range */
     else if (index >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "pop", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully popped nothing */
     }
 #else
@@ -713,21 +791,31 @@ cutils_cdar_DynamicArray_void_ptr_pop(cutils_cdar_DynamicArray_void_ptr *dynarr,
     return count; /* Successfully popped */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+size_t
+METHOD(pop_default3)(DYNAMIC_ARRAY *dynarr,
+                     size_t index,
+                     void *destination)
+{
+    return METHOD(pop)(dynarr, index, 1, destination);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 size_t
-cutils_cdar_DynamicArray_void_ptr_sub(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                      size_t index,
-                                      size_t count,
-                                      void *destination)
+METHOD(sub)(DYNAMIC_ARRAY *dynarr,
+            size_t index,
+            size_t count,
+            void *destination)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "sub")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
     }
     /* Nothing to sub */
@@ -738,28 +826,28 @@ cutils_cdar_DynamicArray_void_ptr_sub(cutils_cdar_DynamicArray_void_ptr *dynarr,
     /* Invalid destination */
     else if (!destination)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "sub", "4th", destination)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully subbed nothing */
     }
     /* Empty array */
     else if (!dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "sub")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully subbed nothing */
     }
     /* Out of range */
     else if (index >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "sub", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully subbed nothing */
     }
 #else
@@ -780,18 +868,29 @@ cutils_cdar_DynamicArray_void_ptr_sub(cutils_cdar_DynamicArray_void_ptr *dynarr,
     return count; /* Successfully subbed */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+size_t
+METHOD(sub_default3)(DYNAMIC_ARRAY *dynarr,
+                     size_t index,
+                     void *destination)
+{
+    return METHOD(sub)(dynarr, index, 1, destination);
+}
+
+
+
 /*----------------------------------------------------------------------------*/
 void
-cutils_cdar_DynamicArray_void_ptr_truncate(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                           size_t index)
+METHOD(truncate)(DYNAMIC_ARRAY *dynarr,
+                 size_t index)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "truncate")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Cannot operate on nothing */
     }
     else
@@ -799,10 +898,10 @@ cutils_cdar_DynamicArray_void_ptr_truncate(cutils_cdar_DynamicArray_void_ptr *dy
     /* Out of range */
     if (index >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "truncate", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Out of range */
     }
 
@@ -810,21 +909,29 @@ cutils_cdar_DynamicArray_void_ptr_truncate(cutils_cdar_DynamicArray_void_ptr *dy
     dynarr->used = index;
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+void
+METHOD(truncate_default1)(DYNAMIC_ARRAY *dynarr)
+{
+    METHOD(truncate)(dynarr, 0);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_set(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                      size_t index,
-                                      size_t count,
-                                      void *source)
+METHOD(set)(DYNAMIC_ARRAY *dynarr,
+            size_t index,
+            size_t count,
+            void *source)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "set")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     /* Nothing to set */
@@ -835,19 +942,19 @@ cutils_cdar_DynamicArray_void_ptr_set(cutils_cdar_DynamicArray_void_ptr *dynarr,
     /* Invalid source */
     else if (!source)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "set", "4th", destination)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return true; /* Successfully set nothing */
     }
     /* Out of range */
     else if (index >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "set", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Out of range */
     }
 #else
@@ -867,33 +974,43 @@ cutils_cdar_DynamicArray_void_ptr_set(cutils_cdar_DynamicArray_void_ptr *dynarr,
     return true; /* Successfully set */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(set_default3)(DYNAMIC_ARRAY *dynarr,
+                     size_t index,
+                     void *source)
+{
+    return METHOD(set)(dynarr, index, 1, source);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 void *
-cutils_cdar_DynamicArray_void_ptr_get(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                      size_t index)
+METHOD(get)(DYNAMIC_ARRAY *dynarr,
+            size_t index)
 {
 #ifndef CDAR_OPT
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "get")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return NULL; /* Cannot operate on nothing */
     }
     else if (!dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "get")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return NULL;
     }
     else if (index >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "get", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return NULL;
     }
 #endif /* CDAR_OPT */
@@ -903,28 +1020,40 @@ cutils_cdar_DynamicArray_void_ptr_get(cutils_cdar_DynamicArray_void_ptr *dynarr,
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_find(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                       bool (*compare)(const void*, const void*, size_t),
-                                       const void *item,
-                                       size_t *index)
+METHOD(compare)(const void *item1,
+                const void *item2,
+                size_t item_size)
+{
+    return !memcmp(item1, item2, item_size);
+}
+
+
+
+/*----------------------------------------------------------------------------*/
+bool
+METHOD(find)(DYNAMIC_ARRAY *dynarr,
+             bool (*compare)(const void*, const void*, size_t),
+             const void *item,
+             size_t *index)
 {
 #ifndef CDAR_OPT
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "find")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     else if (!index)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "find", "4th", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Invalid data */
     }
     else
@@ -948,35 +1077,45 @@ cutils_cdar_DynamicArray_void_ptr_find(cutils_cdar_DynamicArray_void_ptr *dynarr
         }
         return false; /* Successfully not found */
     }
+    #undef  EXCEPTION_MSG
     #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "find")
     cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-    #undef EXCEPTION_MSG
     return false; /* Successfully not found */
 }
+
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(find_default3)(DYNAMIC_ARRAY *dynarr,
+                      const void *item,
+                      size_t *index)
+{
+    return METHOD(find)(dynarr, METHOD(compare), item, index);
+}
+
 
 
 /*----------------------------------------------------------------------------*/
 size_t
-cutils_cdar_DynamicArray_void_ptr_findall(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                          bool (*compare)(const void*, const void*, size_t),
-                                          const void *item,
-                                          size_t *indices)
+METHOD(findall)(DYNAMIC_ARRAY *dynarr,
+                bool (*compare)(const void*, const void*, size_t),
+                const void *item,
+                size_t *indices)
 {
 #ifndef CDAR_OPT
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "findall")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
     }
     else if (!indices)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "findall", "3rd", indices)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0;
     }
     else
@@ -995,32 +1134,43 @@ cutils_cdar_DynamicArray_void_ptr_findall(cutils_cdar_DynamicArray_void_ptr *dyn
                 indices[count++] = i;
         return count;
     }
+    #undef  EXCEPTION_MSG
     #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "findall")
     cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-    #undef EXCEPTION_MSG
     return 0;
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+size_t
+METHOD(findall_default3)(DYNAMIC_ARRAY *dynarr,
+                         const void *item,
+                         size_t *index)
+{
+    return METHOD(findall)(dynarr, METHOD(compare), item, index);
+}
+
+
+
 /*----------------------------------------------------------------------------*/
 void
-cutils_cdar_DynamicArray_void_ptr_sort(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                       int (*compare)(const void*, const void*))
+METHOD(sort)(DYNAMIC_ARRAY *dynarr,
+             int (*compare)(const void*, const void*))
 {
 #ifndef CDAR_OPT
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "sort")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Cannot operate on nothing */
     }
     else
 #endif /* CDAR_OPT */
     if (!dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "sort")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return;
     }
 
@@ -1029,34 +1179,35 @@ cutils_cdar_DynamicArray_void_ptr_sort(cutils_cdar_DynamicArray_void_ptr *dynarr
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 void
-cutils_cdar_DynamicArray_void_ptr_sortsub(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                          size_t index,
-                                          size_t count,
-                                          int (*compare)(const void*, const void*))
+METHOD(sortsub)(DYNAMIC_ARRAY *dynarr,
+                size_t index,
+                size_t count,
+                int (*compare)(const void*, const void*))
 {
 #ifndef CDAR_OPT
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "sortsub")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Cannot operate on nothing */
     }
     else if (!dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "sortsub")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return;
     }
     else if (index >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "sortsub", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return;
     }
 #else
@@ -1072,42 +1223,44 @@ cutils_cdar_DynamicArray_void_ptr_sortsub(cutils_cdar_DynamicArray_void_ptr *dyn
 }
 
 
+
 /*----------------------------------------------------------------------------*/
+/* TODO: map() should return the modified object */
 void
-cutils_cdar_DynamicArray_void_ptr_map(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                      size_t index,
-                                      size_t count,
-                                      void (*function)())
+METHOD(map)(DYNAMIC_ARRAY *dynarr,
+            size_t index,
+            size_t count,
+            void (*function)())
 {
 #ifndef CDAR_OPT
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "map")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Cannot operate on nothing */
     }
     else if (!dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "map")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Successfully did nothing */
     }
     else if (index >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "map", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return;
     }
     else if (!function)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "map", "4th", function)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Cannot call NULL on items */
     }
 #endif
@@ -1123,37 +1276,54 @@ cutils_cdar_DynamicArray_void_ptr_map(cutils_cdar_DynamicArray_void_ptr *dynarr,
         function(i, data + i*size);
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+void
+METHOD(map_default3)(DYNAMIC_ARRAY *dynarr,
+                     size_t count,
+                     void (*function)())
+{
+    METHOD(map)(dynarr, 0, count, function);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_format(const void *item,
-                                         char **buffer,
-                                         size_t *buffer_size)
+METHOD(format)(const void *item,
+               char **buffer,
+               size_t *buffer_size)
 {
+    /* TODO: 'void*' could mean (and should mean) any item not just
+             pointers, therefore casting it to a pointer and then
+             dereferencing it won't work. the question is now:
+             is there any way to determine if the given item is a
+             pointer, and it is a pointer to NULL? otherwise the
+             following doesn't make any sense:
+
+             if (!*(char*)item)
+                 *buffer = REPRESENTATION_OF_NULL_POINTERS; */
+
     /* buffer_size could be used to realloc buffer if
        it is too small to contain the formatted item */
-    if (!*(char **)item)
-        *buffer = REPRESENTATION_OF_NULL_POINTERS;
-    else
-        snprintf(*buffer, *buffer_size, REPRESENTATION_OF_REAL_POINTERS, item);
+    snprintf(*buffer, *buffer_size, REPRESENTATION_OF_REAL_POINTERS, item);
     return true;
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 void
-cutils_cdar_DynamicArray_void_ptr_print(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                        FILE *stream,
-                                        const char *sub_type,
-                                        bool(*format)())
-                                        // char *(*format)(const void*, char**, size_t*))
+METHOD(print)(DYNAMIC_ARRAY *dynarr,
+              FILE *stream,
+              const char *sub_type,
+              bool(*format)()) /* char *(*format)(const void*, char**, size_t*)) */
 {
 #ifndef CDAR_OPT
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "print")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         fprintf(stream, REPRESENTATION_OF_NULL_POINTERS "\n");
         return; /* Cannot operate on nothing */
     }
@@ -1175,9 +1345,9 @@ cutils_cdar_DynamicArray_void_ptr_print(cutils_cdar_DynamicArray_void_ptr *dynar
         char *buffer = malloc(buffer_size);
         if (!buffer)
         {
+            #undef  EXCEPTION_MSG
             #define EXCEPTION_MSG EXCEPTION_MESSAGE_ALLOC_FAIL(TYPE_REPR, "print")
             cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-            #undef EXCEPTION_MSG
             fprintf(stream, "...}\n");
             return;
         }
@@ -1193,10 +1363,10 @@ cutils_cdar_DynamicArray_void_ptr_print(cutils_cdar_DynamicArray_void_ptr *dynar
             /* If formatting representation was successful */
             if (!format(data + size*i, buffer_ptr, &buffer_size))
             {
+                #undef  EXCEPTION_MSG
                 #define EXCEPTION_MSG \
                     EXCEPTION_MESSAGE_REALLOC_FAIL(TYPE_REPR, "print")
                 cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-                #undef EXCEPTION_MSG
                 fprintf(stream, "...");
                 break;
             }
@@ -1209,481 +1379,738 @@ cutils_cdar_DynamicArray_void_ptr_print(cutils_cdar_DynamicArray_void_ptr *dynar
     fprintf(stream, "}\n");
 }
 
-/*----------------------------------------------------------------------------*/
-bool
-cutils_cdar_DynamicArray_void_ptr_compare(const void *item1,
-                                          const void *item2,
-                                          size_t item_size)
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+void
+METHOD(print_default2)(DYNAMIC_ARRAY *dynarr,
+                       bool(*format)())
 {
-    return !memcmp(item1, item2, item_size);
+    METHOD(print)(dynarr, stdout, "void_ptr", format);
+}
+
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+void
+METHOD(print_default1)(DYNAMIC_ARRAY *dynarr)
+{
+    METHOD(print)(dynarr, stdout, "void_ptr", METHOD(format));
 }
 
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_char;
 bool cutils_cdar_DynamicArray_char_new(cutils_cdar_DynamicArray_char**d,size_t c,char*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(char),c,a);}
-char* cutils_cdar_DynamicArray_char_data(cutils_cdar_DynamicArray_char*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-char* cutils_cdar_DynamicArray_char_raw(cutils_cdar_DynamicArray_char*d){return (char*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_char_append(cutils_cdar_DynamicArray_char*d,size_t c,char*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_char_push(cutils_cdar_DynamicArray_char*d,size_t i,size_t c,char*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_char_set(cutils_cdar_DynamicArray_char*d,size_t i,size_t c,char*s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_char_pop(cutils_cdar_DynamicArray_char*d,size_t i,size_t c,char*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_char_sub(cutils_cdar_DynamicArray_char*d,size_t i,size_t c,char*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-char cutils_cdar_DynamicArray_char_get(cutils_cdar_DynamicArray_char*d,size_t i){return *(char*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_char_find(cutils_cdar_DynamicArray_char*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_char_findall(cutils_cdar_DynamicArray_char*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_char_format(const char*i,char**b,size_t*s){cutils_fmtc_repr(*b,*s,i,1);return true;}
-bool cutils_cdar_DynamicArray_char_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_char_del)(cutils_cdar_DynamicArray_char*)=cutils_cdar_DynamicArray_void_ptr_del;
+char* cutils_cdar_DynamicArray_char_data(cutils_cdar_DynamicArray_char*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_char_len)(cutils_cdar_DynamicArray_char*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_char_size)(cutils_cdar_DynamicArray_char*)=cutils_cdar_DynamicArray_void_ptr_size;
+char* cutils_cdar_DynamicArray_char_raw(cutils_cdar_DynamicArray_char*d){return (char*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_char_resize)(cutils_cdar_DynamicArray_char*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_char_swap)(cutils_cdar_DynamicArray_char*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_char_reverse)(cutils_cdar_DynamicArray_char*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_char_pull)(cutils_cdar_DynamicArray_char*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_char_truncate)(cutils_cdar_DynamicArray_char*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_char_clear)(cutils_cdar_DynamicArray_char*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_char_map)(cutils_cdar_DynamicArray_char*,size_t,size_t,void(*)(size_t,char*))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_char_swap)(cutils_cdar_DynamicArray_char*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_char_reverse)(cutils_cdar_DynamicArray_char*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_char_append(cutils_cdar_DynamicArray_char*d,size_t c,char*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_char_push(cutils_cdar_DynamicArray_char*d,size_t i,size_t c,char*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_char_pull)(cutils_cdar_DynamicArray_char*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_char_set(cutils_cdar_DynamicArray_char*d,size_t i,size_t c,char*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_char_pop(cutils_cdar_DynamicArray_char*d,size_t i,size_t c,char*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+char cutils_cdar_DynamicArray_char_get(cutils_cdar_DynamicArray_char*d,size_t i){return *(char*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_char_sub(cutils_cdar_DynamicArray_char*d,size_t i,size_t c,char*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_char_map)(cutils_cdar_DynamicArray_char*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_char_find(cutils_cdar_DynamicArray_char*d,bool(*f)(const void*,const void*,size_t),char*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_char_findall(cutils_cdar_DynamicArray_char*d,bool(*f)(const void*,const void*,size_t),char*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_char_print)(cutils_cdar_DynamicArray_char*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_char_format(const char*i,char **b,size_t*s){cutils_fmtc_repr(*b,*s,i,1);return true;}
+bool cutils_cdar_DynamicArray_char_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
+bool cutils_cdar_DynamicArray_char_new_default1(cutils_cdar_DynamicArray_char**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(char),0,NULL);}
+bool cutils_cdar_DynamicArray_char_new_default2(cutils_cdar_DynamicArray_char**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(char),c,NULL);}
+void cutils_cdar_DynamicArray_char_truncate_default1(cutils_cdar_DynamicArray_char*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_char_swap_default3(cutils_cdar_DynamicArray_char*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_char_append_default2(cutils_cdar_DynamicArray_char*d,char*a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_char_push_default3(cutils_cdar_DynamicArray_char*d,size_t i,char*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_char_pull_default2(cutils_cdar_DynamicArray_char*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_char_set_default3(cutils_cdar_DynamicArray_char*d,size_t i,char*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_char_pop_default3(cutils_cdar_DynamicArray_char*d,size_t i,char*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_char_sub_default3(cutils_cdar_DynamicArray_char*d,size_t i,char*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_char_map_default3(cutils_cdar_DynamicArray_char*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_char_find_default3(cutils_cdar_DynamicArray_char*d,char*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_char_compare,p,i);}
+size_t cutils_cdar_DynamicArray_char_findall_default3(cutils_cdar_DynamicArray_char*d,char*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_char_compare,p,i);}
+void cutils_cdar_DynamicArray_char_print_default1(cutils_cdar_DynamicArray_char*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"char",cutils_cdar_DynamicArray_char_format);}
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_signed_char;
 bool cutils_cdar_DynamicArray_signed_char_new(cutils_cdar_DynamicArray_signed_char**d,size_t c,signed char*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(signed char),c,a);}
-signed char* cutils_cdar_DynamicArray_signed_char_data(cutils_cdar_DynamicArray_signed_char*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-signed char* cutils_cdar_DynamicArray_signed_char_raw(cutils_cdar_DynamicArray_signed_char*d){return (signed char*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_signed_char_append(cutils_cdar_DynamicArray_signed_char*d,size_t c,signed char*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_signed_char_push(cutils_cdar_DynamicArray_signed_char*d,size_t i,size_t c,signed char*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_signed_char_set(cutils_cdar_DynamicArray_signed_char*d,size_t i,size_t c,signed char*s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_signed_char_pop(cutils_cdar_DynamicArray_signed_char*d,size_t i,size_t c,signed char*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_signed_char_sub(cutils_cdar_DynamicArray_signed_char*d,size_t i,size_t c,signed char*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-signed char cutils_cdar_DynamicArray_signed_char_get(cutils_cdar_DynamicArray_signed_char*d,size_t i){return *(signed char*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_signed_char_find(cutils_cdar_DynamicArray_signed_char*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_signed_char_findall(cutils_cdar_DynamicArray_signed_char*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_signed_char_format(const signed char*i,char**b,size_t*s){snprintf(*b,*s,"%c",*i);return true;}
-bool cutils_cdar_DynamicArray_signed_char_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_signed_char_del)(cutils_cdar_DynamicArray_signed_char*)=cutils_cdar_DynamicArray_void_ptr_del;
+signed char* cutils_cdar_DynamicArray_signed_char_data(cutils_cdar_DynamicArray_signed_char*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_signed_char_len)(cutils_cdar_DynamicArray_signed_char*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_signed_char_size)(cutils_cdar_DynamicArray_signed_char*)=cutils_cdar_DynamicArray_void_ptr_size;
+signed char* cutils_cdar_DynamicArray_signed_char_raw(cutils_cdar_DynamicArray_signed_char*d){return (signed char*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_signed_char_resize)(cutils_cdar_DynamicArray_signed_char*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_signed_char_swap)(cutils_cdar_DynamicArray_signed_char*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_signed_char_reverse)(cutils_cdar_DynamicArray_signed_char*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_signed_char_pull)(cutils_cdar_DynamicArray_signed_char*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_signed_char_truncate)(cutils_cdar_DynamicArray_signed_char*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_signed_char_clear)(cutils_cdar_DynamicArray_signed_char*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_signed_char_map)(cutils_cdar_DynamicArray_signed_char*,size_t,size_t,void(*)(size_t,signed char*))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_signed_char_swap)(cutils_cdar_DynamicArray_signed_char*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_signed_char_reverse)(cutils_cdar_DynamicArray_signed_char*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_signed_char_append(cutils_cdar_DynamicArray_signed_char*d,size_t c,signed char*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_signed_char_push(cutils_cdar_DynamicArray_signed_char*d,size_t i,size_t c,signed char*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_signed_char_pull)(cutils_cdar_DynamicArray_signed_char*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_signed_char_set(cutils_cdar_DynamicArray_signed_char*d,size_t i,size_t c,signed char*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_signed_char_pop(cutils_cdar_DynamicArray_signed_char*d,size_t i,size_t c,signed char*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+signed char cutils_cdar_DynamicArray_signed_char_get(cutils_cdar_DynamicArray_signed_char*d,size_t i){return *(signed char*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_signed_char_sub(cutils_cdar_DynamicArray_signed_char*d,size_t i,size_t c,signed char*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_signed_char_map)(cutils_cdar_DynamicArray_signed_char*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_signed_char_find(cutils_cdar_DynamicArray_signed_char*d,bool(*f)(const void*,const void*,size_t),signed char*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_signed_char_findall(cutils_cdar_DynamicArray_signed_char*d,bool(*f)(const void*,const void*,size_t),signed char*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_signed_char_print)(cutils_cdar_DynamicArray_signed_char*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_signed_char_format(const signed char*i,char **b,size_t*s){snprintf(*b,*s,"%c",*i);return true;}
+bool cutils_cdar_DynamicArray_signed_char_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
+bool cutils_cdar_DynamicArray_signed_char_new_default1(cutils_cdar_DynamicArray_signed_char**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(signed char),0,NULL);}
+bool cutils_cdar_DynamicArray_signed_char_new_default2(cutils_cdar_DynamicArray_signed_char**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(signed char),c,NULL);}
+void cutils_cdar_DynamicArray_signed_char_truncate_default1(cutils_cdar_DynamicArray_signed_char*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_signed_char_swap_default3(cutils_cdar_DynamicArray_signed_char*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_signed_char_append_default2(cutils_cdar_DynamicArray_signed_char*d,signed char*a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_signed_char_push_default3(cutils_cdar_DynamicArray_signed_char*d,size_t i,signed char*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_signed_char_pull_default2(cutils_cdar_DynamicArray_signed_char*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_signed_char_set_default3(cutils_cdar_DynamicArray_signed_char*d,size_t i,signed char*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_signed_char_pop_default3(cutils_cdar_DynamicArray_signed_char*d,size_t i,signed char*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_signed_char_sub_default3(cutils_cdar_DynamicArray_signed_char*d,size_t i,signed char*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_signed_char_map_default3(cutils_cdar_DynamicArray_signed_char*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_signed_char_find_default3(cutils_cdar_DynamicArray_signed_char*d,signed char*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_signed_char_compare,p,i);}
+size_t cutils_cdar_DynamicArray_signed_char_findall_default3(cutils_cdar_DynamicArray_signed_char*d,signed char*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_signed_char_compare,p,i);}
+void cutils_cdar_DynamicArray_signed_char_print_default1(cutils_cdar_DynamicArray_signed_char*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"signed_char",cutils_cdar_DynamicArray_signed_char_format);}
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_unsigned_char;
 bool cutils_cdar_DynamicArray_unsigned_char_new(cutils_cdar_DynamicArray_unsigned_char**d,size_t c,unsigned char*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned char),c,a);}
-unsigned char* cutils_cdar_DynamicArray_unsigned_char_data(cutils_cdar_DynamicArray_unsigned_char*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-unsigned char* cutils_cdar_DynamicArray_unsigned_char_raw(cutils_cdar_DynamicArray_unsigned_char*d){return (unsigned char*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_unsigned_char_append(cutils_cdar_DynamicArray_unsigned_char*d,size_t c,unsigned char*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_unsigned_char_push(cutils_cdar_DynamicArray_unsigned_char*d,size_t i,size_t c,unsigned char*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_unsigned_char_set(cutils_cdar_DynamicArray_unsigned_char*d,size_t i,size_t c,unsigned char*s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_unsigned_char_pop(cutils_cdar_DynamicArray_unsigned_char*d,size_t i,size_t c,unsigned char*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_unsigned_char_sub(cutils_cdar_DynamicArray_unsigned_char*d,size_t i,size_t c,unsigned char*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-unsigned char cutils_cdar_DynamicArray_unsigned_char_get(cutils_cdar_DynamicArray_unsigned_char*d,size_t i){return *(unsigned char*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_unsigned_char_find(cutils_cdar_DynamicArray_unsigned_char*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_unsigned_char_findall(cutils_cdar_DynamicArray_unsigned_char*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_unsigned_char_format(const unsigned char*i,char**b,size_t*s){snprintf(*b,*s,"%u",*i);return true;}
-bool cutils_cdar_DynamicArray_unsigned_char_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_unsigned_char_del)(cutils_cdar_DynamicArray_unsigned_char*)=cutils_cdar_DynamicArray_void_ptr_del;
+unsigned char* cutils_cdar_DynamicArray_unsigned_char_data(cutils_cdar_DynamicArray_unsigned_char*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_unsigned_char_len)(cutils_cdar_DynamicArray_unsigned_char*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_unsigned_char_size)(cutils_cdar_DynamicArray_unsigned_char*)=cutils_cdar_DynamicArray_void_ptr_size;
+unsigned char* cutils_cdar_DynamicArray_unsigned_char_raw(cutils_cdar_DynamicArray_unsigned_char*d){return (unsigned char*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_unsigned_char_resize)(cutils_cdar_DynamicArray_unsigned_char*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_unsigned_char_swap)(cutils_cdar_DynamicArray_unsigned_char*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_unsigned_char_reverse)(cutils_cdar_DynamicArray_unsigned_char*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_unsigned_char_pull)(cutils_cdar_DynamicArray_unsigned_char*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_unsigned_char_truncate)(cutils_cdar_DynamicArray_unsigned_char*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_unsigned_char_clear)(cutils_cdar_DynamicArray_unsigned_char*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_unsigned_char_map)(cutils_cdar_DynamicArray_unsigned_char*,size_t,size_t,void(*)(size_t,unsigned char*))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_unsigned_char_swap)(cutils_cdar_DynamicArray_unsigned_char*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_unsigned_char_reverse)(cutils_cdar_DynamicArray_unsigned_char*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_unsigned_char_append(cutils_cdar_DynamicArray_unsigned_char*d,size_t c,unsigned char*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_unsigned_char_push(cutils_cdar_DynamicArray_unsigned_char*d,size_t i,size_t c,unsigned char*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_unsigned_char_pull)(cutils_cdar_DynamicArray_unsigned_char*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_unsigned_char_set(cutils_cdar_DynamicArray_unsigned_char*d,size_t i,size_t c,unsigned char*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_unsigned_char_pop(cutils_cdar_DynamicArray_unsigned_char*d,size_t i,size_t c,unsigned char*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+unsigned char cutils_cdar_DynamicArray_unsigned_char_get(cutils_cdar_DynamicArray_unsigned_char*d,size_t i){return *(unsigned char*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_unsigned_char_sub(cutils_cdar_DynamicArray_unsigned_char*d,size_t i,size_t c,unsigned char*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_unsigned_char_map)(cutils_cdar_DynamicArray_unsigned_char*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_unsigned_char_find(cutils_cdar_DynamicArray_unsigned_char*d,bool(*f)(const void*,const void*,size_t),unsigned char*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_unsigned_char_findall(cutils_cdar_DynamicArray_unsigned_char*d,bool(*f)(const void*,const void*,size_t),unsigned char*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_unsigned_char_print)(cutils_cdar_DynamicArray_unsigned_char*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_unsigned_char_format(const unsigned char*i,char **b,size_t*s){snprintf(*b,*s,"%u",*i);return true;}
+bool cutils_cdar_DynamicArray_unsigned_char_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
+bool cutils_cdar_DynamicArray_unsigned_char_new_default1(cutils_cdar_DynamicArray_unsigned_char**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned char),0,NULL);}
+bool cutils_cdar_DynamicArray_unsigned_char_new_default2(cutils_cdar_DynamicArray_unsigned_char**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned char),c,NULL);}
+void cutils_cdar_DynamicArray_unsigned_char_truncate_default1(cutils_cdar_DynamicArray_unsigned_char*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_unsigned_char_swap_default3(cutils_cdar_DynamicArray_unsigned_char*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_unsigned_char_append_default2(cutils_cdar_DynamicArray_unsigned_char*d,unsigned char*a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_unsigned_char_push_default3(cutils_cdar_DynamicArray_unsigned_char*d,size_t i,unsigned char*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_unsigned_char_pull_default2(cutils_cdar_DynamicArray_unsigned_char*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_unsigned_char_set_default3(cutils_cdar_DynamicArray_unsigned_char*d,size_t i,unsigned char*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_unsigned_char_pop_default3(cutils_cdar_DynamicArray_unsigned_char*d,size_t i,unsigned char*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_unsigned_char_sub_default3(cutils_cdar_DynamicArray_unsigned_char*d,size_t i,unsigned char*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_unsigned_char_map_default3(cutils_cdar_DynamicArray_unsigned_char*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_unsigned_char_find_default3(cutils_cdar_DynamicArray_unsigned_char*d,unsigned char*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_unsigned_char_compare,p,i);}
+size_t cutils_cdar_DynamicArray_unsigned_char_findall_default3(cutils_cdar_DynamicArray_unsigned_char*d,unsigned char*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_unsigned_char_compare,p,i);}
+void cutils_cdar_DynamicArray_unsigned_char_print_default1(cutils_cdar_DynamicArray_unsigned_char*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"unsigned_char",cutils_cdar_DynamicArray_unsigned_char_format);}
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_char_ptr;
 bool cutils_cdar_DynamicArray_char_ptr_new(cutils_cdar_DynamicArray_char_ptr**d,size_t c,char**a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(char*),c,a);}
-char** cutils_cdar_DynamicArray_char_ptr_data(cutils_cdar_DynamicArray_char_ptr*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-char** cutils_cdar_DynamicArray_char_ptr_raw(cutils_cdar_DynamicArray_char_ptr*d){return (char**)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_char_ptr_append(cutils_cdar_DynamicArray_char_ptr*d,size_t c,char**a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_char_ptr_push(cutils_cdar_DynamicArray_char_ptr*d,size_t i,size_t c,char**a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_char_ptr_set(cutils_cdar_DynamicArray_char_ptr*d,size_t i,size_t c,char**s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_char_ptr_pop(cutils_cdar_DynamicArray_char_ptr*d,size_t i,size_t c,char**a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_char_ptr_sub(cutils_cdar_DynamicArray_char_ptr*d,size_t i,size_t c,char**a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-char* cutils_cdar_DynamicArray_char_ptr_get(cutils_cdar_DynamicArray_char_ptr*d,size_t i){return *(char**)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_char_ptr_find(cutils_cdar_DynamicArray_char_ptr*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_char_ptr_findall(cutils_cdar_DynamicArray_char_ptr*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_char_ptr_format(const char**i,char**b,size_t*s){size_t l=strlen(*i);if(*s<l+3)if(!(*b=realloc(*b,(*s=l*2+3))))
-return false;cutils_fmtc_repr(*b,*s,*i,l);return true;}
-bool cutils_cdar_DynamicArray_char_ptr_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_char_ptr_del)(cutils_cdar_DynamicArray_char_ptr*)=cutils_cdar_DynamicArray_void_ptr_del;
+char** cutils_cdar_DynamicArray_char_ptr_data(cutils_cdar_DynamicArray_char_ptr*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_char_ptr_len)(cutils_cdar_DynamicArray_char_ptr*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_char_ptr_size)(cutils_cdar_DynamicArray_char_ptr*)=cutils_cdar_DynamicArray_void_ptr_size;
+char** cutils_cdar_DynamicArray_char_ptr_raw(cutils_cdar_DynamicArray_char_ptr*d){return (char**)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_char_ptr_resize)(cutils_cdar_DynamicArray_char_ptr*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_char_ptr_swap)(cutils_cdar_DynamicArray_char_ptr*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_char_ptr_reverse)(cutils_cdar_DynamicArray_char_ptr*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_char_ptr_pull)(cutils_cdar_DynamicArray_char_ptr*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_char_ptr_truncate)(cutils_cdar_DynamicArray_char_ptr*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_char_ptr_clear)(cutils_cdar_DynamicArray_char_ptr*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_char_ptr_map)(cutils_cdar_DynamicArray_char_ptr*,size_t,size_t,void(*)(size_t,char**))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_char_ptr_swap)(cutils_cdar_DynamicArray_char_ptr*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_char_ptr_reverse)(cutils_cdar_DynamicArray_char_ptr*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_char_ptr_append(cutils_cdar_DynamicArray_char_ptr*d,size_t c,char**a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_char_ptr_push(cutils_cdar_DynamicArray_char_ptr*d,size_t i,size_t c,char**a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_char_ptr_pull)(cutils_cdar_DynamicArray_char_ptr*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_char_ptr_set(cutils_cdar_DynamicArray_char_ptr*d,size_t i,size_t c,char**a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_char_ptr_pop(cutils_cdar_DynamicArray_char_ptr*d,size_t i,size_t c,char**a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+char* cutils_cdar_DynamicArray_char_ptr_get(cutils_cdar_DynamicArray_char_ptr*d,size_t i){return *(char**)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_char_ptr_sub(cutils_cdar_DynamicArray_char_ptr*d,size_t i,size_t c,char**a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_char_ptr_map)(cutils_cdar_DynamicArray_char_ptr*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_char_ptr_find(cutils_cdar_DynamicArray_char_ptr*d,bool(*f)(const void*,const void*,size_t),char**p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_char_ptr_findall(cutils_cdar_DynamicArray_char_ptr*d,bool(*f)(const void*,const void*,size_t),char**p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_char_ptr_print)(cutils_cdar_DynamicArray_char_ptr*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_char_ptr_format(const char**i,char **b,size_t*s){size_t l=strlen(*i);if(*s<l+3)if(!(*b=realloc(*b,(*s=l*2+3))))return false;cutils_fmtc_repr(*b,*s,*i,l);return true;}
+bool cutils_cdar_DynamicArray_char_ptr_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
+bool cutils_cdar_DynamicArray_char_ptr_new_default1(cutils_cdar_DynamicArray_char_ptr**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(char*),0,NULL);}
+bool cutils_cdar_DynamicArray_char_ptr_new_default2(cutils_cdar_DynamicArray_char_ptr**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(char*),c,NULL);}
+void cutils_cdar_DynamicArray_char_ptr_truncate_default1(cutils_cdar_DynamicArray_char_ptr*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_char_ptr_swap_default3(cutils_cdar_DynamicArray_char_ptr*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_char_ptr_append_default2(cutils_cdar_DynamicArray_char_ptr*d,char**a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_char_ptr_push_default3(cutils_cdar_DynamicArray_char_ptr*d,size_t i,char**a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_char_ptr_pull_default2(cutils_cdar_DynamicArray_char_ptr*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_char_ptr_set_default3(cutils_cdar_DynamicArray_char_ptr*d,size_t i,char**a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_char_ptr_pop_default3(cutils_cdar_DynamicArray_char_ptr*d,size_t i,char**a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_char_ptr_sub_default3(cutils_cdar_DynamicArray_char_ptr*d,size_t i,char**a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_char_ptr_map_default3(cutils_cdar_DynamicArray_char_ptr*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_char_ptr_find_default3(cutils_cdar_DynamicArray_char_ptr*d,char**p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_char_ptr_compare,p,i);}
+size_t cutils_cdar_DynamicArray_char_ptr_findall_default3(cutils_cdar_DynamicArray_char_ptr*d,char**p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_char_ptr_compare,p,i);}
+void cutils_cdar_DynamicArray_char_ptr_print_default1(cutils_cdar_DynamicArray_char_ptr*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"char_ptr",cutils_cdar_DynamicArray_char_ptr_format);}
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_short;
 bool cutils_cdar_DynamicArray_short_new(cutils_cdar_DynamicArray_short**d,size_t c,short*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(short),c,a);}
-short* cutils_cdar_DynamicArray_short_data(cutils_cdar_DynamicArray_short*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-short* cutils_cdar_DynamicArray_short_raw(cutils_cdar_DynamicArray_short*d){return (short*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_short_append(cutils_cdar_DynamicArray_short*d,size_t c,short*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_short_push(cutils_cdar_DynamicArray_short*d,size_t i,size_t c,short*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_short_set(cutils_cdar_DynamicArray_short*d,size_t i,size_t c,short*s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_short_pop(cutils_cdar_DynamicArray_short*d,size_t i,size_t c,short*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_short_sub(cutils_cdar_DynamicArray_short*d,size_t i,size_t c,short*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-short cutils_cdar_DynamicArray_short_get(cutils_cdar_DynamicArray_short*d,size_t i){return *(short*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_short_find(cutils_cdar_DynamicArray_short*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_short_findall(cutils_cdar_DynamicArray_short*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_short_format(const short*i,char**b,size_t*s){snprintf(*b,*s,"%hd",*i);return true;}
-bool cutils_cdar_DynamicArray_short_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_short_del)(cutils_cdar_DynamicArray_short*)=cutils_cdar_DynamicArray_void_ptr_del;
+short* cutils_cdar_DynamicArray_short_data(cutils_cdar_DynamicArray_short*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_short_len)(cutils_cdar_DynamicArray_short*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_short_size)(cutils_cdar_DynamicArray_short*)=cutils_cdar_DynamicArray_void_ptr_size;
+short* cutils_cdar_DynamicArray_short_raw(cutils_cdar_DynamicArray_short*d){return (short*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_short_resize)(cutils_cdar_DynamicArray_short*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_short_swap)(cutils_cdar_DynamicArray_short*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_short_reverse)(cutils_cdar_DynamicArray_short*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_short_pull)(cutils_cdar_DynamicArray_short*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_short_truncate)(cutils_cdar_DynamicArray_short*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_short_clear)(cutils_cdar_DynamicArray_short*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_short_map)(cutils_cdar_DynamicArray_short*,size_t,size_t,void(*)(size_t,short*))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_short_swap)(cutils_cdar_DynamicArray_short*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_short_reverse)(cutils_cdar_DynamicArray_short*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_short_append(cutils_cdar_DynamicArray_short*d,size_t c,short*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_short_push(cutils_cdar_DynamicArray_short*d,size_t i,size_t c,short*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_short_pull)(cutils_cdar_DynamicArray_short*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_short_set(cutils_cdar_DynamicArray_short*d,size_t i,size_t c,short*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_short_pop(cutils_cdar_DynamicArray_short*d,size_t i,size_t c,short*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+short cutils_cdar_DynamicArray_short_get(cutils_cdar_DynamicArray_short*d,size_t i){return *(short*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_short_sub(cutils_cdar_DynamicArray_short*d,size_t i,size_t c,short*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_short_map)(cutils_cdar_DynamicArray_short*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_short_find(cutils_cdar_DynamicArray_short*d,bool(*f)(const void*,const void*,size_t),short*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_short_findall(cutils_cdar_DynamicArray_short*d,bool(*f)(const void*,const void*,size_t),short*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_short_print)(cutils_cdar_DynamicArray_short*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_short_format(const short*i,char **b,size_t*s){snprintf(*b,*s,"%hd",*i);return true;}
+bool cutils_cdar_DynamicArray_short_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
+bool cutils_cdar_DynamicArray_short_new_default1(cutils_cdar_DynamicArray_short**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(short),0,NULL);}
+bool cutils_cdar_DynamicArray_short_new_default2(cutils_cdar_DynamicArray_short**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(short),c,NULL);}
+void cutils_cdar_DynamicArray_short_truncate_default1(cutils_cdar_DynamicArray_short*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_short_swap_default3(cutils_cdar_DynamicArray_short*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_short_append_default2(cutils_cdar_DynamicArray_short*d,short*a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_short_push_default3(cutils_cdar_DynamicArray_short*d,size_t i,short*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_short_pull_default2(cutils_cdar_DynamicArray_short*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_short_set_default3(cutils_cdar_DynamicArray_short*d,size_t i,short*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_short_pop_default3(cutils_cdar_DynamicArray_short*d,size_t i,short*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_short_sub_default3(cutils_cdar_DynamicArray_short*d,size_t i,short*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_short_map_default3(cutils_cdar_DynamicArray_short*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_short_find_default3(cutils_cdar_DynamicArray_short*d,short*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_short_compare,p,i);}
+size_t cutils_cdar_DynamicArray_short_findall_default3(cutils_cdar_DynamicArray_short*d,short*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_short_compare,p,i);}
+void cutils_cdar_DynamicArray_short_print_default1(cutils_cdar_DynamicArray_short*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"short",cutils_cdar_DynamicArray_short_format);}
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_unsigned_short;
 bool cutils_cdar_DynamicArray_unsigned_short_new(cutils_cdar_DynamicArray_unsigned_short**d,size_t c,unsigned short*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned short),c,a);}
-unsigned short* cutils_cdar_DynamicArray_unsigned_short_data(cutils_cdar_DynamicArray_unsigned_short*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-unsigned short* cutils_cdar_DynamicArray_unsigned_short_raw(cutils_cdar_DynamicArray_unsigned_short*d){return (unsigned short*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_unsigned_short_append(cutils_cdar_DynamicArray_unsigned_short*d,size_t c,unsigned short*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_unsigned_short_push(cutils_cdar_DynamicArray_unsigned_short*d,size_t i,size_t c,unsigned short*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_unsigned_short_set(cutils_cdar_DynamicArray_unsigned_short*d,size_t i,size_t c,unsigned short*s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_unsigned_short_pop(cutils_cdar_DynamicArray_unsigned_short*d,size_t i,size_t c,unsigned short*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_unsigned_short_sub(cutils_cdar_DynamicArray_unsigned_short*d,size_t i,size_t c,unsigned short*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-unsigned short cutils_cdar_DynamicArray_unsigned_short_get(cutils_cdar_DynamicArray_unsigned_short*d,size_t i){return *(unsigned short*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_unsigned_short_find(cutils_cdar_DynamicArray_unsigned_short*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_unsigned_short_findall(cutils_cdar_DynamicArray_unsigned_short*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_unsigned_short_format(const unsigned short*i,char**b,size_t*s){snprintf(*b,*s,"%hu",*i);return true;}
-bool cutils_cdar_DynamicArray_unsigned_short_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_unsigned_short_del)(cutils_cdar_DynamicArray_unsigned_short*)=cutils_cdar_DynamicArray_void_ptr_del;
+unsigned short* cutils_cdar_DynamicArray_unsigned_short_data(cutils_cdar_DynamicArray_unsigned_short*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_unsigned_short_len)(cutils_cdar_DynamicArray_unsigned_short*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_unsigned_short_size)(cutils_cdar_DynamicArray_unsigned_short*)=cutils_cdar_DynamicArray_void_ptr_size;
+unsigned short* cutils_cdar_DynamicArray_unsigned_short_raw(cutils_cdar_DynamicArray_unsigned_short*d){return (unsigned short*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_unsigned_short_resize)(cutils_cdar_DynamicArray_unsigned_short*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_unsigned_short_swap)(cutils_cdar_DynamicArray_unsigned_short*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_unsigned_short_reverse)(cutils_cdar_DynamicArray_unsigned_short*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_unsigned_short_pull)(cutils_cdar_DynamicArray_unsigned_short*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_unsigned_short_truncate)(cutils_cdar_DynamicArray_unsigned_short*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_unsigned_short_clear)(cutils_cdar_DynamicArray_unsigned_short*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_unsigned_short_map)(cutils_cdar_DynamicArray_unsigned_short*,size_t,size_t,void(*)(size_t,unsigned short*))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_unsigned_short_swap)(cutils_cdar_DynamicArray_unsigned_short*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_unsigned_short_reverse)(cutils_cdar_DynamicArray_unsigned_short*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_unsigned_short_append(cutils_cdar_DynamicArray_unsigned_short*d,size_t c,unsigned short*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_unsigned_short_push(cutils_cdar_DynamicArray_unsigned_short*d,size_t i,size_t c,unsigned short*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_unsigned_short_pull)(cutils_cdar_DynamicArray_unsigned_short*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_unsigned_short_set(cutils_cdar_DynamicArray_unsigned_short*d,size_t i,size_t c,unsigned short*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_unsigned_short_pop(cutils_cdar_DynamicArray_unsigned_short*d,size_t i,size_t c,unsigned short*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+unsigned short cutils_cdar_DynamicArray_unsigned_short_get(cutils_cdar_DynamicArray_unsigned_short*d,size_t i){return *(unsigned short*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_unsigned_short_sub(cutils_cdar_DynamicArray_unsigned_short*d,size_t i,size_t c,unsigned short*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_unsigned_short_map)(cutils_cdar_DynamicArray_unsigned_short*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_unsigned_short_find(cutils_cdar_DynamicArray_unsigned_short*d,bool(*f)(const void*,const void*,size_t),unsigned short*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_unsigned_short_findall(cutils_cdar_DynamicArray_unsigned_short*d,bool(*f)(const void*,const void*,size_t),unsigned short*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_unsigned_short_print)(cutils_cdar_DynamicArray_unsigned_short*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_unsigned_short_format(const unsigned short*i,char **b,size_t*s){snprintf(*b,*s,"%hu",*i);return true;}
+bool cutils_cdar_DynamicArray_unsigned_short_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
+bool cutils_cdar_DynamicArray_unsigned_short_new_default1(cutils_cdar_DynamicArray_unsigned_short**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned short),0,NULL);}
+bool cutils_cdar_DynamicArray_unsigned_short_new_default2(cutils_cdar_DynamicArray_unsigned_short**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned short),c,NULL);}
+void cutils_cdar_DynamicArray_unsigned_short_truncate_default1(cutils_cdar_DynamicArray_unsigned_short*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_unsigned_short_swap_default3(cutils_cdar_DynamicArray_unsigned_short*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_unsigned_short_append_default2(cutils_cdar_DynamicArray_unsigned_short*d,unsigned short*a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_unsigned_short_push_default3(cutils_cdar_DynamicArray_unsigned_short*d,size_t i,unsigned short*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_unsigned_short_pull_default2(cutils_cdar_DynamicArray_unsigned_short*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_unsigned_short_set_default3(cutils_cdar_DynamicArray_unsigned_short*d,size_t i,unsigned short*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_unsigned_short_pop_default3(cutils_cdar_DynamicArray_unsigned_short*d,size_t i,unsigned short*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_unsigned_short_sub_default3(cutils_cdar_DynamicArray_unsigned_short*d,size_t i,unsigned short*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_unsigned_short_map_default3(cutils_cdar_DynamicArray_unsigned_short*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_unsigned_short_find_default3(cutils_cdar_DynamicArray_unsigned_short*d,unsigned short*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_unsigned_short_compare,p,i);}
+size_t cutils_cdar_DynamicArray_unsigned_short_findall_default3(cutils_cdar_DynamicArray_unsigned_short*d,unsigned short*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_unsigned_short_compare,p,i);}
+void cutils_cdar_DynamicArray_unsigned_short_print_default1(cutils_cdar_DynamicArray_unsigned_short*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"unsigned_short",cutils_cdar_DynamicArray_unsigned_short_format);}
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_int;
 bool cutils_cdar_DynamicArray_int_new(cutils_cdar_DynamicArray_int**d,size_t c,int*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(int),c,a);}
-int* cutils_cdar_DynamicArray_int_data(cutils_cdar_DynamicArray_int*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-int* cutils_cdar_DynamicArray_int_raw(cutils_cdar_DynamicArray_int*d){return (int*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_int_append(cutils_cdar_DynamicArray_int*d,size_t c,int*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_int_push(cutils_cdar_DynamicArray_int*d,size_t i,size_t c,int*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_int_set(cutils_cdar_DynamicArray_int*d,size_t i,size_t c,int*s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_int_pop(cutils_cdar_DynamicArray_int*d,size_t i,size_t c,int*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_int_sub(cutils_cdar_DynamicArray_int*d,size_t i,size_t c,int*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-int cutils_cdar_DynamicArray_int_get(cutils_cdar_DynamicArray_int*d,size_t i){return *(int*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_int_find(cutils_cdar_DynamicArray_int*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_int_findall(cutils_cdar_DynamicArray_int*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_int_format(const int*i,char**b,size_t*s){snprintf(*b,*s,"%d",*i);return true;}
-bool cutils_cdar_DynamicArray_int_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_int_del)(cutils_cdar_DynamicArray_int*)=cutils_cdar_DynamicArray_void_ptr_del;
+int* cutils_cdar_DynamicArray_int_data(cutils_cdar_DynamicArray_int*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_int_len)(cutils_cdar_DynamicArray_int*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_int_size)(cutils_cdar_DynamicArray_int*)=cutils_cdar_DynamicArray_void_ptr_size;
+int* cutils_cdar_DynamicArray_int_raw(cutils_cdar_DynamicArray_int*d){return (int*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_int_resize)(cutils_cdar_DynamicArray_int*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_int_swap)(cutils_cdar_DynamicArray_int*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_int_reverse)(cutils_cdar_DynamicArray_int*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_int_pull)(cutils_cdar_DynamicArray_int*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_int_truncate)(cutils_cdar_DynamicArray_int*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_int_clear)(cutils_cdar_DynamicArray_int*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_int_map)(cutils_cdar_DynamicArray_int*,size_t,size_t,void(*)(size_t,int*))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_int_swap)(cutils_cdar_DynamicArray_int*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_int_reverse)(cutils_cdar_DynamicArray_int*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_int_append(cutils_cdar_DynamicArray_int*d,size_t c,int*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_int_push(cutils_cdar_DynamicArray_int*d,size_t i,size_t c,int*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_int_pull)(cutils_cdar_DynamicArray_int*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_int_set(cutils_cdar_DynamicArray_int*d,size_t i,size_t c,int*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_int_pop(cutils_cdar_DynamicArray_int*d,size_t i,size_t c,int*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+int cutils_cdar_DynamicArray_int_get(cutils_cdar_DynamicArray_int*d,size_t i){return *(int*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_int_sub(cutils_cdar_DynamicArray_int*d,size_t i,size_t c,int*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_int_map)(cutils_cdar_DynamicArray_int*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_int_find(cutils_cdar_DynamicArray_int*d,bool(*f)(const void*,const void*,size_t),int*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_int_findall(cutils_cdar_DynamicArray_int*d,bool(*f)(const void*,const void*,size_t),int*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_int_print)(cutils_cdar_DynamicArray_int*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_int_format(const int*i,char **b,size_t*s){snprintf(*b,*s,"%d",*i);return true;}
+bool cutils_cdar_DynamicArray_int_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
+bool cutils_cdar_DynamicArray_int_new_default1(cutils_cdar_DynamicArray_int**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(int),0,NULL);}
+bool cutils_cdar_DynamicArray_int_new_default2(cutils_cdar_DynamicArray_int**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(int),c,NULL);}
+void cutils_cdar_DynamicArray_int_truncate_default1(cutils_cdar_DynamicArray_int*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_int_swap_default3(cutils_cdar_DynamicArray_int*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_int_append_default2(cutils_cdar_DynamicArray_int*d,int*a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_int_push_default3(cutils_cdar_DynamicArray_int*d,size_t i,int*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_int_pull_default2(cutils_cdar_DynamicArray_int*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_int_set_default3(cutils_cdar_DynamicArray_int*d,size_t i,int*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_int_pop_default3(cutils_cdar_DynamicArray_int*d,size_t i,int*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_int_sub_default3(cutils_cdar_DynamicArray_int*d,size_t i,int*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_int_map_default3(cutils_cdar_DynamicArray_int*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_int_find_default3(cutils_cdar_DynamicArray_int*d,int*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_int_compare,p,i);}
+size_t cutils_cdar_DynamicArray_int_findall_default3(cutils_cdar_DynamicArray_int*d,int*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_int_compare,p,i);}
+void cutils_cdar_DynamicArray_int_print_default1(cutils_cdar_DynamicArray_int*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"int",cutils_cdar_DynamicArray_int_format);}
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_unsigned_int;
 bool cutils_cdar_DynamicArray_unsigned_int_new(cutils_cdar_DynamicArray_unsigned_int**d,size_t c,unsigned int*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned int),c,a);}
-unsigned int* cutils_cdar_DynamicArray_unsigned_int_data(cutils_cdar_DynamicArray_unsigned_int*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-unsigned int* cutils_cdar_DynamicArray_unsigned_int_raw(cutils_cdar_DynamicArray_unsigned_int*d){return (unsigned int*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_unsigned_int_append(cutils_cdar_DynamicArray_unsigned_int*d,size_t c,unsigned int*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_unsigned_int_push(cutils_cdar_DynamicArray_unsigned_int*d,size_t i,size_t c,unsigned int*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_unsigned_int_set(cutils_cdar_DynamicArray_unsigned_int*d,size_t i,size_t c,unsigned int*s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_unsigned_int_pop(cutils_cdar_DynamicArray_unsigned_int*d,size_t i,size_t c,unsigned int*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_unsigned_int_sub(cutils_cdar_DynamicArray_unsigned_int*d,size_t i,size_t c,unsigned int*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-unsigned int cutils_cdar_DynamicArray_unsigned_int_get(cutils_cdar_DynamicArray_unsigned_int*d,size_t i){return *(unsigned int*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_unsigned_int_find(cutils_cdar_DynamicArray_unsigned_int*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_unsigned_int_findall(cutils_cdar_DynamicArray_unsigned_int*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_unsigned_int_format(const unsigned int*i,char**b,size_t*s){snprintf(*b,*s,"%uu",*i);return true;}
-bool cutils_cdar_DynamicArray_unsigned_int_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_unsigned_int_del)(cutils_cdar_DynamicArray_unsigned_int*)=cutils_cdar_DynamicArray_void_ptr_del;
+unsigned int* cutils_cdar_DynamicArray_unsigned_int_data(cutils_cdar_DynamicArray_unsigned_int*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_unsigned_int_len)(cutils_cdar_DynamicArray_unsigned_int*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_unsigned_int_size)(cutils_cdar_DynamicArray_unsigned_int*)=cutils_cdar_DynamicArray_void_ptr_size;
+unsigned int* cutils_cdar_DynamicArray_unsigned_int_raw(cutils_cdar_DynamicArray_unsigned_int*d){return (unsigned int*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_unsigned_int_resize)(cutils_cdar_DynamicArray_unsigned_int*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_unsigned_int_swap)(cutils_cdar_DynamicArray_unsigned_int*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_unsigned_int_reverse)(cutils_cdar_DynamicArray_unsigned_int*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_unsigned_int_pull)(cutils_cdar_DynamicArray_unsigned_int*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_unsigned_int_truncate)(cutils_cdar_DynamicArray_unsigned_int*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_unsigned_int_clear)(cutils_cdar_DynamicArray_unsigned_int*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_unsigned_int_map)(cutils_cdar_DynamicArray_unsigned_int*,size_t,size_t,void(*)(size_t,unsigned int*))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_unsigned_int_swap)(cutils_cdar_DynamicArray_unsigned_int*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_unsigned_int_reverse)(cutils_cdar_DynamicArray_unsigned_int*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_unsigned_int_append(cutils_cdar_DynamicArray_unsigned_int*d,size_t c,unsigned int*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_unsigned_int_push(cutils_cdar_DynamicArray_unsigned_int*d,size_t i,size_t c,unsigned int*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_unsigned_int_pull)(cutils_cdar_DynamicArray_unsigned_int*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_unsigned_int_set(cutils_cdar_DynamicArray_unsigned_int*d,size_t i,size_t c,unsigned int*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_unsigned_int_pop(cutils_cdar_DynamicArray_unsigned_int*d,size_t i,size_t c,unsigned int*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+unsigned int cutils_cdar_DynamicArray_unsigned_int_get(cutils_cdar_DynamicArray_unsigned_int*d,size_t i){return *(unsigned int*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_unsigned_int_sub(cutils_cdar_DynamicArray_unsigned_int*d,size_t i,size_t c,unsigned int*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_unsigned_int_map)(cutils_cdar_DynamicArray_unsigned_int*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_unsigned_int_find(cutils_cdar_DynamicArray_unsigned_int*d,bool(*f)(const void*,const void*,size_t),unsigned int*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_unsigned_int_findall(cutils_cdar_DynamicArray_unsigned_int*d,bool(*f)(const void*,const void*,size_t),unsigned int*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_unsigned_int_print)(cutils_cdar_DynamicArray_unsigned_int*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_unsigned_int_format(const unsigned int*i,char **b,size_t*s){snprintf(*b,*s,"%uu",*i);return true;}
+bool cutils_cdar_DynamicArray_unsigned_int_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
+bool cutils_cdar_DynamicArray_unsigned_int_new_default1(cutils_cdar_DynamicArray_unsigned_int**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned int),0,NULL);}
+bool cutils_cdar_DynamicArray_unsigned_int_new_default2(cutils_cdar_DynamicArray_unsigned_int**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned int),c,NULL);}
+void cutils_cdar_DynamicArray_unsigned_int_truncate_default1(cutils_cdar_DynamicArray_unsigned_int*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_unsigned_int_swap_default3(cutils_cdar_DynamicArray_unsigned_int*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_unsigned_int_append_default2(cutils_cdar_DynamicArray_unsigned_int*d,unsigned int*a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_unsigned_int_push_default3(cutils_cdar_DynamicArray_unsigned_int*d,size_t i,unsigned int*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_unsigned_int_pull_default2(cutils_cdar_DynamicArray_unsigned_int*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_unsigned_int_set_default3(cutils_cdar_DynamicArray_unsigned_int*d,size_t i,unsigned int*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_unsigned_int_pop_default3(cutils_cdar_DynamicArray_unsigned_int*d,size_t i,unsigned int*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_unsigned_int_sub_default3(cutils_cdar_DynamicArray_unsigned_int*d,size_t i,unsigned int*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_unsigned_int_map_default3(cutils_cdar_DynamicArray_unsigned_int*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_unsigned_int_find_default3(cutils_cdar_DynamicArray_unsigned_int*d,unsigned int*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_unsigned_int_compare,p,i);}
+size_t cutils_cdar_DynamicArray_unsigned_int_findall_default3(cutils_cdar_DynamicArray_unsigned_int*d,unsigned int*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_unsigned_int_compare,p,i);}
+void cutils_cdar_DynamicArray_unsigned_int_print_default1(cutils_cdar_DynamicArray_unsigned_int*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"unsigned_int",cutils_cdar_DynamicArray_unsigned_int_format);}
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_long;
 bool cutils_cdar_DynamicArray_long_new(cutils_cdar_DynamicArray_long**d,size_t c,long*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(long),c,a);}
-long* cutils_cdar_DynamicArray_long_data(cutils_cdar_DynamicArray_long*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-long* cutils_cdar_DynamicArray_long_raw(cutils_cdar_DynamicArray_long*d){return (long*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_long_append(cutils_cdar_DynamicArray_long*d,size_t c,long*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_long_push(cutils_cdar_DynamicArray_long*d,size_t i,size_t c,long*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_long_set(cutils_cdar_DynamicArray_long*d,size_t i,size_t c,long*s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_long_pop(cutils_cdar_DynamicArray_long*d,size_t i,size_t c,long*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_long_sub(cutils_cdar_DynamicArray_long*d,size_t i,size_t c,long*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-long cutils_cdar_DynamicArray_long_get(cutils_cdar_DynamicArray_long*d,size_t i){return *(long*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_long_find(cutils_cdar_DynamicArray_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_long_findall(cutils_cdar_DynamicArray_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_long_format(const long*i,char**b,size_t*s){snprintf(*b,*s,"%ldl",*i);return true;}
-bool cutils_cdar_DynamicArray_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_long_del)(cutils_cdar_DynamicArray_long*)=cutils_cdar_DynamicArray_void_ptr_del;
+long* cutils_cdar_DynamicArray_long_data(cutils_cdar_DynamicArray_long*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_long_len)(cutils_cdar_DynamicArray_long*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_long_size)(cutils_cdar_DynamicArray_long*)=cutils_cdar_DynamicArray_void_ptr_size;
+long* cutils_cdar_DynamicArray_long_raw(cutils_cdar_DynamicArray_long*d){return (long*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_long_resize)(cutils_cdar_DynamicArray_long*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_long_swap)(cutils_cdar_DynamicArray_long*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_long_reverse)(cutils_cdar_DynamicArray_long*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_long_pull)(cutils_cdar_DynamicArray_long*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_long_truncate)(cutils_cdar_DynamicArray_long*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_long_clear)(cutils_cdar_DynamicArray_long*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_long_map)(cutils_cdar_DynamicArray_long*,size_t,size_t,void(*)(size_t,long*))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_long_swap)(cutils_cdar_DynamicArray_long*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_long_reverse)(cutils_cdar_DynamicArray_long*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_long_append(cutils_cdar_DynamicArray_long*d,size_t c,long*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_long_push(cutils_cdar_DynamicArray_long*d,size_t i,size_t c,long*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_long_pull)(cutils_cdar_DynamicArray_long*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_long_set(cutils_cdar_DynamicArray_long*d,size_t i,size_t c,long*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_long_pop(cutils_cdar_DynamicArray_long*d,size_t i,size_t c,long*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+long cutils_cdar_DynamicArray_long_get(cutils_cdar_DynamicArray_long*d,size_t i){return *(long*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_long_sub(cutils_cdar_DynamicArray_long*d,size_t i,size_t c,long*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_long_map)(cutils_cdar_DynamicArray_long*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_long_find(cutils_cdar_DynamicArray_long*d,bool(*f)(const void*,const void*,size_t),long*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_long_findall(cutils_cdar_DynamicArray_long*d,bool(*f)(const void*,const void*,size_t),long*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_long_print)(cutils_cdar_DynamicArray_long*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_long_format(const long*i,char **b,size_t*s){snprintf(*b,*s,"%ldl",*i);return true;}
+bool cutils_cdar_DynamicArray_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
+bool cutils_cdar_DynamicArray_long_new_default1(cutils_cdar_DynamicArray_long**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(long),0,NULL);}
+bool cutils_cdar_DynamicArray_long_new_default2(cutils_cdar_DynamicArray_long**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(long),c,NULL);}
+void cutils_cdar_DynamicArray_long_truncate_default1(cutils_cdar_DynamicArray_long*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_long_swap_default3(cutils_cdar_DynamicArray_long*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_long_append_default2(cutils_cdar_DynamicArray_long*d,long*a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_long_push_default3(cutils_cdar_DynamicArray_long*d,size_t i,long*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_long_pull_default2(cutils_cdar_DynamicArray_long*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_long_set_default3(cutils_cdar_DynamicArray_long*d,size_t i,long*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_long_pop_default3(cutils_cdar_DynamicArray_long*d,size_t i,long*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_long_sub_default3(cutils_cdar_DynamicArray_long*d,size_t i,long*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_long_map_default3(cutils_cdar_DynamicArray_long*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_long_find_default3(cutils_cdar_DynamicArray_long*d,long*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_long_compare,p,i);}
+size_t cutils_cdar_DynamicArray_long_findall_default3(cutils_cdar_DynamicArray_long*d,long*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_long_compare,p,i);}
+void cutils_cdar_DynamicArray_long_print_default1(cutils_cdar_DynamicArray_long*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"long",cutils_cdar_DynamicArray_long_format);}
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_unsigned_long;
 bool cutils_cdar_DynamicArray_unsigned_long_new(cutils_cdar_DynamicArray_unsigned_long**d,size_t c,unsigned long*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned long),c,a);}
-unsigned long* cutils_cdar_DynamicArray_unsigned_long_data(cutils_cdar_DynamicArray_unsigned_long*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-unsigned long* cutils_cdar_DynamicArray_unsigned_long_raw(cutils_cdar_DynamicArray_unsigned_long*d){return (unsigned long*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_unsigned_long_append(cutils_cdar_DynamicArray_unsigned_long*d,size_t c,unsigned long*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_unsigned_long_push(cutils_cdar_DynamicArray_unsigned_long*d,size_t i,size_t c,unsigned long*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_unsigned_long_set(cutils_cdar_DynamicArray_unsigned_long*d,size_t i,size_t c,unsigned long*s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_unsigned_long_pop(cutils_cdar_DynamicArray_unsigned_long*d,size_t i,size_t c,unsigned long*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_unsigned_long_sub(cutils_cdar_DynamicArray_unsigned_long*d,size_t i,size_t c,unsigned long*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-unsigned long cutils_cdar_DynamicArray_unsigned_long_get(cutils_cdar_DynamicArray_unsigned_long*d,size_t i){return *(unsigned long*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_unsigned_long_find(cutils_cdar_DynamicArray_unsigned_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_unsigned_long_findall(cutils_cdar_DynamicArray_unsigned_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_unsigned_long_format(const unsigned long*i,char**b,size_t*s){snprintf(*b,*s,"%luul",*i);return true;}
-bool cutils_cdar_DynamicArray_unsigned_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_unsigned_long_del)(cutils_cdar_DynamicArray_unsigned_long*)=cutils_cdar_DynamicArray_void_ptr_del;
+unsigned long* cutils_cdar_DynamicArray_unsigned_long_data(cutils_cdar_DynamicArray_unsigned_long*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_unsigned_long_len)(cutils_cdar_DynamicArray_unsigned_long*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_unsigned_long_size)(cutils_cdar_DynamicArray_unsigned_long*)=cutils_cdar_DynamicArray_void_ptr_size;
+unsigned long* cutils_cdar_DynamicArray_unsigned_long_raw(cutils_cdar_DynamicArray_unsigned_long*d){return (unsigned long*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_unsigned_long_resize)(cutils_cdar_DynamicArray_unsigned_long*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_unsigned_long_swap)(cutils_cdar_DynamicArray_unsigned_long*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_unsigned_long_reverse)(cutils_cdar_DynamicArray_unsigned_long*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_unsigned_long_pull)(cutils_cdar_DynamicArray_unsigned_long*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_unsigned_long_truncate)(cutils_cdar_DynamicArray_unsigned_long*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_unsigned_long_clear)(cutils_cdar_DynamicArray_unsigned_long*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_unsigned_long_map)(cutils_cdar_DynamicArray_unsigned_long*,size_t,size_t,void(*)(size_t,unsigned long*))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_unsigned_long_swap)(cutils_cdar_DynamicArray_unsigned_long*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_unsigned_long_reverse)(cutils_cdar_DynamicArray_unsigned_long*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_unsigned_long_append(cutils_cdar_DynamicArray_unsigned_long*d,size_t c,unsigned long*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_unsigned_long_push(cutils_cdar_DynamicArray_unsigned_long*d,size_t i,size_t c,unsigned long*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_unsigned_long_pull)(cutils_cdar_DynamicArray_unsigned_long*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_unsigned_long_set(cutils_cdar_DynamicArray_unsigned_long*d,size_t i,size_t c,unsigned long*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_unsigned_long_pop(cutils_cdar_DynamicArray_unsigned_long*d,size_t i,size_t c,unsigned long*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+unsigned long cutils_cdar_DynamicArray_unsigned_long_get(cutils_cdar_DynamicArray_unsigned_long*d,size_t i){return *(unsigned long*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_unsigned_long_sub(cutils_cdar_DynamicArray_unsigned_long*d,size_t i,size_t c,unsigned long*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_unsigned_long_map)(cutils_cdar_DynamicArray_unsigned_long*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_unsigned_long_find(cutils_cdar_DynamicArray_unsigned_long*d,bool(*f)(const void*,const void*,size_t),unsigned long*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_unsigned_long_findall(cutils_cdar_DynamicArray_unsigned_long*d,bool(*f)(const void*,const void*,size_t),unsigned long*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_unsigned_long_print)(cutils_cdar_DynamicArray_unsigned_long*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_unsigned_long_format(const unsigned long*i,char **b,size_t*s){snprintf(*b,*s,"%luul",*i);return true;}
+bool cutils_cdar_DynamicArray_unsigned_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
+bool cutils_cdar_DynamicArray_unsigned_long_new_default1(cutils_cdar_DynamicArray_unsigned_long**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned long),0,NULL);}
+bool cutils_cdar_DynamicArray_unsigned_long_new_default2(cutils_cdar_DynamicArray_unsigned_long**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned long),c,NULL);}
+void cutils_cdar_DynamicArray_unsigned_long_truncate_default1(cutils_cdar_DynamicArray_unsigned_long*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_unsigned_long_swap_default3(cutils_cdar_DynamicArray_unsigned_long*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_unsigned_long_append_default2(cutils_cdar_DynamicArray_unsigned_long*d,unsigned long*a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_unsigned_long_push_default3(cutils_cdar_DynamicArray_unsigned_long*d,size_t i,unsigned long*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_unsigned_long_pull_default2(cutils_cdar_DynamicArray_unsigned_long*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_unsigned_long_set_default3(cutils_cdar_DynamicArray_unsigned_long*d,size_t i,unsigned long*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_unsigned_long_pop_default3(cutils_cdar_DynamicArray_unsigned_long*d,size_t i,unsigned long*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_unsigned_long_sub_default3(cutils_cdar_DynamicArray_unsigned_long*d,size_t i,unsigned long*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_unsigned_long_map_default3(cutils_cdar_DynamicArray_unsigned_long*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_unsigned_long_find_default3(cutils_cdar_DynamicArray_unsigned_long*d,unsigned long*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_unsigned_long_compare,p,i);}
+size_t cutils_cdar_DynamicArray_unsigned_long_findall_default3(cutils_cdar_DynamicArray_unsigned_long*d,unsigned long*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_unsigned_long_compare,p,i);}
+void cutils_cdar_DynamicArray_unsigned_long_print_default1(cutils_cdar_DynamicArray_unsigned_long*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"unsigned_long",cutils_cdar_DynamicArray_unsigned_long_format);}
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_long_long;
 bool cutils_cdar_DynamicArray_long_long_new(cutils_cdar_DynamicArray_long_long**d,size_t c,long long*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(long long),c,a);}
-long long* cutils_cdar_DynamicArray_long_long_data(cutils_cdar_DynamicArray_long_long*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-long long* cutils_cdar_DynamicArray_long_long_raw(cutils_cdar_DynamicArray_long_long*d){return (long long*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_long_long_append(cutils_cdar_DynamicArray_long_long*d,size_t c,long long*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_long_long_push(cutils_cdar_DynamicArray_long_long*d,size_t i,size_t c,long long*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_long_long_set(cutils_cdar_DynamicArray_long_long*d,size_t i,size_t c,long long*s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_long_long_pop(cutils_cdar_DynamicArray_long_long*d,size_t i,size_t c,long long*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_long_long_sub(cutils_cdar_DynamicArray_long_long*d,size_t i,size_t c,long long*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-long long cutils_cdar_DynamicArray_long_long_get(cutils_cdar_DynamicArray_long_long*d,size_t i){return *(long long*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_long_long_find(cutils_cdar_DynamicArray_long_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_long_long_findall(cutils_cdar_DynamicArray_long_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_long_long_format(const long long*i,char**b,size_t*s){snprintf(*b,*s,"%lldll",*i);return true;}
-bool cutils_cdar_DynamicArray_long_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_long_long_del)(cutils_cdar_DynamicArray_long_long*)=cutils_cdar_DynamicArray_void_ptr_del;
+long long* cutils_cdar_DynamicArray_long_long_data(cutils_cdar_DynamicArray_long_long*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_long_long_len)(cutils_cdar_DynamicArray_long_long*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_long_long_size)(cutils_cdar_DynamicArray_long_long*)=cutils_cdar_DynamicArray_void_ptr_size;
+long long* cutils_cdar_DynamicArray_long_long_raw(cutils_cdar_DynamicArray_long_long*d){return (long long*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_long_long_resize)(cutils_cdar_DynamicArray_long_long*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_long_long_swap)(cutils_cdar_DynamicArray_long_long*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_long_long_reverse)(cutils_cdar_DynamicArray_long_long*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_long_long_pull)(cutils_cdar_DynamicArray_long_long*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_long_long_truncate)(cutils_cdar_DynamicArray_long_long*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_long_long_clear)(cutils_cdar_DynamicArray_long_long*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_long_long_map)(cutils_cdar_DynamicArray_long_long*,size_t,size_t,void(*)(size_t,long long*))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_long_long_swap)(cutils_cdar_DynamicArray_long_long*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_long_long_reverse)(cutils_cdar_DynamicArray_long_long*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_long_long_append(cutils_cdar_DynamicArray_long_long*d,size_t c,long long*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_long_long_push(cutils_cdar_DynamicArray_long_long*d,size_t i,size_t c,long long*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_long_long_pull)(cutils_cdar_DynamicArray_long_long*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_long_long_set(cutils_cdar_DynamicArray_long_long*d,size_t i,size_t c,long long*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_long_long_pop(cutils_cdar_DynamicArray_long_long*d,size_t i,size_t c,long long*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+long long cutils_cdar_DynamicArray_long_long_get(cutils_cdar_DynamicArray_long_long*d,size_t i){return *(long long*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_long_long_sub(cutils_cdar_DynamicArray_long_long*d,size_t i,size_t c,long long*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_long_long_map)(cutils_cdar_DynamicArray_long_long*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_long_long_find(cutils_cdar_DynamicArray_long_long*d,bool(*f)(const void*,const void*,size_t),long long*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_long_long_findall(cutils_cdar_DynamicArray_long_long*d,bool(*f)(const void*,const void*,size_t),long long*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_long_long_print)(cutils_cdar_DynamicArray_long_long*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_long_long_format(const long long*i,char **b,size_t*s){snprintf(*b,*s,"%lldll",*i);return true;}
+bool cutils_cdar_DynamicArray_long_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
+bool cutils_cdar_DynamicArray_long_long_new_default1(cutils_cdar_DynamicArray_long_long**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(long long),0,NULL);}
+bool cutils_cdar_DynamicArray_long_long_new_default2(cutils_cdar_DynamicArray_long_long**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(long long),c,NULL);}
+void cutils_cdar_DynamicArray_long_long_truncate_default1(cutils_cdar_DynamicArray_long_long*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_long_long_swap_default3(cutils_cdar_DynamicArray_long_long*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_long_long_append_default2(cutils_cdar_DynamicArray_long_long*d,long long*a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_long_long_push_default3(cutils_cdar_DynamicArray_long_long*d,size_t i,long long*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_long_long_pull_default2(cutils_cdar_DynamicArray_long_long*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_long_long_set_default3(cutils_cdar_DynamicArray_long_long*d,size_t i,long long*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_long_long_pop_default3(cutils_cdar_DynamicArray_long_long*d,size_t i,long long*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_long_long_sub_default3(cutils_cdar_DynamicArray_long_long*d,size_t i,long long*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_long_long_map_default3(cutils_cdar_DynamicArray_long_long*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_long_long_find_default3(cutils_cdar_DynamicArray_long_long*d,long long*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_long_long_compare,p,i);}
+size_t cutils_cdar_DynamicArray_long_long_findall_default3(cutils_cdar_DynamicArray_long_long*d,long long*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_long_long_compare,p,i);}
+void cutils_cdar_DynamicArray_long_long_print_default1(cutils_cdar_DynamicArray_long_long*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"long_long",cutils_cdar_DynamicArray_long_long_format);}
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_unsigned_long_long;
 bool cutils_cdar_DynamicArray_unsigned_long_long_new(cutils_cdar_DynamicArray_unsigned_long_long**d,size_t c,unsigned long long*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned long long),c,a);}
-unsigned long long* cutils_cdar_DynamicArray_unsigned_long_long_data(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-unsigned long long* cutils_cdar_DynamicArray_unsigned_long_long_raw(cutils_cdar_DynamicArray_unsigned_long_long*d){return (unsigned long long*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_unsigned_long_long_append(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t c,unsigned long long*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_unsigned_long_long_push(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i,size_t c,unsigned long long*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_unsigned_long_long_set(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i,size_t c,unsigned long long*s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_unsigned_long_long_pop(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i,size_t c,unsigned long long*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_unsigned_long_long_sub(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i,size_t c,unsigned long long*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-unsigned long long cutils_cdar_DynamicArray_unsigned_long_long_get(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i){return *(unsigned long long*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_unsigned_long_long_find(cutils_cdar_DynamicArray_unsigned_long_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_unsigned_long_long_findall(cutils_cdar_DynamicArray_unsigned_long_long*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_unsigned_long_long_format(const unsigned long long*i,char**b,size_t*s){snprintf(*b,*s,"%lluull",*i);return true;}
-bool cutils_cdar_DynamicArray_unsigned_long_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_unsigned_long_long_del)(cutils_cdar_DynamicArray_unsigned_long_long*)=cutils_cdar_DynamicArray_void_ptr_del;
+unsigned long long* cutils_cdar_DynamicArray_unsigned_long_long_data(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_unsigned_long_long_len)(cutils_cdar_DynamicArray_unsigned_long_long*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_unsigned_long_long_size)(cutils_cdar_DynamicArray_unsigned_long_long*)=cutils_cdar_DynamicArray_void_ptr_size;
+unsigned long long* cutils_cdar_DynamicArray_unsigned_long_long_raw(cutils_cdar_DynamicArray_unsigned_long_long*d){return (unsigned long long*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_unsigned_long_long_resize)(cutils_cdar_DynamicArray_unsigned_long_long*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_unsigned_long_long_swap)(cutils_cdar_DynamicArray_unsigned_long_long*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_unsigned_long_long_reverse)(cutils_cdar_DynamicArray_unsigned_long_long*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_unsigned_long_long_pull)(cutils_cdar_DynamicArray_unsigned_long_long*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_unsigned_long_long_truncate)(cutils_cdar_DynamicArray_unsigned_long_long*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_unsigned_long_long_clear)(cutils_cdar_DynamicArray_unsigned_long_long*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_unsigned_long_long_map)(cutils_cdar_DynamicArray_unsigned_long_long*,size_t,size_t,void(*)(size_t,unsigned long long*))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_unsigned_long_long_swap)(cutils_cdar_DynamicArray_unsigned_long_long*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_unsigned_long_long_reverse)(cutils_cdar_DynamicArray_unsigned_long_long*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_unsigned_long_long_append(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t c,unsigned long long*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_unsigned_long_long_push(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i,size_t c,unsigned long long*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_unsigned_long_long_pull)(cutils_cdar_DynamicArray_unsigned_long_long*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_unsigned_long_long_set(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i,size_t c,unsigned long long*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_unsigned_long_long_pop(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i,size_t c,unsigned long long*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+unsigned long long cutils_cdar_DynamicArray_unsigned_long_long_get(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i){return *(unsigned long long*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_unsigned_long_long_sub(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i,size_t c,unsigned long long*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_unsigned_long_long_map)(cutils_cdar_DynamicArray_unsigned_long_long*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_unsigned_long_long_find(cutils_cdar_DynamicArray_unsigned_long_long*d,bool(*f)(const void*,const void*,size_t),unsigned long long*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_unsigned_long_long_findall(cutils_cdar_DynamicArray_unsigned_long_long*d,bool(*f)(const void*,const void*,size_t),unsigned long long*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_unsigned_long_long_print)(cutils_cdar_DynamicArray_unsigned_long_long*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_unsigned_long_long_format(const unsigned long long*i,char **b,size_t*s){snprintf(*b,*s,"%lluull",*i);return true;}
+bool cutils_cdar_DynamicArray_unsigned_long_long_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
+bool cutils_cdar_DynamicArray_unsigned_long_long_new_default1(cutils_cdar_DynamicArray_unsigned_long_long**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned long long),0,NULL);}
+bool cutils_cdar_DynamicArray_unsigned_long_long_new_default2(cutils_cdar_DynamicArray_unsigned_long_long**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(unsigned long long),c,NULL);}
+void cutils_cdar_DynamicArray_unsigned_long_long_truncate_default1(cutils_cdar_DynamicArray_unsigned_long_long*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_unsigned_long_long_swap_default3(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_unsigned_long_long_append_default2(cutils_cdar_DynamicArray_unsigned_long_long*d,unsigned long long*a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_unsigned_long_long_push_default3(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i,unsigned long long*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_unsigned_long_long_pull_default2(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_unsigned_long_long_set_default3(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i,unsigned long long*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_unsigned_long_long_pop_default3(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i,unsigned long long*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_unsigned_long_long_sub_default3(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t i,unsigned long long*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_unsigned_long_long_map_default3(cutils_cdar_DynamicArray_unsigned_long_long*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_unsigned_long_long_find_default3(cutils_cdar_DynamicArray_unsigned_long_long*d,unsigned long long*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_unsigned_long_long_compare,p,i);}
+size_t cutils_cdar_DynamicArray_unsigned_long_long_findall_default3(cutils_cdar_DynamicArray_unsigned_long_long*d,unsigned long long*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_unsigned_long_long_compare,p,i);}
+void cutils_cdar_DynamicArray_unsigned_long_long_print_default1(cutils_cdar_DynamicArray_unsigned_long_long*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"unsigned_long_long",cutils_cdar_DynamicArray_unsigned_long_long_format);}
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_float;
 bool cutils_cdar_DynamicArray_float_new(cutils_cdar_DynamicArray_float**d,size_t c,float*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(float),c,a);}
-float* cutils_cdar_DynamicArray_float_data(cutils_cdar_DynamicArray_float*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-float* cutils_cdar_DynamicArray_float_raw(cutils_cdar_DynamicArray_float*d){return (float*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_float_append(cutils_cdar_DynamicArray_float*d,size_t c,float*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_float_push(cutils_cdar_DynamicArray_float*d,size_t i,size_t c,float*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_float_set(cutils_cdar_DynamicArray_float*d,size_t i,size_t c,float*s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_float_pop(cutils_cdar_DynamicArray_float*d,size_t i,size_t c,float*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_float_sub(cutils_cdar_DynamicArray_float*d,size_t i,size_t c,float*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-float cutils_cdar_DynamicArray_float_get(cutils_cdar_DynamicArray_float*d,size_t i){return *(float*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_float_find(cutils_cdar_DynamicArray_float*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_float_findall(cutils_cdar_DynamicArray_float*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_float_format(const float*i,char**b,size_t*s){snprintf(*b,*s,"%ff",*i);return true;}
-bool cutils_cdar_DynamicArray_float_compare(const void*p1,const void*p2,size_t s){return cutils_fcmp_float_compare(*(float*)p1,*(float*)p2);}
 void(*cutils_cdar_DynamicArray_float_del)(cutils_cdar_DynamicArray_float*)=cutils_cdar_DynamicArray_void_ptr_del;
+float* cutils_cdar_DynamicArray_float_data(cutils_cdar_DynamicArray_float*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_float_len)(cutils_cdar_DynamicArray_float*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_float_size)(cutils_cdar_DynamicArray_float*)=cutils_cdar_DynamicArray_void_ptr_size;
+float* cutils_cdar_DynamicArray_float_raw(cutils_cdar_DynamicArray_float*d){return (float*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_float_resize)(cutils_cdar_DynamicArray_float*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_float_swap)(cutils_cdar_DynamicArray_float*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_float_reverse)(cutils_cdar_DynamicArray_float*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_float_pull)(cutils_cdar_DynamicArray_float*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_float_truncate)(cutils_cdar_DynamicArray_float*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_float_clear)(cutils_cdar_DynamicArray_float*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_float_map)(cutils_cdar_DynamicArray_float*,size_t,size_t,void(*)(size_t,float*))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_float_swap)(cutils_cdar_DynamicArray_float*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_float_reverse)(cutils_cdar_DynamicArray_float*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_float_append(cutils_cdar_DynamicArray_float*d,size_t c,float*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_float_push(cutils_cdar_DynamicArray_float*d,size_t i,size_t c,float*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_float_pull)(cutils_cdar_DynamicArray_float*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_float_set(cutils_cdar_DynamicArray_float*d,size_t i,size_t c,float*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_float_pop(cutils_cdar_DynamicArray_float*d,size_t i,size_t c,float*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+float cutils_cdar_DynamicArray_float_get(cutils_cdar_DynamicArray_float*d,size_t i){return *(float*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_float_sub(cutils_cdar_DynamicArray_float*d,size_t i,size_t c,float*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_float_map)(cutils_cdar_DynamicArray_float*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_float_find(cutils_cdar_DynamicArray_float*d,bool(*f)(const void*,const void*,size_t),float*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_float_findall(cutils_cdar_DynamicArray_float*d,bool(*f)(const void*,const void*,size_t),float*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_float_print)(cutils_cdar_DynamicArray_float*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_float_format(const float*i,char **b,size_t*s){snprintf(*b,*s,"%ff",*i);return true;}
+bool cutils_cdar_DynamicArray_float_compare(const void*p1,const void*p2,size_t s){return cutils_fcmp_float_compare(*(float*)p1,*(float*)p2);}
+bool cutils_cdar_DynamicArray_float_new_default1(cutils_cdar_DynamicArray_float**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(float),0,NULL);}
+bool cutils_cdar_DynamicArray_float_new_default2(cutils_cdar_DynamicArray_float**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(float),c,NULL);}
+void cutils_cdar_DynamicArray_float_truncate_default1(cutils_cdar_DynamicArray_float*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_float_swap_default3(cutils_cdar_DynamicArray_float*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_float_append_default2(cutils_cdar_DynamicArray_float*d,float*a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_float_push_default3(cutils_cdar_DynamicArray_float*d,size_t i,float*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_float_pull_default2(cutils_cdar_DynamicArray_float*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_float_set_default3(cutils_cdar_DynamicArray_float*d,size_t i,float*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_float_pop_default3(cutils_cdar_DynamicArray_float*d,size_t i,float*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_float_sub_default3(cutils_cdar_DynamicArray_float*d,size_t i,float*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_float_map_default3(cutils_cdar_DynamicArray_float*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_float_find_default3(cutils_cdar_DynamicArray_float*d,float*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_float_compare,p,i);}
+size_t cutils_cdar_DynamicArray_float_findall_default3(cutils_cdar_DynamicArray_float*d,float*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_float_compare,p,i);}
+void cutils_cdar_DynamicArray_float_print_default1(cutils_cdar_DynamicArray_float*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"float",cutils_cdar_DynamicArray_float_format);}
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_double;
 bool cutils_cdar_DynamicArray_double_new(cutils_cdar_DynamicArray_double**d,size_t c,double*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(double),c,a);}
-double* cutils_cdar_DynamicArray_double_data(cutils_cdar_DynamicArray_double*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-double* cutils_cdar_DynamicArray_double_raw(cutils_cdar_DynamicArray_double*d){return (double*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_double_append(cutils_cdar_DynamicArray_double*d,size_t c,double*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_double_push(cutils_cdar_DynamicArray_double*d,size_t i,size_t c,double*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_double_set(cutils_cdar_DynamicArray_double*d,size_t i,size_t c,double*s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_double_pop(cutils_cdar_DynamicArray_double*d,size_t i,size_t c,double*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_double_sub(cutils_cdar_DynamicArray_double*d,size_t i,size_t c,double*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-double cutils_cdar_DynamicArray_double_get(cutils_cdar_DynamicArray_double*d,size_t i){return *(double*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_double_find(cutils_cdar_DynamicArray_double*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_double_findall(cutils_cdar_DynamicArray_double*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_double_format(const double*i,char**b,size_t*s){snprintf(*b,*s,"%lf",*i);return true;}
-bool cutils_cdar_DynamicArray_double_compare(const void*p1,const void*p2,size_t s){return cutils_fcmp_double_compare(*(double*)p1,*(double*)p2);}
 void(*cutils_cdar_DynamicArray_double_del)(cutils_cdar_DynamicArray_double*)=cutils_cdar_DynamicArray_void_ptr_del;
+double* cutils_cdar_DynamicArray_double_data(cutils_cdar_DynamicArray_double*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_double_len)(cutils_cdar_DynamicArray_double*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_double_size)(cutils_cdar_DynamicArray_double*)=cutils_cdar_DynamicArray_void_ptr_size;
+double* cutils_cdar_DynamicArray_double_raw(cutils_cdar_DynamicArray_double*d){return (double*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_double_resize)(cutils_cdar_DynamicArray_double*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_double_swap)(cutils_cdar_DynamicArray_double*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_double_reverse)(cutils_cdar_DynamicArray_double*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_double_pull)(cutils_cdar_DynamicArray_double*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_double_truncate)(cutils_cdar_DynamicArray_double*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_double_clear)(cutils_cdar_DynamicArray_double*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_double_map)(cutils_cdar_DynamicArray_double*,size_t,size_t,void(*)(size_t,double*))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_double_swap)(cutils_cdar_DynamicArray_double*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_double_reverse)(cutils_cdar_DynamicArray_double*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_double_append(cutils_cdar_DynamicArray_double*d,size_t c,double*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_double_push(cutils_cdar_DynamicArray_double*d,size_t i,size_t c,double*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_double_pull)(cutils_cdar_DynamicArray_double*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_double_set(cutils_cdar_DynamicArray_double*d,size_t i,size_t c,double*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_double_pop(cutils_cdar_DynamicArray_double*d,size_t i,size_t c,double*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+double cutils_cdar_DynamicArray_double_get(cutils_cdar_DynamicArray_double*d,size_t i){return *(double*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_double_sub(cutils_cdar_DynamicArray_double*d,size_t i,size_t c,double*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_double_map)(cutils_cdar_DynamicArray_double*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_double_find(cutils_cdar_DynamicArray_double*d,bool(*f)(const void*,const void*,size_t),double*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_double_findall(cutils_cdar_DynamicArray_double*d,bool(*f)(const void*,const void*,size_t),double*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_double_print)(cutils_cdar_DynamicArray_double*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_double_format(const double*i,char **b,size_t*s){snprintf(*b,*s,"%lf",*i);return true;}
+bool cutils_cdar_DynamicArray_double_compare(const void*p1,const void*p2,size_t s){return cutils_fcmp_double_compare(*(double*)p1,*(double*)p2);}
+bool cutils_cdar_DynamicArray_double_new_default1(cutils_cdar_DynamicArray_double**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(double),0,NULL);}
+bool cutils_cdar_DynamicArray_double_new_default2(cutils_cdar_DynamicArray_double**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(double),c,NULL);}
+void cutils_cdar_DynamicArray_double_truncate_default1(cutils_cdar_DynamicArray_double*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_double_swap_default3(cutils_cdar_DynamicArray_double*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_double_append_default2(cutils_cdar_DynamicArray_double*d,double*a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_double_push_default3(cutils_cdar_DynamicArray_double*d,size_t i,double*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_double_pull_default2(cutils_cdar_DynamicArray_double*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_double_set_default3(cutils_cdar_DynamicArray_double*d,size_t i,double*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_double_pop_default3(cutils_cdar_DynamicArray_double*d,size_t i,double*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_double_sub_default3(cutils_cdar_DynamicArray_double*d,size_t i,double*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_double_map_default3(cutils_cdar_DynamicArray_double*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_double_find_default3(cutils_cdar_DynamicArray_double*d,double*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_double_compare,p,i);}
+size_t cutils_cdar_DynamicArray_double_findall_default3(cutils_cdar_DynamicArray_double*d,double*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_double_compare,p,i);}
+void cutils_cdar_DynamicArray_double_print_default1(cutils_cdar_DynamicArray_double*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"double",cutils_cdar_DynamicArray_double_format);}
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_long_double;
 bool cutils_cdar_DynamicArray_long_double_new(cutils_cdar_DynamicArray_long_double**d,size_t c,long double*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(long double),c,a);}
-long double* cutils_cdar_DynamicArray_long_double_data(cutils_cdar_DynamicArray_long_double*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-long double* cutils_cdar_DynamicArray_long_double_raw(cutils_cdar_DynamicArray_long_double*d){return (long double*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_long_double_append(cutils_cdar_DynamicArray_long_double*d,size_t c,long double*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_long_double_push(cutils_cdar_DynamicArray_long_double*d,size_t i,size_t c,long double*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_long_double_set(cutils_cdar_DynamicArray_long_double*d,size_t i,size_t c,long double*s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_long_double_pop(cutils_cdar_DynamicArray_long_double*d,size_t i,size_t c,long double*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_long_double_sub(cutils_cdar_DynamicArray_long_double*d,size_t i,size_t c,long double*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-long double cutils_cdar_DynamicArray_long_double_get(cutils_cdar_DynamicArray_long_double*d,size_t i){return *(long double*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_long_double_find(cutils_cdar_DynamicArray_long_double*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_long_double_findall(cutils_cdar_DynamicArray_long_double*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_long_double_format(const long double*i,char**b,size_t*s){snprintf(*b,*s,"%Lf",*i);return true;}
-bool cutils_cdar_DynamicArray_long_double_compare(const void*p1,const void*p2,size_t s){return cutils_fcmp_long_double_compare(*(long double*)p1,*(long double*)p2);}
 void(*cutils_cdar_DynamicArray_long_double_del)(cutils_cdar_DynamicArray_long_double*)=cutils_cdar_DynamicArray_void_ptr_del;
+long double* cutils_cdar_DynamicArray_long_double_data(cutils_cdar_DynamicArray_long_double*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_long_double_len)(cutils_cdar_DynamicArray_long_double*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_long_double_size)(cutils_cdar_DynamicArray_long_double*)=cutils_cdar_DynamicArray_void_ptr_size;
+long double* cutils_cdar_DynamicArray_long_double_raw(cutils_cdar_DynamicArray_long_double*d){return (long double*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_long_double_resize)(cutils_cdar_DynamicArray_long_double*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_long_double_swap)(cutils_cdar_DynamicArray_long_double*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_long_double_reverse)(cutils_cdar_DynamicArray_long_double*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_long_double_pull)(cutils_cdar_DynamicArray_long_double*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_long_double_truncate)(cutils_cdar_DynamicArray_long_double*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_long_double_clear)(cutils_cdar_DynamicArray_long_double*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_long_double_map)(cutils_cdar_DynamicArray_long_double*,size_t,size_t,void(*)(size_t,long double*))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_long_double_swap)(cutils_cdar_DynamicArray_long_double*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_long_double_reverse)(cutils_cdar_DynamicArray_long_double*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_long_double_append(cutils_cdar_DynamicArray_long_double*d,size_t c,long double*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_long_double_push(cutils_cdar_DynamicArray_long_double*d,size_t i,size_t c,long double*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_long_double_pull)(cutils_cdar_DynamicArray_long_double*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_long_double_set(cutils_cdar_DynamicArray_long_double*d,size_t i,size_t c,long double*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_long_double_pop(cutils_cdar_DynamicArray_long_double*d,size_t i,size_t c,long double*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+long double cutils_cdar_DynamicArray_long_double_get(cutils_cdar_DynamicArray_long_double*d,size_t i){return *(long double*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_long_double_sub(cutils_cdar_DynamicArray_long_double*d,size_t i,size_t c,long double*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_long_double_map)(cutils_cdar_DynamicArray_long_double*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_long_double_find(cutils_cdar_DynamicArray_long_double*d,bool(*f)(const void*,const void*,size_t),long double*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_long_double_findall(cutils_cdar_DynamicArray_long_double*d,bool(*f)(const void*,const void*,size_t),long double*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_long_double_print)(cutils_cdar_DynamicArray_long_double*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_long_double_format(const long double*i,char **b,size_t*s){snprintf(*b,*s,"%Lf",*i);return true;}
+bool cutils_cdar_DynamicArray_long_double_compare(const void*p1,const void*p2,size_t s){return cutils_fcmp_long_double_compare(*(long double*)p1,*(long double*)p2);}
+bool cutils_cdar_DynamicArray_long_double_new_default1(cutils_cdar_DynamicArray_long_double**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(long double),0,NULL);}
+bool cutils_cdar_DynamicArray_long_double_new_default2(cutils_cdar_DynamicArray_long_double**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(long double),c,NULL);}
+void cutils_cdar_DynamicArray_long_double_truncate_default1(cutils_cdar_DynamicArray_long_double*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_long_double_swap_default3(cutils_cdar_DynamicArray_long_double*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_long_double_append_default2(cutils_cdar_DynamicArray_long_double*d,long double*a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_long_double_push_default3(cutils_cdar_DynamicArray_long_double*d,size_t i,long double*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_long_double_pull_default2(cutils_cdar_DynamicArray_long_double*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_long_double_set_default3(cutils_cdar_DynamicArray_long_double*d,size_t i,long double*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_long_double_pop_default3(cutils_cdar_DynamicArray_long_double*d,size_t i,long double*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_long_double_sub_default3(cutils_cdar_DynamicArray_long_double*d,size_t i,long double*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_long_double_map_default3(cutils_cdar_DynamicArray_long_double*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_long_double_find_default3(cutils_cdar_DynamicArray_long_double*d,long double*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_long_double_compare,p,i);}
+size_t cutils_cdar_DynamicArray_long_double_findall_default3(cutils_cdar_DynamicArray_long_double*d,long double*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_long_double_compare,p,i);}
+void cutils_cdar_DynamicArray_long_double_print_default1(cutils_cdar_DynamicArray_long_double*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"long_double",cutils_cdar_DynamicArray_long_double_format);}
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_bool;
 bool cutils_cdar_DynamicArray_bool_new(cutils_cdar_DynamicArray_bool**d,size_t c,bool*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(bool),c,a);}
-bool* cutils_cdar_DynamicArray_bool_data(cutils_cdar_DynamicArray_bool*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-bool* cutils_cdar_DynamicArray_bool_raw(cutils_cdar_DynamicArray_bool*d){return (bool*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_bool_append(cutils_cdar_DynamicArray_bool*d,size_t c,bool*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_bool_push(cutils_cdar_DynamicArray_bool*d,size_t i,size_t c,bool*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_bool_set(cutils_cdar_DynamicArray_bool*d,size_t i,size_t c,bool*s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_bool_pop(cutils_cdar_DynamicArray_bool*d,size_t i,size_t c,bool*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_bool_sub(cutils_cdar_DynamicArray_bool*d,size_t i,size_t c,bool*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-bool cutils_cdar_DynamicArray_bool_get(cutils_cdar_DynamicArray_bool*d,size_t i){return *(bool*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_bool_find(cutils_cdar_DynamicArray_bool*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_bool_findall(cutils_cdar_DynamicArray_bool*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_bool_format(const bool*i,char**b,size_t*s){snprintf(*b,*s,"%s",*i?"true":"false");return true;}
-bool cutils_cdar_DynamicArray_bool_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_bool_del)(cutils_cdar_DynamicArray_bool*)=cutils_cdar_DynamicArray_void_ptr_del;
+bool* cutils_cdar_DynamicArray_bool_data(cutils_cdar_DynamicArray_bool*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_bool_len)(cutils_cdar_DynamicArray_bool*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_bool_size)(cutils_cdar_DynamicArray_bool*)=cutils_cdar_DynamicArray_void_ptr_size;
+bool* cutils_cdar_DynamicArray_bool_raw(cutils_cdar_DynamicArray_bool*d){return (bool*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_bool_resize)(cutils_cdar_DynamicArray_bool*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_bool_swap)(cutils_cdar_DynamicArray_bool*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_bool_reverse)(cutils_cdar_DynamicArray_bool*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_bool_pull)(cutils_cdar_DynamicArray_bool*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_bool_truncate)(cutils_cdar_DynamicArray_bool*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_bool_clear)(cutils_cdar_DynamicArray_bool*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_bool_map)(cutils_cdar_DynamicArray_bool*,size_t,size_t,void(*)(size_t,bool*))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_bool_swap)(cutils_cdar_DynamicArray_bool*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_bool_reverse)(cutils_cdar_DynamicArray_bool*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_bool_append(cutils_cdar_DynamicArray_bool*d,size_t c,bool*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_bool_push(cutils_cdar_DynamicArray_bool*d,size_t i,size_t c,bool*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_bool_pull)(cutils_cdar_DynamicArray_bool*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_bool_set(cutils_cdar_DynamicArray_bool*d,size_t i,size_t c,bool*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_bool_pop(cutils_cdar_DynamicArray_bool*d,size_t i,size_t c,bool*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+bool cutils_cdar_DynamicArray_bool_get(cutils_cdar_DynamicArray_bool*d,size_t i){return *(bool*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_bool_sub(cutils_cdar_DynamicArray_bool*d,size_t i,size_t c,bool*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_bool_map)(cutils_cdar_DynamicArray_bool*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_bool_find(cutils_cdar_DynamicArray_bool*d,bool(*f)(const void*,const void*,size_t),bool*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_bool_findall(cutils_cdar_DynamicArray_bool*d,bool(*f)(const void*,const void*,size_t),bool*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_bool_print)(cutils_cdar_DynamicArray_bool*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_bool_format(const bool*i,char **b,size_t*s){snprintf(*b,*s,"%s",*i?"true":"false");return true;}
+bool cutils_cdar_DynamicArray_bool_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
+bool cutils_cdar_DynamicArray_bool_new_default1(cutils_cdar_DynamicArray_bool**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(bool),0,NULL);}
+bool cutils_cdar_DynamicArray_bool_new_default2(cutils_cdar_DynamicArray_bool**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(bool),c,NULL);}
+void cutils_cdar_DynamicArray_bool_truncate_default1(cutils_cdar_DynamicArray_bool*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_bool_swap_default3(cutils_cdar_DynamicArray_bool*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_bool_append_default2(cutils_cdar_DynamicArray_bool*d,bool*a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_bool_push_default3(cutils_cdar_DynamicArray_bool*d,size_t i,bool*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_bool_pull_default2(cutils_cdar_DynamicArray_bool*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_bool_set_default3(cutils_cdar_DynamicArray_bool*d,size_t i,bool*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_bool_pop_default3(cutils_cdar_DynamicArray_bool*d,size_t i,bool*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_bool_sub_default3(cutils_cdar_DynamicArray_bool*d,size_t i,bool*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_bool_map_default3(cutils_cdar_DynamicArray_bool*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_bool_find_default3(cutils_cdar_DynamicArray_bool*d,bool*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_bool_compare,p,i);}
+size_t cutils_cdar_DynamicArray_bool_findall_default3(cutils_cdar_DynamicArray_bool*d,bool*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_bool_compare,p,i);}
+void cutils_cdar_DynamicArray_bool_print_default1(cutils_cdar_DynamicArray_bool*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"bool",cutils_cdar_DynamicArray_bool_format);}
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_size_t;
 bool cutils_cdar_DynamicArray_size_t_new(cutils_cdar_DynamicArray_size_t**d,size_t c,size_t*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(size_t),c,a);}
-size_t* cutils_cdar_DynamicArray_size_t_data(cutils_cdar_DynamicArray_size_t*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-size_t* cutils_cdar_DynamicArray_size_t_raw(cutils_cdar_DynamicArray_size_t*d){return (size_t*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_size_t_append(cutils_cdar_DynamicArray_size_t*d,size_t c,size_t*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_size_t_push(cutils_cdar_DynamicArray_size_t*d,size_t i,size_t c,size_t*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_size_t_set(cutils_cdar_DynamicArray_size_t*d,size_t i,size_t c,size_t*s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_size_t_pop(cutils_cdar_DynamicArray_size_t*d,size_t i,size_t c,size_t*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_size_t_sub(cutils_cdar_DynamicArray_size_t*d,size_t i,size_t c,size_t*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_size_t_get(cutils_cdar_DynamicArray_size_t*d,size_t i){return *(size_t*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_size_t_find(cutils_cdar_DynamicArray_size_t*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_size_t_findall(cutils_cdar_DynamicArray_size_t*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_size_t_format(const size_t*i,char**b,size_t*s){snprintf(*b,*s,"%zu",*i);return true;}
-bool cutils_cdar_DynamicArray_size_t_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_size_t_del)(cutils_cdar_DynamicArray_size_t*)=cutils_cdar_DynamicArray_void_ptr_del;
+size_t* cutils_cdar_DynamicArray_size_t_data(cutils_cdar_DynamicArray_size_t*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_size_t_len)(cutils_cdar_DynamicArray_size_t*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_size_t_size)(cutils_cdar_DynamicArray_size_t*)=cutils_cdar_DynamicArray_void_ptr_size;
+size_t* cutils_cdar_DynamicArray_size_t_raw(cutils_cdar_DynamicArray_size_t*d){return (size_t*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_size_t_resize)(cutils_cdar_DynamicArray_size_t*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_size_t_swap)(cutils_cdar_DynamicArray_size_t*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_size_t_reverse)(cutils_cdar_DynamicArray_size_t*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_size_t_pull)(cutils_cdar_DynamicArray_size_t*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_size_t_truncate)(cutils_cdar_DynamicArray_size_t*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_size_t_clear)(cutils_cdar_DynamicArray_size_t*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_size_t_map)(cutils_cdar_DynamicArray_size_t*,size_t,size_t,void(*)(size_t,size_t*))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_size_t_swap)(cutils_cdar_DynamicArray_size_t*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_size_t_reverse)(cutils_cdar_DynamicArray_size_t*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_size_t_append(cutils_cdar_DynamicArray_size_t*d,size_t c,size_t*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_size_t_push(cutils_cdar_DynamicArray_size_t*d,size_t i,size_t c,size_t*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_size_t_pull)(cutils_cdar_DynamicArray_size_t*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_size_t_set(cutils_cdar_DynamicArray_size_t*d,size_t i,size_t c,size_t*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_size_t_pop(cutils_cdar_DynamicArray_size_t*d,size_t i,size_t c,size_t*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_size_t_get(cutils_cdar_DynamicArray_size_t*d,size_t i){return *(size_t*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_size_t_sub(cutils_cdar_DynamicArray_size_t*d,size_t i,size_t c,size_t*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_size_t_map)(cutils_cdar_DynamicArray_size_t*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_size_t_find(cutils_cdar_DynamicArray_size_t*d,bool(*f)(const void*,const void*,size_t),size_t*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_size_t_findall(cutils_cdar_DynamicArray_size_t*d,bool(*f)(const void*,const void*,size_t),size_t*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_size_t_print)(cutils_cdar_DynamicArray_size_t*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_size_t_format(const size_t*i,char **b,size_t*s){snprintf(*b,*s,"%zu",*i);return true;}
+bool cutils_cdar_DynamicArray_size_t_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
+bool cutils_cdar_DynamicArray_size_t_new_default1(cutils_cdar_DynamicArray_size_t**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(size_t),0,NULL);}
+bool cutils_cdar_DynamicArray_size_t_new_default2(cutils_cdar_DynamicArray_size_t**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(size_t),c,NULL);}
+void cutils_cdar_DynamicArray_size_t_truncate_default1(cutils_cdar_DynamicArray_size_t*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_size_t_swap_default3(cutils_cdar_DynamicArray_size_t*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_size_t_append_default2(cutils_cdar_DynamicArray_size_t*d,size_t*a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_size_t_push_default3(cutils_cdar_DynamicArray_size_t*d,size_t i,size_t*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_size_t_pull_default2(cutils_cdar_DynamicArray_size_t*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_size_t_set_default3(cutils_cdar_DynamicArray_size_t*d,size_t i,size_t*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_size_t_pop_default3(cutils_cdar_DynamicArray_size_t*d,size_t i,size_t*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_size_t_sub_default3(cutils_cdar_DynamicArray_size_t*d,size_t i,size_t*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_size_t_map_default3(cutils_cdar_DynamicArray_size_t*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_size_t_find_default3(cutils_cdar_DynamicArray_size_t*d,size_t*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_size_t_compare,p,i);}
+size_t cutils_cdar_DynamicArray_size_t_findall_default3(cutils_cdar_DynamicArray_size_t*d,size_t*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_size_t_compare,p,i);}
+void cutils_cdar_DynamicArray_size_t_print_default1(cutils_cdar_DynamicArray_size_t*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"size_t",cutils_cdar_DynamicArray_size_t_format);}
 /*----------------------------------------------------------------------------*/
 typedef cutils_cdar_DynamicArray_void_ptr cutils_cdar_DynamicArray_ptrdiff_t;
 bool cutils_cdar_DynamicArray_ptrdiff_t_new(cutils_cdar_DynamicArray_ptrdiff_t**d,size_t c,ptrdiff_t*a){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(ptrdiff_t),c,a);}
-ptrdiff_t* cutils_cdar_DynamicArray_ptrdiff_t_data(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
-ptrdiff_t* cutils_cdar_DynamicArray_ptrdiff_t_raw(cutils_cdar_DynamicArray_ptrdiff_t*d){return (ptrdiff_t*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
-bool cutils_cdar_DynamicArray_ptrdiff_t_append(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t c,ptrdiff_t*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
-bool cutils_cdar_DynamicArray_ptrdiff_t_push(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t i,size_t c,ptrdiff_t*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
-bool cutils_cdar_DynamicArray_ptrdiff_t_set(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t i,size_t c,ptrdiff_t*s){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,s);}
-size_t cutils_cdar_DynamicArray_ptrdiff_t_pop(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t i,size_t c,ptrdiff_t*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
-size_t cutils_cdar_DynamicArray_ptrdiff_t_sub(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t i,size_t c,ptrdiff_t*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
-ptrdiff_t cutils_cdar_DynamicArray_ptrdiff_t_get(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t i){return *(ptrdiff_t*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
-bool cutils_cdar_DynamicArray_ptrdiff_t_find(cutils_cdar_DynamicArray_ptrdiff_t*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
-size_t cutils_cdar_DynamicArray_ptrdiff_t_findall(cutils_cdar_DynamicArray_ptrdiff_t*d,bool(*f)(const void*,const void*,size_t),const void*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
-bool cutils_cdar_DynamicArray_ptrdiff_t_format(const ptrdiff_t*i,char**b,size_t*s){snprintf(*b,*s,"%td",*i);return true;}
-bool cutils_cdar_DynamicArray_ptrdiff_t_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
 void(*cutils_cdar_DynamicArray_ptrdiff_t_del)(cutils_cdar_DynamicArray_ptrdiff_t*)=cutils_cdar_DynamicArray_void_ptr_del;
+ptrdiff_t* cutils_cdar_DynamicArray_ptrdiff_t_data(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t*s,size_t*c){return cutils_cdar_DynamicArray_void_ptr_data(d,s,c);}
 size_t(*cutils_cdar_DynamicArray_ptrdiff_t_len)(cutils_cdar_DynamicArray_ptrdiff_t*)=cutils_cdar_DynamicArray_void_ptr_len;
 size_t(*cutils_cdar_DynamicArray_ptrdiff_t_size)(cutils_cdar_DynamicArray_ptrdiff_t*)=cutils_cdar_DynamicArray_void_ptr_size;
+ptrdiff_t* cutils_cdar_DynamicArray_ptrdiff_t_raw(cutils_cdar_DynamicArray_ptrdiff_t*d){return (ptrdiff_t*)cutils_cdar_DynamicArray_void_ptr_raw(d);}
 bool(*cutils_cdar_DynamicArray_ptrdiff_t_resize)(cutils_cdar_DynamicArray_ptrdiff_t*,size_t)=cutils_cdar_DynamicArray_void_ptr_resize;
-bool(*cutils_cdar_DynamicArray_ptrdiff_t_swap)(cutils_cdar_DynamicArray_ptrdiff_t*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
-bool(*cutils_cdar_DynamicArray_ptrdiff_t_reverse)(cutils_cdar_DynamicArray_ptrdiff_t*)=cutils_cdar_DynamicArray_void_ptr_reverse;
-size_t(*cutils_cdar_DynamicArray_ptrdiff_t_pull)(cutils_cdar_DynamicArray_ptrdiff_t*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
 void(*cutils_cdar_DynamicArray_ptrdiff_t_truncate)(cutils_cdar_DynamicArray_ptrdiff_t*,size_t)=cutils_cdar_DynamicArray_void_ptr_truncate;
 void(*cutils_cdar_DynamicArray_ptrdiff_t_clear)(cutils_cdar_DynamicArray_ptrdiff_t*)=cutils_cdar_DynamicArray_void_ptr_clear;
-void(*cutils_cdar_DynamicArray_ptrdiff_t_map)(cutils_cdar_DynamicArray_ptrdiff_t*,size_t,size_t,void(*)(size_t,ptrdiff_t*))=cutils_cdar_DynamicArray_void_ptr_map;
+bool(*cutils_cdar_DynamicArray_ptrdiff_t_swap)(cutils_cdar_DynamicArray_ptrdiff_t*,size_t,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_swap;
+bool(*cutils_cdar_DynamicArray_ptrdiff_t_reverse)(cutils_cdar_DynamicArray_ptrdiff_t*)=cutils_cdar_DynamicArray_void_ptr_reverse;
+bool cutils_cdar_DynamicArray_ptrdiff_t_append(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t c,ptrdiff_t*a){return cutils_cdar_DynamicArray_void_ptr_append(d,c,a);}
+bool cutils_cdar_DynamicArray_ptrdiff_t_push(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t i,size_t c,ptrdiff_t*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,c,a);}
+size_t(*cutils_cdar_DynamicArray_ptrdiff_t_pull)(cutils_cdar_DynamicArray_ptrdiff_t*,size_t,size_t)=cutils_cdar_DynamicArray_void_ptr_pull;
+bool cutils_cdar_DynamicArray_ptrdiff_t_set(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t i,size_t c,ptrdiff_t*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,c,a);}
+size_t cutils_cdar_DynamicArray_ptrdiff_t_pop(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t i,size_t c,ptrdiff_t*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,c,a);}
+ptrdiff_t cutils_cdar_DynamicArray_ptrdiff_t_get(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t i){return *(ptrdiff_t*)cutils_cdar_DynamicArray_void_ptr_get(d,i);}
+size_t cutils_cdar_DynamicArray_ptrdiff_t_sub(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t i,size_t c,ptrdiff_t*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,c,a);}
+void(*cutils_cdar_DynamicArray_ptrdiff_t_map)(cutils_cdar_DynamicArray_ptrdiff_t*,size_t,size_t,void(*)())=cutils_cdar_DynamicArray_void_ptr_map;
+bool cutils_cdar_DynamicArray_ptrdiff_t_find(cutils_cdar_DynamicArray_ptrdiff_t*d,bool(*f)(const void*,const void*,size_t),ptrdiff_t*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,f,p,i);}
+size_t cutils_cdar_DynamicArray_ptrdiff_t_findall(cutils_cdar_DynamicArray_ptrdiff_t*d,bool(*f)(const void*,const void*,size_t),ptrdiff_t*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,f,p,i);}
 void(*cutils_cdar_DynamicArray_ptrdiff_t_print)(cutils_cdar_DynamicArray_ptrdiff_t*,FILE*,const char*,bool(*)())=cutils_cdar_DynamicArray_void_ptr_print;
+bool cutils_cdar_DynamicArray_ptrdiff_t_format(const ptrdiff_t*i,char **b,size_t*s){snprintf(*b,*s,"%td",*i);return true;}
+bool cutils_cdar_DynamicArray_ptrdiff_t_compare(const void*p1,const void*p2,size_t s){return !memcmp(p1,p2,s);}
+bool cutils_cdar_DynamicArray_ptrdiff_t_new_default1(cutils_cdar_DynamicArray_ptrdiff_t**d){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(ptrdiff_t),0,NULL);}
+bool cutils_cdar_DynamicArray_ptrdiff_t_new_default2(cutils_cdar_DynamicArray_ptrdiff_t**d,size_t c){return cutils_cdar_DynamicArray_void_ptr_new(d,sizeof(ptrdiff_t),c,NULL);}
+void cutils_cdar_DynamicArray_ptrdiff_t_truncate_default1(cutils_cdar_DynamicArray_ptrdiff_t*d){return cutils_cdar_DynamicArray_void_ptr_truncate(d,0);}
+bool cutils_cdar_DynamicArray_ptrdiff_t_swap_default3(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t i1,size_t i2){return cutils_cdar_DynamicArray_void_ptr_swap(d,i1,i2,1);}
+bool cutils_cdar_DynamicArray_ptrdiff_t_append_default2(cutils_cdar_DynamicArray_ptrdiff_t*d,ptrdiff_t*a){return cutils_cdar_DynamicArray_void_ptr_append(d,1,a);}
+bool cutils_cdar_DynamicArray_ptrdiff_t_push_default3(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t i,ptrdiff_t*a){return cutils_cdar_DynamicArray_void_ptr_push(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_ptrdiff_t_pull_default2(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t i){return cutils_cdar_DynamicArray_void_ptr_pull(d,i,1);}
+bool cutils_cdar_DynamicArray_ptrdiff_t_set_default3(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t i,ptrdiff_t*a){return cutils_cdar_DynamicArray_void_ptr_set(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_ptrdiff_t_pop_default3(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t i,ptrdiff_t*a){return cutils_cdar_DynamicArray_void_ptr_pop(d,i,1,a);}
+size_t cutils_cdar_DynamicArray_ptrdiff_t_sub_default3(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t i,ptrdiff_t*a){return cutils_cdar_DynamicArray_void_ptr_sub(d,i,1,a);}
+void cutils_cdar_DynamicArray_ptrdiff_t_map_default3(cutils_cdar_DynamicArray_ptrdiff_t*d,size_t c,void(*f)()){return cutils_cdar_DynamicArray_void_ptr_map(d,0,c,f);}
+bool cutils_cdar_DynamicArray_ptrdiff_t_find_default3(cutils_cdar_DynamicArray_ptrdiff_t*d,ptrdiff_t*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_find(d,cutils_cdar_DynamicArray_ptrdiff_t_compare,p,i);}
+size_t cutils_cdar_DynamicArray_ptrdiff_t_findall_default3(cutils_cdar_DynamicArray_ptrdiff_t*d,ptrdiff_t*p,size_t*i){return cutils_cdar_DynamicArray_void_ptr_findall(d,cutils_cdar_DynamicArray_ptrdiff_t_compare,p,i);}
+void cutils_cdar_DynamicArray_ptrdiff_t_print_default1(cutils_cdar_DynamicArray_ptrdiff_t*d){return cutils_cdar_DynamicArray_void_ptr_print(d,stdout,"ptrdiff_t",cutils_cdar_DynamicArray_ptrdiff_t_format);}

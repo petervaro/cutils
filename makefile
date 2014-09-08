@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.784 (20140825)                       ##
+##                       Version: 0.8.96.177 (20140907)                       ##
 ##                                                                            ##
 ##                               File: makefile                               ##
 ##                                                                            ##
@@ -17,8 +17,8 @@
 #------------------------------------------------------------------------------#
 # User flags
 IS_OPTIMISED=
-USE_JEMALLOC=
-EXCEPTION_LOG=
+USE_JEMALLOC=true
+EXCEPTION_LOG=true
 DYNAMIC_LIB=
 
 # Location 'prefix'
@@ -34,6 +34,8 @@ PYTHON=$(LOCATION)/bin/python3
 CC=clang
 #------------------------------------------------------------------------------#
 
+cutils_DEVELOPER_CHECK=
+
 # Filename of library
 cutils_NAME=libcutils
 
@@ -42,11 +44,11 @@ cutils_BUILD_OUT_DIR=build
 cutils_BUILD_TMP_DIR=$(cutils_BUILD_OUT_DIR)/tmp
 
 # Resources in current library
-cutils_C_SOURCES=$(wildcard *.c)
+cutils_C_SOURCES=$(wildcard *.c) internal/xxhash.c
 cutils_C_OBJECTS=$(addprefix $(cutils_BUILD_TMP_DIR)/, $(notdir $(cutils_C_SOURCES:.c=.o)))
 
 cutils_H_SOURCES=$(wildcard *.h)
-cutils_INTERNALS=$(addprefix internal/, defs.h fcmp.h fmtc.h)
+cutils_INTERNALS=$(addprefix internal/, defs.h fcmp.h fmtc.h xxhash.h)
 
 # Includes, libs and frameworks
 cutils_INCLUDE_DIRS=/usr/local/include .
@@ -60,14 +62,18 @@ UNAME=$(shell uname)
 # If use the jemalloc library
 ifdef USE_JEMALLOC
 cutils_LIBRARIES+=jemalloc
-CFLAGS+=-D CDAR_JEM -D CSLL_JEM
+CFLAGS+=$(addprefix -D, CDAR_JEM CSLL_JEM)
 endif
 
 # Flags
 ifdef IS_OPTIMISED
-CFLAGS+=-O3 -DCDAR_OPT -D CSLL_OPT
+CFLAGS+=-O3 $(addprefix -D, CDAR_OPT CSLL_OPT)
 else
 CFLAGS+=-Wall -v -g
+endif
+
+ifdef cutils_DEVELOPER_CHECK
+CFLAGS+=-Wextra
 endif
 
 # If compiler is clang
@@ -79,17 +85,31 @@ ifdef EXCEPTION_LOG
 CFLAGS+=-D CEXC_LOG
 endif
 
-CFLAGS+=-std=c11 $(foreach dir, $(cutils_INCLUDE_DIRS), -I$(dir))
-LDFLAGS=$(foreach libdir, $(cutils_LIBRARY_DIRS), -L$(libdir))
-LDFLAGS+=$(foreach library, $(cutils_LIBRARIES), -l$(library))
+CFLAGS+=-std=c11 $(addprefix -I, $(cutils_INCLUDE_DIRS))
+CFLAGS+=$(foreach framework, $(cutils_FRAMEWORKS), -framework $(framework))
+LDFLAGS=$(addprefix -L, $(cutils_LIBRARY_DIRS))
+LDFLAGS+=$(addprefix -l, $(cutils_LIBRARIES))
 
 # Rules
-.PHONY: all clean install make_build_dirs make_install_dirs build_static
+.PHONY: all clean install
+.PHONY: make_build_dirs make_install_dirs
+.PHONY: build_generic build_static
 
-all: make_build_dirs build_static
+all: make_build_dirs build_generic build_static
 
+# Build rule for sources in the root-dir
 $(cutils_BUILD_TMP_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
+
+# Build rule for sources in the internal-dir
+$(cutils_BUILD_TMP_DIR)/%.o: internal/%.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+build_generic:
+	# HACK:
+	cp -f internal/static_hash_map.h cshm.h
+	cp -f internal/static_hash_map.c cshm.c
+	$(PYTHON) dev/proj.py
 
 build_static: $(cutils_C_OBJECTS)
 	ar -c -r -s -v $(cutils_BUILD_OUT_DIR)/$(cutils_NAME).a $(cutils_C_OBJECTS)

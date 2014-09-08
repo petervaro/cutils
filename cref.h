@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.90.784 (20140825)                       **
+**                       Version: 0.8.95.968 (20140904)                       **
 **                                                                            **
 **                                File: cref.h                                **
 **                                                                            **
@@ -567,6 +567,9 @@ void va_copy(va_list dst,
 // which is the offset in bytes to the structure member
 // (member-designator), from the beginning of its structure (type)
 #define offsetof(type, member)
+
+#define size_t
+#define ptrdiff_t
 
 
 /*----------------------------------------------------------------------------*/

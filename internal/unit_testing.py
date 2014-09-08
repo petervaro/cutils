@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.749 (20140821)                       ##
+##                       Version: 0.8.95.875 (20140901)                       ##
 ##                                                                            ##
 ##                       File: internal/unit_testing.py                       ##
 ##                                                                            ##
@@ -15,29 +15,31 @@
 ######################################################################## INFO ##
 
 # Import cutils modules
-from generator import args, methods
+from generator import methods, Function
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-ARG1_T = '{0}*'
-ARG1_N = 't'
+NAME = 'Tester'
+PREFIX = 'cutils_cutt'
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-_RETURN = ''
-WRAPPERS = (
-    # new
-    ('void', 'new',
-    args(ARG1_T + '*', ARG1_N, 'size_t', 'c'),
-    _RETURN),
+_RETURN_DEF = ''
 
-    # del
-    ('void', 'del',
-    args(ARG1_T, ARG1_N),
-    _RETURN)
-)
+
+
+#------------------------------------------------------------------------------#
+new_ = Function('new', 'void', ('{MAINTYPE}**', 't'),
+                               ('size_t',      'c'))
+new_.wrapping = _RETURN_DEF
+
+#- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+del_ = Function('del', 'void', ('{MAINTYPE}*', 't'))
+del_.wrapping = _RETURN_DEF
+
+
 
 #------------------------------------------------------------------------------#
 def generate(folder, macros_dict):
-    methods(types=((ARG1_N, 'p', ''),),
-            base_name='cutils_cutt_Tester',
-            wrappers=WRAPPERS,
-            macros_dict=macros_dict)
+    methods(base_name=NAME,
+            module_prefix=PREFIX,
+            macros_dict=macros_dict,
+            functions=(new_, del_))

@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.787 (20140825)                       ##
+##                       Version: 0.8.96.222 (20140908)                       ##
 ##                                                                            ##
 ##                                 File: TODO                                 ##
 ##                                                                            ##
@@ -14,7 +14,7 @@
 ##                                                                            ##
 ######################################################################## INFO ##
 
-#---------------------------- 20 POSTS IN 11 FILES ----------------------------#
+#---------------------------- 19 POSTS IN 10 FILES ----------------------------#
 FIXME:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
@@ -52,71 +52,6 @@ FIXME:
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 5
-  - file: build/lib/cutils/ccom.py
-    line: 160
-    note: |
-          for some reason, if a comment-type ever existed in the TODO
-          file, but after a while its posts are all gone, the keyword
-          still remains there, according to the current TODO file,
-          which still have the "QUESTIONS" keyword, and comment
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 6
-  - file: build/lib/cutils/clic.py
-    line: 31
-    note: |
-          if modules cannot be found?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 7
-  - file: build/lib/cutils/clic.py
-    line: 156
-    note: |
-          what if none of the files changed only INFO has been updated?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 8
-  - file: build/lib/cutils/clic.py
-    line: 170
-    note: |
-          make it more generic than ./ -- what if ../../?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 9
-  - file: internal/dynamic_array.py
-    line: 102
-    note: |
-          try to make both find and findall type-safe
-          by replacing the const void* to type specific pointer
-          the main problem is, cannot pass
-          bool(*)(const type*,...) --> bool(*)(const void*,...)
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 10
-  - file: internal/generator.py
-    line: 131
-    note: |
-          better guard ending and meaningful comment
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 11
-  - file: internal/generator.py
-    line: 150
-    note: |
-          strip whitespaces
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 12
-  - file: internal/singly_linked_list.py
-    line: 105
-    note: |
-          try to make both find and findall type-safe
-          by replacing the const void* to type specific pointer
-          the main problem is, cannot pass
-          bool(*)(const type*,...) --> bool(*)(const void*,...)
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 13
   - file: doc/src/05_ccom.yaml
     line: 91
     note: |
@@ -125,25 +60,7 @@ FIXME:
           instead of this simple struct
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 14
-  - file: build/lib/cutils/cdoc.py
-    line: 133
-    note: |
-          replace newline only if newline character is
-          the first token in that line or it is after
-          a similar token (prevent: \\\n)
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 15
-  - file: build/lib/cutils/cdoc.py
-    line: 250
-    note: |
-          if external file changed -> change the whole file
-          check for all special features and find out how
-          to store them properly in the cache files
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 16
+  # 6
   - file: pycutils/cutils/cdoc.py
     line: 133
     note: |
@@ -152,7 +69,7 @@ FIXME:
           a similar token (prevent: \\\n)
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 17
+  # 7
   - file: pycutils/cutils/cdoc.py
     line: 250
     note: |
@@ -161,54 +78,106 @@ FIXME:
           to store them properly in the cache files
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 18
+  # 8
   - file: pycutils/cutils/clic.py
     line: 31
     note: |
           if modules cannot be found?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 19
+  # 9
   - file: pycutils/cutils/clic.py
     line: 158
     note: |
           what if none of the files changed only INFO has been updated?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 20
+  # 10
   - file: pycutils/cutils/clic.py
+    line: 172
+    note: |
+          make it more generic than ./ -- what if ../../?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 11
+  - file: internal/singly_linked_list.py
+    line: 190
+    note: |
+          try to make both find and findall type-safe
+          by replacing the const void* to type specific pointer
+          the main problem is, cannot pass
+          bool(*)(const type*,...) --> bool(*)(const void*,...)
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 12
+  - file: internal/generator.py
+    line: 282
+    note: |
+          better guard ending and meaningful comment
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 13
+  - file: internal/generator.py
+    line: 459
+    note: |
+          getting 'default' key will raise KeyError even if
+          'subtype_name' is in 'func_wrapping' !!!
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 14
+  - file: build/lib/cutils/ccom.py
+    line: 161
+    note: |
+          for some reason, if a comment-type ever existed in the TODO
+          file, but after a while its posts are all gone, the keyword
+          still remains there, according to the current TODO file,
+          which still have the "QUESTIONS" keyword, and comment
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 15
+  - file: build/lib/cutils/cdoc.py
+    line: 133
+    note: |
+          replace newline only if newline character is
+          the first token in that line or it is after
+          a similar token (prevent: \\\n)
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 16
+  - file: build/lib/cutils/cdoc.py
+    line: 250
+    note: |
+          if external file changed -> change the whole file
+          check for all special features and find out how
+          to store them properly in the cache files
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 17
+  - file: build/lib/cutils/clic.py
+    line: 31
+    note: |
+          if modules cannot be found?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 18
+  - file: build/lib/cutils/clic.py
+    line: 158
+    note: |
+          what if none of the files changed only INFO has been updated?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 19
+  - file: build/lib/cutils/clic.py
     line: 172
     note: |
           make it more generic than ./ -- what if ../../?
 
 
 
-#---------------------------- 71 POSTS IN 28 FILES ----------------------------#
+#---------------------------- 77 POSTS IN 31 FILES ----------------------------#
 TODO:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
-  - file: call.h
-    line: 20
-    note: |
-          rename this to 'cutils.h'? 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 2
-  - file: capi.h
-    line: 104
-    note: |
-          generate these two automatically 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 3
-  - file: cbug.h
-    line: 20
-    note: |
-          sdebug() -> expands to string literal or
-          debugexc(func, msg, len) -> calls raise() or ccraise() 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 4
   - file: cexc.h
     line: 145
     note: |
@@ -217,7 +186,7 @@ TODO:
                     `if (catch())` would have done) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 5
+  # 2
   - file: cfps.h
     line: 22
     note: |
@@ -227,7 +196,7 @@ TODO:
           a getter function which can also implement the printing functionality 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 6
+  # 3
   - file: doc/src/16_cstr.yaml
     line: 43
     note: |
@@ -243,47 +212,21 @@ TODO:
                   printf(str,  12);
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 7
+  # 4
   - file: doc/src/19_cmap.yaml
     line: 42
     note: |
           Implement cmap: Hash Map
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 8
+  # 5
   - file: doc/src/23_call.yaml
     line: 25
     note: |
           write about defining flags and CUTILS_NAMESPACE before call.h
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 9
-  - file: internal/singly_linked_list.c
-    line: 17
-    note: |
-          consider to implement SinglyLinkedList.reserved_head and reserved_tail
-          members as SLLNode* which will hold the deleted nodes, and whenever a
-          new node has to be inserted, it will insert from reserved_head, and
-          replace its data -- super fast; less allocations (less fragmented
-          memory blocks); takes way more space. Also: resize() will add empty
-          nodes to reserved_tail (or removed from there) and size() will return
-          the total number of nodes (length + reserved_length) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 10
-  - file: internal/singly_linked_list.c
-    line: 704
-    note: |
-          pop() has only three extra statements compared to pull()
-          1) else if (!destination) ...
-          2) char *dest = (char *)destination;
-          3) memcpy(dest + (count - counter)*item_size, node_curr->data, item_size);
-          try to "merge" these two together -- with a macro?
-          also sub() has the same lines except no popping and freeing
-          (and their error message "names" differes of course) 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 11
+  # 6
   - file: pycutils/cutils/ccom.py
     line: 69
     note: |
@@ -295,7 +238,7 @@ TODO:
           the code goes on...
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 12
+  # 7
   - file: pycutils/cutils/ccom.py
     line: 157
     note: |
@@ -303,7 +246,7 @@ TODO:
           https://docs.python.org/3.4/library/tempfile.html ?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 13
+  # 8
   - file: pycutils/cutils/ccom.py
     line: 165
     note: |
@@ -313,7 +256,7 @@ TODO:
           and use the cutils command line tools
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 14
+  # 9
   - file: internal/c11.py
     line: 37
     note: |
@@ -331,58 +274,189 @@ TODO:
           This notation is a valid C syntax according to the standard.
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 15
+  # 10
   - file: internal/c11.py
     line: 297
     note: |
           enum ?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 16
-  - file: build/lib/cutils/ccom.py
-    line: 69
-    note: |
-          consider: can <space> be anything?
-          Like this example:
-          some line of code # tag: starts here
-                            #      another line goes here
-                            #      and the third here..
-          the code goes on...
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 17
-  - file: build/lib/cutils/ccom.py
-    line: 157
-    note: |
-          Make hidden files OS independent, probably using
-          https://docs.python.org/3.4/library/tempfile.html ?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 18
-  - file: build/lib/cutils/ccom.py
-    line: 165
-    note: |
-          Add explicit-remove/browsing capabilities of the .*_cache files
-          (for example: if git reverted changes --> remove hash from cache file)
-          The best solution would be a complete CLI tool, to read and manage
-          and use the cutils command line tools
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 19
-  - file: build/lib/cutils/clic.py
-    line: 41
-    note: |
-          Add special exception variable; maybe simply: 'cutils' as a dir?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 20
+  # 11
   - file: internal/convert.py
     line: 109
     note: |
           decide if we need `word-wrap: break-word;` or not?
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 12
+  - file: doc/src/15_cdar.yaml
+    line: 45
+    note: |
+          finish dependings
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 13
+  - file: pycutils/cutils/cdoc.py
+    line: 18
+    note: |
+          add 'since' to indicate which version the given feature is availbe from
+          like:   since: version 3.14
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 14
+  - file: pycutils/cutils/cdoc.py
+    line: 544
+    note: |
+          support formatted TODO import
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 15
+  - file: pycutils/cutils/cdoc.py
+    line: 604
+    note: |
+          add `members` support in TYPE
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 16
+  - file: pycutils/cutils/cdoc.py
+    line: 688
+    note: |
+          Implement a Schema validator for better user-feedback
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 17
+  - file: pycutils/cutils/cdoc.py
+    line: 690
+    note: |
+          add FOOT key
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 18
+  - file: pycutils/cutils/cdoc.py
+    line: 692
+    note: |
+          add EXEC to cdoc to add "interactive" python snippets to code
+          EXEC: |
+          with open('VERSION') as file:
+          # Insert to USER:About
+          DOC[USER][0].insert(0, {'name': 'Version', 'info': file.read()})
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 19
+  - file: pycutils/cutils/cdoc.py
+    line: 815
+    note: |
+          do we really need a separate OrderedDict for pages ???
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 20
+  - file: pycutils/cutils/cdoc.py
+    line: 819
+    note: |
+          Create real dependency graphs
+          Document object:
+              parents  = set()  # other documents depending on this document
+              children = set()  # other documents this document depending on
+          
+          If document changed:
+              set all parents of document => changed
+          
+          If any of its children changed:
+              set all parents of child => changed
+          
+          -- The loop should check if a document's change flag has already
+             been set. If not, hash file, and set flag, and notify all
+             dependencies (parents)
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 21
+  - file: pycutils/cutils/cdoc.py
+    line: 890
+    note: |
+          add -reset flags which will remove the cache files
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 22
+  - file: pycutils/cutils/clic.py
+    line: 41
+    note: |
+          Add special exception variable; maybe simply: 'cutils' as a dir?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 23
+  - file: cbug.h
+    line: 20
+    note: |
+          sdebug() -> expands to string literal or
+          debugexc(func, msg, len) -> calls raise() or ccraise() 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 24
+  - file: dev/proj.py
+    line: 34
+    note: |
+          generate documentation to some better place, maybe /tmp ?
+          after committed, change the branch copy the content and
+          then commit changed to the gh-pages branch and switch
+          back to master branch
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 25
+  - file: dev/proj.py
+    line: 39
+    note: |
+          Make error messages and reports of cver/cdoc/ccom/clic similar!
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 26
+  - file: pycutils/cutils/cenv.py
+    line: 25
+    note: |
+          Add makefile variable naming option:
+          -prefix=myapp => myapp_NAME, myapp_C_SOURCES, etc.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 27
+  - file: doc/src/00_cutils.yaml
+    line: 17
+    note: |
+          consider changing `clic` -> `ccom` and `ccom` -> `ctag`
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 28
+  - file: cout.c
+    line: 24
+    note: |
+          - add arrays (eg. char[]) => _Generic sees char* and char[] differently
+          - add pointers (eg. int*)
+          - add qualifiers (eg. const void*) 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 29
+  - file: cref.h
+    line: 345
+    note: |
+          %ju and %lf and %td and %hd and %hu
+          http://www.mekong.net/tech/printf.htm
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 30
+  - file: internal/types.py
+    line: 38
+    note: |
+          Finish OpenGL types, create formatting functions for them
+          (And actually design the whole extension system of cutils)
+          http://www.opengl.org/wiki/OpenGL_Type
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 31
+  - file: call.h
+    line: 20
+    note: |
+          rename this to 'cutils.h'? 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 32
   - file: internal/dynamic_array.c
     line: 17
     note: |
@@ -391,7 +465,7 @@ TODO:
           DynamicArray_string: char * 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 22
+  # 33
   - file: internal/dynamic_array.c
     line: 21
     note: |
@@ -399,7 +473,7 @@ TODO:
           DynamicArray_DynamicArray: nested arrays 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 23
+  # 34
   - file: internal/dynamic_array.c
     line: 24
     note: |
@@ -410,7 +484,7 @@ TODO:
                           size_t count) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 24
+  # 35
   - file: internal/dynamic_array.c
     line: 30
     note: |
@@ -418,7 +492,7 @@ TODO:
           #define swapto(dar_ptr_src, dar_ptr_dst, index_src, index_dst, count) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 25
+  # 36
   - file: internal/dynamic_array.c
     line: 33
     note: |
@@ -430,7 +504,7 @@ TODO:
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 26
+  # 37
   - file: internal/dynamic_array.c
     line: 40
     note: |
@@ -442,7 +516,7 @@ TODO:
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 27
+  # 38
   - file: internal/dynamic_array.c
     line: 47
     note: |
@@ -454,7 +528,7 @@ TODO:
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 28
+  # 39
   - file: internal/dynamic_array.c
     line: 54
     note: |
@@ -469,28 +543,28 @@ TODO:
               } while (0) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 29
+  # 40
   - file: internal/dynamic_array.c
     line: 64
     note: |
           copy() => new(&darf2, len(darf1), raw(darf1)); 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 30
+  # 41
   - file: internal/dynamic_array.c
     line: 66
     note: |
           slice() => creates a new DynamicArray_type from sub of array 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 31
+  # 42
   - file: internal/dynamic_array.c
     line: 68
     note: |
           findmax() => find the first n appereances of an item, where n<=max 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 32
+  # 43
   - file: internal/dynamic_array.c
     line: 70
     note: |
@@ -499,25 +573,250 @@ TODO:
           #define append(dar_ptr, data_ptr) push(data_ptr, len(dar_ptr) - 1, 1, data_ptr) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 33
+  # 44
   - file: internal/dynamic_array.c
-    line: 412
+    line: 451
     note: |
           change behaviour: return false, instead of limiting,
           just like in csll; also: correct the documentation 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 34
+  # 45
+  - file: internal/dynamic_array.c
+    line: 1282
+    note: |
+          map() should return the modified object 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 46
+  - file: internal/dynamic_array.c
+    line: 1350
+    note: |
+          'void*' could mean (and should mean) any item not just
+          pointers, therefore casting it to a pointer and then
+          dereferencing it won't work. the question is now:
+          is there any way to determine if the given item is a
+          pointer, and it is a pointer to NULL? otherwise the
+          following doesn't make any sense:
+          
+          if (!*(char*)item)
+              *buffer = REPRESENTATION_OF_NULL_POINTERS; 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 47
+  - file: internal/singly_linked_list.py
+    line: 220
+    note: |
+          is there a way to make this inline?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 48
+  - file: internal/singly_linked_list.py
+    line: 233
+    note: |
+          is there a way to make this inline?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 49
+  - file: internal/singly_linked_list.py
+    line: 245
+    note: |
+          is there a way to make this inline?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 50
+  - file: internal/generator.py
+    line: 37
+    note: |
+          make generic naming available to user
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 51
+  - file: internal/generator.py
+    line: 296
+    note: |
+          Reduce the levels of formatting from 3
+          to at most 2 with an elegant solution...
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 52
+  - file: build/lib/cutils/ccom.py
+    line: 69
+    note: |
+          consider: can <space> be anything?
+          Like this example:
+          some line of code # tag: starts here
+                            #      another line goes here
+                            #      and the third here..
+          the code goes on...
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 53
+  - file: build/lib/cutils/ccom.py
+    line: 158
+    note: |
+          Make hidden files OS independent, probably using
+          https://docs.python.org/3.4/library/tempfile.html ?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 54
+  - file: build/lib/cutils/ccom.py
+    line: 166
+    note: |
+          Add explicit-remove/browsing capabilities of the .*_cache files
+          (for example: if git reverted changes --> remove hash from cache file)
+          The best solution would be a complete CLI tool, to read and manage
+          and use the cutils command line tools
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 55
+  - file: build/lib/cutils/cdoc.py
+    line: 18
+    note: |
+          add 'since' to indicate which version the given feature is availbe from
+          like:   since: version 3.14
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 56
+  - file: build/lib/cutils/cdoc.py
+    line: 544
+    note: |
+          support formatted TODO import
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 57
+  - file: build/lib/cutils/cdoc.py
+    line: 604
+    note: |
+          add `members` support in TYPE
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 58
+  - file: build/lib/cutils/cdoc.py
+    line: 688
+    note: |
+          Implement a Schema validator for better user-feedback
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 59
+  - file: build/lib/cutils/cdoc.py
+    line: 690
+    note: |
+          add FOOT key
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 60
+  - file: build/lib/cutils/cdoc.py
+    line: 692
+    note: |
+          add EXEC to cdoc to add "interactive" python snippets to code
+          EXEC: |
+          with open('VERSION') as file:
+          # Insert to USER:About
+          DOC[USER][0].insert(0, {'name': 'Version', 'info': file.read()})
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 61
+  - file: build/lib/cutils/cdoc.py
+    line: 815
+    note: |
+          do we really need a separate OrderedDict for pages ???
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 62
+  - file: build/lib/cutils/cdoc.py
+    line: 819
+    note: |
+          Create real dependency graphs
+          Document object:
+              parents  = set()  # other documents depending on this document
+              children = set()  # other documents this document depending on
+          
+          If document changed:
+              set all parents of document => changed
+          
+          If any of its children changed:
+              set all parents of child => changed
+          
+          -- The loop should check if a document's change flag has already
+             been set. If not, hash file, and set flag, and notify all
+             dependencies (parents)
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 63
+  - file: build/lib/cutils/cdoc.py
+    line: 890
+    note: |
+          add -reset flags which will remove the cache files
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 64
+  - file: build/lib/cutils/cenv.py
+    line: 25
+    note: |
+          Add makefile variable naming option:
+          -prefix=myapp => myapp_NAME, myapp_C_SOURCES, etc.
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 65
+  - file: build/lib/cutils/clic.py
+    line: 41
+    note: |
+          Add special exception variable; maybe simply: 'cutils' as a dir?
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 66
   - file: cdar.c
-    line: 358
+    line: 397
     note: |
           change behaviour: return false, instead of limiting,
           just like in csll; also: correct the documentation 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 35
+  # 67
+  - file: cdar.c
+    line: 1228
+    note: |
+          map() should return the modified object 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 68
+  - file: cdar.c
+    line: 1296
+    note: |
+          'void*' could mean (and should mean) any item not just
+          pointers, therefore casting it to a pointer and then
+          dereferencing it won't work. the question is now:
+          is there any way to determine if the given item is a
+          pointer, and it is a pointer to NULL? otherwise the
+          following doesn't make any sense:
+          
+          if (!*(char*)item)
+              *buffer = REPRESENTATION_OF_NULL_POINTERS; 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 69
+  - file: cshm.c
+    line: 40
+    note: |
+          Newest xxhash has XXH64 which is way faster than XXH32, but works only
+          on 64 bit systems. Update xxhash to latest. Create an architecture
+          dependent macro dispatcher between the hash functions 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 70
+  - file: cshm.c
+    line: 281
+    note: |
+          try to get a pointer from the SinglyLinkedList_void_ptr_append()
+          which is "empty" and has the size of 'item_size' and can be
+          casted to SHMItem => so adding a new item to the hashmap will
+          only require one malloc instead of two 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 71
   - file: csll.c
-    line: 699
+    line: 782
     note: |
           pop() has only three extra statements compared to pull()
           1) else if (!destination) ...
@@ -528,304 +827,90 @@ TODO:
           (and their error message "names" differes of course) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 36
-  - file: internal/dynamic_array.py
-    line: 127
+  # 72
+  - file: csll.c
+    line: 1111
     note: |
-          is there a way to make this inline?
+          this is considered to be a very dangerous function, because right now
+          the function can't check the current SLLNode's size. It's not a problem,
+          when the size is lesser than or equal to the new item, but it will lead
+          to SEGFAULT when it is greater. One solution can be to store the
+          item_size in each SLLNode, however, that is a very large extra memory
+          overhead. Also, if the content of the list is homogeneous, it is a very
+          redundant solution too. Another possible option is, to offer a
+          pre-defined SLLBoundedNode, which knows its own size, and which can be
+          added as the 'data' of a regular SLLNode. In that case only a very thin
+          wrapper will be needed, to get access to the original item data 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 37
-  - file: internal/dynamic_array.py
-    line: 129
-    note: |
-          change this const void* --> const {2}* ?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 38
-  - file: internal/dynamic_array.py
-    line: 131
-    note: |
-          add all suffixes of numbers (eg.: unsigned long long 1ull)
-          and update the examples of the documentation
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 39
-  - file: internal/dynamic_array.py
-    line: 141
-    note: |
-          is there a way to make this inline?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 40
-  - file: internal/dynamic_array.py
-    line: 208
-    note: |
-          is there a way to make this inline?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 41
-  - file: internal/singly_linked_list.py
-    line: 130
-    note: |
-          is there a way to make this inline?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 42
-  - file: internal/singly_linked_list.py
-    line: 132
-    note: |
-          change this const void* --> const {2}* ?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 43
-  - file: internal/singly_linked_list.py
-    line: 134
-    note: |
-          add all suffixes of numbers (eg.: unsigned long long 1ull)
-          and update the examples of the documentation
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 44
-  - file: internal/singly_linked_list.py
-    line: 144
-    note: |
-          is there a way to make this inline?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 45
-  - file: internal/singly_linked_list.py
-    line: 202
-    note: |
-          is there a way to make this inline?
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 46
-  - file: doc/src/15_cdar.yaml
-    line: 45
-    note: |
-          finish dependings
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 47
-  - file: cref.h
-    line: 345
-    note: |
-          %ju and %lf and %td and %hd and %hu
-          http://www.mekong.net/tech/printf.htm
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 48
-  - file: build/lib/cutils/cdoc.py
-    line: 18
-    note: |
-          add 'since' to indicate which version the given feature is availbe from
-          like:   since: version 3.14
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 49
-  - file: build/lib/cutils/cdoc.py
-    line: 544
-    note: |
-          support formatted TODO import
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 50
-  - file: build/lib/cutils/cdoc.py
-    line: 604
-    note: |
-          add `members` support in TYPE
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 51
-  - file: build/lib/cutils/cdoc.py
-    line: 688
-    note: |
-          Implement a Schema validator for better user-feedback
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 52
-  - file: build/lib/cutils/cdoc.py
-    line: 690
-    note: |
-          add FOOT key
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 53
-  - file: build/lib/cutils/cdoc.py
-    line: 692
-    note: |
-          add EXEC to cdoc to add "interactive" python snippets to code
-          EXEC: |
-          with open('VERSION') as file:
-          # Insert to USER:About
-          DOC[USER][0].insert(0, {'name': 'Version', 'info': file.read()})
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 54
-  - file: build/lib/cutils/cdoc.py
-    line: 815
-    note: |
-          do we really need a separate OrderedDict for pages ???
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 55
-  - file: build/lib/cutils/cdoc.py
-    line: 819
-    note: |
-          Create real dependency graphs
-          Document object:
-              parents  = set()  # other documents depending on this document
-              children = set()  # other documents this document depending on
-          
-          If document changed:
-              set all parents of document => changed
-          
-          If any of its children changed:
-              set all parents of child => changed
-          
-          -- The loop should check if a document's change flag has already
-             been set. If not, hash file, and set flag, and notify all
-             dependencies (parents)
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 56
-  - file: build/lib/cutils/cdoc.py
-    line: 890
-    note: |
-          add -reset flags which will remove the cache files
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 57
-  - file: build/lib/cutils/cenv.py
-    line: 25
-    note: |
-          Add makefile variable naming option:
-          -prefix=myapp => myapp_NAME, myapp_C_SOURCES, etc.
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 58
-  - file: doc/src/00_cutils.yaml
+  # 73
+  - file: internal/singly_linked_list.c
     line: 17
     note: |
-          consider changing `clic` -> `ccom` and `ccom` -> `ctag`
+          consider to implement SinglyLinkedList.reserved_head and reserved_tail
+          members as SLLNode* which will hold the deleted nodes, and whenever a
+          new node has to be inserted, it will insert from reserved_head, and
+          replace its data -- super fast; less allocations (less fragmented
+          memory blocks); takes way more space. Also: resize() will add empty
+          nodes to reserved_tail (or removed from there) and size() will return
+          the total number of nodes (length + reserved_length)
+          - - -
+          Update1: after refactoring SLL, so now each node can be vary in size,
+          it is most likely that the previous problem is not a problem any more,
+          since, it is very unlikely that a node will match an "empty" one
+          later on
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 59
-  - file: internal/pre_commit.py
-    line: 34
+  # 74
+  - file: internal/singly_linked_list.c
+    line: 792
     note: |
-          generate documentation to some better place, maybe /tmp ?
-          after committed, change the branch copy the content and
-          then commit changed to the gh-pages branch and switch
-          back to master branch
+          pop() has only three extra statements compared to pull()
+          1) else if (!destination) ...
+          2) char *dest = (char *)destination;
+          3) memcpy(dest + (count - counter)*item_size, node_curr->data, item_size);
+          try to "merge" these two together -- with a macro?
+          also sub() has the same lines except no popping and freeing
+          (and their error message "names" differes of course) 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 60
-  - file: internal/pre_commit.py
-    line: 39
+  # 75
+  - file: internal/singly_linked_list.c
+    line: 1121
     note: |
-          Make error messages and reports of cver/cdoc/ccom/clic similar!
+          this is considered to be a very dangerous function, because right now
+          the function can't check the current SLLNode's size. It's not a problem,
+          when the size is lesser than or equal to the new item, but it will lead
+          to SEGFAULT when it is greater. One solution can be to store the
+          item_size in each SLLNode, however, that is a very large extra memory
+          overhead. Also, if the content of the list is homogeneous, it is a very
+          redundant solution too. Another possible option is, to offer a
+          pre-defined SLLBoundedNode, which knows its own size, and which can be
+          added as the 'data' of a regular SLLNode. In that case only a very thin
+          wrapper will be needed, to get access to the original item data 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 61
-  - file: pycutils/cutils/cdoc.py
-    line: 18
+  # 76
+  - file: internal/static_hash_map.c
+    line: 40
     note: |
-          add 'since' to indicate which version the given feature is availbe from
-          like:   since: version 3.14
+          Newest xxhash has XXH64 which is way faster than XXH32, but works only
+          on 64 bit systems. Update xxhash to latest. Create an architecture
+          dependent macro dispatcher between the hash functions 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 62
-  - file: pycutils/cutils/cdoc.py
-    line: 544
+  # 77
+  - file: internal/static_hash_map.c
+    line: 281
     note: |
-          support formatted TODO import
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 63
-  - file: pycutils/cutils/cdoc.py
-    line: 604
-    note: |
-          add `members` support in TYPE
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 64
-  - file: pycutils/cutils/cdoc.py
-    line: 688
-    note: |
-          Implement a Schema validator for better user-feedback
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 65
-  - file: pycutils/cutils/cdoc.py
-    line: 690
-    note: |
-          add FOOT key
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 66
-  - file: pycutils/cutils/cdoc.py
-    line: 692
-    note: |
-          add EXEC to cdoc to add "interactive" python snippets to code
-          EXEC: |
-          with open('VERSION') as file:
-          # Insert to USER:About
-          DOC[USER][0].insert(0, {'name': 'Version', 'info': file.read()})
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 67
-  - file: pycutils/cutils/cdoc.py
-    line: 815
-    note: |
-          do we really need a separate OrderedDict for pages ???
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 68
-  - file: pycutils/cutils/cdoc.py
-    line: 819
-    note: |
-          Create real dependency graphs
-          Document object:
-              parents  = set()  # other documents depending on this document
-              children = set()  # other documents this document depending on
-          
-          If document changed:
-              set all parents of document => changed
-          
-          If any of its children changed:
-              set all parents of child => changed
-          
-          -- The loop should check if a document's change flag has already
-             been set. If not, hash file, and set flag, and notify all
-             dependencies (parents)
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 69
-  - file: pycutils/cutils/cdoc.py
-    line: 890
-    note: |
-          add -reset flags which will remove the cache files
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 70
-  - file: pycutils/cutils/cenv.py
-    line: 25
-    note: |
-          Add makefile variable naming option:
-          -prefix=myapp => myapp_NAME, myapp_C_SOURCES, etc.
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 71
-  - file: pycutils/cutils/clic.py
-    line: 41
-    note: |
-          Add special exception variable; maybe simply: 'cutils' as a dir?
+          try to get a pointer from the SinglyLinkedList_void_ptr_append()
+          which is "empty" and has the size of 'item_size' and can be
+          casted to SHMItem => so adding a new item to the hashmap will
+          only require one malloc instead of two 
 
 
 
-#----------------------------- 2 POSTS IN 2 FILES -----------------------------#
+#----------------------------- 5 POSTS IN 2 FILES -----------------------------#
 HACK:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
@@ -841,40 +926,42 @@ HACK:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 2
   - file: internal/generator.py
-    line: 155
+    line: 69
     note: |
-          make the supporter types way more generic
-          create a better definition-structure!
-
-
-
-#----------------------------- 5 POSTS IN 5 FILES -----------------------------#
-NOTE:
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 1
-  - file: internal/hash/xxhash.c
-    line: 141
-    note: |
-          although _rotl exists for minGW (GCC under windows), performance seems poor
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 2
-  - file: internal/singly_linked_list.c
-    line: 1173
-    note: |
-          maybe rename const void *item --> const void *target ?
-          if it will be done, de the same in DynamicArray methods as well 
+          Make this 'first_arg' type detection smarter...
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 3
-  - file: csll.c
-    line: 1168
+  - file: internal/generator.py
+    line: 216
     note: |
-          maybe rename const void *item --> const void *target ?
-          if it will be done, de the same in DynamicArray methods as well 
+          even uglier, dirtier and filthier then the other hack below..
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 4
+  - file: internal/generator.py
+    line: 365
+    note: |
+          this is a dirty and filthy hack, just to make this
+          supported-method system work. fixit ASAP!
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 5
+  - file: internal/generator.py
+    line: 399
+    note: |
+          Because of the unordered nature of a dictionary, if
+          'SUPPORTED' will be processed first and 'SUPPORT_n'
+          (function.supported) later, then the output will never
+          be formatted properly. To solve this undeterministic bug,
+          'SUPPORTED' is formatted directly here. Solve this!!!
+
+
+
+#----------------------------- 7 POSTS IN 5 FILES -----------------------------#
+NOTE:
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 1
   - file: doc/src/05_ccom.yaml
     line: 87
     note: |
@@ -882,34 +969,115 @@ NOTE:
           array stored in string 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 5
+  # 2
   - file: doc/src/00_cutils.yaml
     line: 19
     note: |
           Timing: 1) CCOL
                   2) update doc -> menu: fork me, etc.
 
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 3
+  - file: internal/xxhash.c
+    line: 141
+    note: |
+          although _rotl exists for minGW (GCC under windows), performance seems poor
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 4
+  - file: csll.c
+    line: 1327
+    note: |
+          maybe rename const void *item --> const void *target ?
+          if it will be done, do the same in DynamicArray methods as well 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 5
+  - file: csll.c
+    line: 1474
+    note: |
+          If the list is modified directly or through another iterator, while
+          there is an iterator already created, it will lead to undefined
+          behaviour, as the 'next' pointer will most likely point to a deleted
+          node. An example:
+          
+              SinglyLinkedList_type_iterator *i1 = iter(list);
+              SinglyLinkedList_type_iterator *i2 = iter(list);
+              next(i1);
+              pull(i1);
+              next(i2);
+          
+          If possible, solve this. One option is to create a virtual-pointer
+          array inside the list object, and the nodes are going to point to the
+          entries of the this array, instead of directly pointing to each other.
+          However this is a working solution, this will make the linked-list
+          super heavy, probably unnecessarily heavy. 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 6
+  - file: internal/singly_linked_list.c
+    line: 1337
+    note: |
+          maybe rename const void *item --> const void *target ?
+          if it will be done, do the same in DynamicArray methods as well 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 7
+  - file: internal/singly_linked_list.c
+    line: 1484
+    note: |
+          If the list is modified directly or through another iterator, while
+          there is an iterator already created, it will lead to undefined
+          behaviour, as the 'next' pointer will most likely point to a deleted
+          node. An example:
+          
+              SinglyLinkedList_type_iterator *i1 = iter(list);
+              SinglyLinkedList_type_iterator *i2 = iter(list);
+              next(i1);
+              pull(i1);
+              next(i2);
+          
+          If possible, solve this. One option is to create a virtual-pointer
+          array inside the list object, and the nodes are going to point to the
+          entries of the this array, instead of directly pointing to each other.
+          However this is a working solution, this will make the linked-list
+          super heavy, probably unnecessarily heavy. 
 
 
-#----------------------------- 3 POSTS IN 3 FILES -----------------------------#
+
+#----------------------------- 5 POSTS IN 5 FILES -----------------------------#
 ALERT:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
   # 1
-  - file: capi.h
-    line: 524
-    note: |
-          D O N ' T   R E M O V E   T H E   N E X T   C O M M E N T !!! 
-
-  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 2
   - file: internal/dynamic_array.h
     line: 17
     note: |
           DON NOT ADD GUARD TO THIS FILE !!! 
 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-  # 3
+  # 2
   - file: internal/singly_linked_list.h
+    line: 17
+    note: |
+          DON NOT ADD GUARD TO THIS FILE !!! 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 3
+  - file: capi.h
+    line: 619
+    note: |
+          D O N ' T   R E M O V E   T H E   N E X T   C O M M E N T !!! 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 4
+  - file: internal/static_hash_map.h
+    line: 17
+    note: |
+          DON NOT ADD GUARD TO THIS FILE !!! 
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+  # 5
+  - file: cshm.h
     line: 17
     note: |
           DON NOT ADD GUARD TO THIS FILE !!! 

@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.90.423 (20140817)                       **
+**                       Version: 0.8.95.989 (20140904)                       **
 **                                                                            **
 **                                File: call.h                                **
 **                                                                            **
@@ -21,6 +21,7 @@
 
 #include "carg.h"
 #include "cbug.h"
+#include "cout.h"
 #include "cexc.h"
 #include "cpro.h"
 #include "cutt.h"
@@ -29,6 +30,7 @@
 #include "csll.h"
 /* #include "cdll.h" */
 /* #include "cmap.h" */
+#include "cshm.h"
 #include "cfps.h"
 /* #include "ccol.h" */
 #include "capi.h"

@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.90.725 (20140821)                       **
+**                       Version: 0.8.90.788 (20140826)                       **
 **                                                                            **
 **                                File: cbug.h                                **
 **                                                                            **
@@ -53,7 +53,7 @@ __debug_9802738545513323(const char *file_name,
 
 /* Generic debug information + simple string */
 #define __debug1(str) \
-    do { __debug0(); fprintf(stderr, __tab #str "\n"); } while(0)
+    do { __debug0(); fprintf(stderr, __tab "%s\n", str); } while(0)
 
 /* Generic debug information + formatted string */
 #define __debug2(fmt, ...) \

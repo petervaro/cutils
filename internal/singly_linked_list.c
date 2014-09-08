@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.90.629 (20140820)                       **
+**                       Version: 0.8.96.219 (20140908)                       **
 **                                                                            **
 **                    File: internal/singly_linked_list.c                     **
 **                                                                            **
@@ -20,7 +20,12 @@
          replace its data -- super fast; less allocations (less fragmented
          memory blocks); takes way more space. Also: resize() will add empty
          nodes to reserved_tail (or removed from there) and size() will return
-         the total number of nodes (length + reserved_length) */
+         the total number of nodes (length + reserved_length)
+         - - -
+         Update1: after refactoring SLL, so now each node can be vary in size,
+         it is most likely that the previous problem is not a problem any more,
+         since, it is very unlikely that a node will match an "empty" one
+         later on*/
 
 #define FILE_STARTS_HERE
 #include <stdio.h>   /* FILE, snprintf() */
@@ -39,10 +44,23 @@
 /* Exception messages */
 #undef  TYPE_REPR
 #define TYPE_REPR "SinglyLinkedList"
+#undef  SUBTYPE_REPR
+#define SUBTYPE_REPR TYPE_REPR "_iterator"
 
-/* A variable to construct the exception message in */
-#undef EXCEPTION_MSG
-
+/*----------------------------------------------------------------------------*/
+/* Shorthands for this source */
+#undef _concat_underscore
+#undef concat_underscore
+#undef LINKED_LIST
+#undef METHOD
+#undef SUPPORT
+#undef SUPPORT_METHOD
+#define _concat_underscore(token1, token2) token1##_##token2
+#define concat_underscore(token1, token2) _concat_underscore(token1, token2)
+#define LINKED_LIST cutils_csll_SinglyLinkedList_void_ptr
+#define METHOD(func)  concat_underscore(LINKED_LIST, func)
+#define SUPPORT(type) concat_underscore(LINKED_LIST, type)
+#define SUPPORT_METHOD(type, func) concat_underscore(LINKED_LIST, type##_##func)
 
 /*----------------------------------------------------------------------------*/
 /* Support type */
@@ -53,26 +71,39 @@ typedef struct sll_node
 
 } SLLNode;
 
-/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-/* Iterator type (node alias) */
-typedef SLLNode cutils_csll_SinglyLinkedList_void_ptr_iterator;
 
 
 /*----------------------------------------------------------------------------*/
 /* Base type */
 typedef struct
 {
-    size_t size;    /* Size of an item */
     size_t length;  /* Number of items in the list */
     SLLNode *head;  /* Pointer to first node */
     SLLNode *tail;  /* Pointer to last node */
 
-} cutils_csll_SinglyLinkedList_void_ptr;
+} LINKED_LIST;
+
+
+
+/*----------------------------------------------------------------------------*/
+/* Iterator type (doubly linked node) */
+typedef struct
+{
+    LINKED_LIST *list;
+    SLLNode *prev;  /* Pointer to previous node */
+    SLLNode *curr;  /* Pointer to current node */
+    SLLNode *next;  /* Pointer to next node (link) */
+} SLLIterator;
+
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+/* Iterator type (public alias) */
+typedef SLLIterator SUPPORT(iterator);
+
 
 
 /*----------------------------------------------------------------------------*/
 static inline void
-__csll_node_ins(cutils_csll_SinglyLinkedList_void_ptr *linlist,
+__csll_node_ins(LINKED_LIST *linlist,
                 SLLNode *node_prev,  /* node before sub-sequence */
                 SLLNode *node_head,  /* sub-sequence start */
                 SLLNode *node_tail,  /* sub-sequence end */
@@ -96,33 +127,38 @@ __csll_node_ins(cutils_csll_SinglyLinkedList_void_ptr *linlist,
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 static inline void
-__csll_node_pop(cutils_csll_SinglyLinkedList_void_ptr *linlist,
+__csll_node_pop(LINKED_LIST *linlist,
                 SLLNode *node_prev,  /* node before sub-sequence */
                 SLLNode *node_next)  /* node after sub-sequence */
 {
-    /* If node is nth item */
+    /* If current node was nth item */
     if (node_prev)
         node_prev->next = node_next;
-    /* If node is first item */
+    /* If current node was first item */
     else
         linlist->head = node_next;
+
+    /* If current node was last item */
+    if (!node_next)
+        linlist->tail = node_prev;
 }
+
 
 
 /*----------------------------------------------------------------------------*/
 static inline bool
-__csll_node_new(cutils_csll_SinglyLinkedList_void_ptr *linlist,
+__csll_node_new(LINKED_LIST *linlist,
                 const char *exception_msg,
                 size_t exception_msg_size,
                 SLLNode *node_prev,
                 SLLNode *node_next,
+                size_t item_size,
                 size_t item_count,
                 char *items)
 {
-    /* Get item individual item size */
-    size_t item_size = linlist->size;
     /* Node pointers */
     SLLNode *node_head, *node_tail, *node_temp;
     /* Allocate space for the first new node */
@@ -156,32 +192,28 @@ __csll_node_new(cutils_csll_SinglyLinkedList_void_ptr *linlist,
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 bool
-cutils_csll_SinglyLinkedList_void_ptr_new(cutils_csll_SinglyLinkedList_void_ptr **linlist,
-                                          size_t item_size,
-                                          size_t count,
-                                          void *source)
+METHOD(new)(LINKED_LIST **linlist,
+            size_t item_size,
+            size_t count,
+            void *source)
 {
     /* Allocate space for list */
-    cutils_csll_SinglyLinkedList_void_ptr *_linlist =
-        malloc(sizeof(cutils_csll_SinglyLinkedList_void_ptr));
+    LINKED_LIST *_linlist = malloc(sizeof(LINKED_LIST));
     if (!_linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_ALLOC_FAIL(TYPE_REPR, "new")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #ifndef CSLL_OPT
-        /* Set pointer to list to NULL so all other methods of
-           DynamicArray won't break the code, just raise exceptions */
         *linlist = NULL;
-        #endif
         return false; /* Internal allocation failed */
     }
     /* Set list to empty */
     _linlist->head = NULL;
     _linlist->tail = NULL;
     _linlist->length = 0;
-    _linlist->size = item_size;
     /* Assign newly created list to passed pointer */
     *linlist = _linlist;
 
@@ -194,6 +226,7 @@ cutils_csll_SinglyLinkedList_void_ptr_new(cutils_csll_SinglyLinkedList_void_ptr 
          /* message length */sizeof EXCEPTION_MSG,
           /* previous node */NULL,
               /* next node */NULL,
+              /* item size */item_size,
              /* item count */count,
           /* data if items */(char *)source))
             return false; /* Internal allocation failed */
@@ -204,10 +237,18 @@ cutils_csll_SinglyLinkedList_void_ptr_new(cutils_csll_SinglyLinkedList_void_ptr 
     return true; /* The list have been successfully allocated */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(new_default1)(LINKED_LIST **linlist)
+{
+    return METHOD(new)(linlist, 0, 0, NULL);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 void
-cutils_csll_SinglyLinkedList_void_ptr_del(cutils_csll_SinglyLinkedList_void_ptr *linlist)
+METHOD(del)(LINKED_LIST *linlist)
 {
 #ifndef CSLL_OPT
     if (!linlist)
@@ -230,17 +271,18 @@ cutils_csll_SinglyLinkedList_void_ptr_del(cutils_csll_SinglyLinkedList_void_ptr 
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 size_t
-cutils_csll_SinglyLinkedList_void_ptr_len(cutils_csll_SinglyLinkedList_void_ptr *linlist)
+METHOD(len)(LINKED_LIST *linlist)
 {
 #ifndef CSLL_OPT
     /* Not initialised */
     if (!linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "len")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
     }
 #endif
@@ -248,17 +290,18 @@ cutils_csll_SinglyLinkedList_void_ptr_len(cutils_csll_SinglyLinkedList_void_ptr 
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 void
-cutils_csll_SinglyLinkedList_void_ptr_clear(cutils_csll_SinglyLinkedList_void_ptr *linlist)
+METHOD(clear)(LINKED_LIST *linlist)
 {
 #ifndef CSLL_OPT
     /* Not initialised */
     if (!linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "clear")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Cannot operate on nothing */
     }
 #endif
@@ -278,21 +321,22 @@ cutils_csll_SinglyLinkedList_void_ptr_clear(cutils_csll_SinglyLinkedList_void_pt
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 bool
-cutils_csll_SinglyLinkedList_void_ptr_swap(cutils_csll_SinglyLinkedList_void_ptr *linlist,
-                                           size_t index1,
-                                           size_t index2,
-                                           size_t count)
+METHOD(swap)(LINKED_LIST *linlist,
+             size_t index1,
+             size_t index2,
+             size_t count)
 {
     size_t length;
 #ifndef CSLL_OPT
     /* If pointer to list is pointing to NULL */
     if (!linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "swap")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
 #endif /* CSLL_OPT */
@@ -304,44 +348,44 @@ cutils_csll_SinglyLinkedList_void_ptr_swap(cutils_csll_SinglyLinkedList_void_ptr
     /* If list empty */
     else if (!(length = linlist->length))
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "swap")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return true; /* Successfully did nothing */
     }
 #ifndef CSLL_OPT
     /* If index1 or index2 out of range */
     else if (index1 >= length)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "swap", "2nd", index1)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Not valid index */
     }
     else if (index2 >= length)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "swap", "3rd", index2)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Not valid index */
     }
     /* If blocks are overlapping */
     if (labs(index1 - index2) < count)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_OVERLAP(TYPE_REPR, "swap")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Not valid count */
     }
     /* If blocks are out of bounds */
     if ((index1 + count) > length || (index2 + count) > length)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "swap", "4th", count)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Not valid count */
     }
 #endif /* CSLL_OPT */
@@ -435,25 +479,35 @@ cutils_csll_SinglyLinkedList_void_ptr_swap(cutils_csll_SinglyLinkedList_void_ptr
     return true; /* Swapping was successful */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(swap_default3)(LINKED_LIST *linlist,
+                      size_t index1,
+                      size_t index2)
+{
+    return METHOD(swap)(linlist, index1, index2, 1);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 bool
-cutils_csll_SinglyLinkedList_void_ptr_reverse(cutils_csll_SinglyLinkedList_void_ptr *linlist)
+METHOD(reverse)(LINKED_LIST *linlist)
 {
     /* If pointer to list is pointing to NULL */
     if (!linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "reverse")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     /* If list is empty */
     if (!linlist->length)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "reverse")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return true; /* Successfully did nothing */
     }
 
@@ -483,23 +537,24 @@ cutils_csll_SinglyLinkedList_void_ptr_reverse(cutils_csll_SinglyLinkedList_void_
 
 /*----------------------------------------------------------------------------*/
 bool
-cutils_csll_SinglyLinkedList_void_ptr_append(cutils_csll_SinglyLinkedList_void_ptr *linlist,
-                                             size_t count,
-                                             void *source)
+METHOD(append)(LINKED_LIST *linlist,
+               size_t item_size,
+               size_t count,
+               void *source)
 {
     if (!linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "append")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     else if (!source)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "append", "3rd", source)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return true; /* Successfully did nothing */
     }
     else
@@ -507,44 +562,56 @@ cutils_csll_SinglyLinkedList_void_ptr_append(cutils_csll_SinglyLinkedList_void_p
     if (count)
     {
 #endif
+    #undef  EXCEPTION_MSG
     #define EXCEPTION_MSG EXCEPTION_MESSAGE_ALLOC_FAIL(TYPE_REPR, "append")
         if (!__csll_node_new(linlist,
                 /* message */EXCEPTION_MSG,
          /* message length */sizeof EXCEPTION_MSG,
           /* previous node */linlist->tail,
               /* next node */NULL,
+              /* item size */item_size,
              /* item count */count,
           /* data if items */(char *)source))
             return false; /* Internal allocation failed */
-        #undef EXCEPTION_MSG
 #ifndef CSLL_OPT
     }
 #endif
     return true; /* Successfully added new items or nothing */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(append_default3)(LINKED_LIST *linlist,
+                        size_t item_size,
+                        void *source)
+{
+    return METHOD(append)(linlist, item_size, 1, source);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 bool
-cutils_csll_SinglyLinkedList_void_ptr_push(cutils_csll_SinglyLinkedList_void_ptr *linlist,
-                                           size_t index,
-                                           size_t count,
-                                           void *source)
+METHOD(push)(LINKED_LIST *linlist,
+             size_t index,
+             size_t item_size,
+             size_t count,
+             void *source)
 {
 #ifndef CSLL_OPT
     if (!linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "append")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     else if (!source)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "append", "3rd", source)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return true; /* Successfully did nothing */
     }
     else if (count)
@@ -578,37 +645,49 @@ cutils_csll_SinglyLinkedList_void_ptr_push(cutils_csll_SinglyLinkedList_void_ptr
                 node_prev = node_next;
             }
         }
+    #undef  EXCEPTION_MSG
     #define EXCEPTION_MSG EXCEPTION_MESSAGE_ALLOC_FAIL(TYPE_REPR, "push")
         if (!__csll_node_new(linlist,
                 /* message */EXCEPTION_MSG,
          /* message length */sizeof EXCEPTION_MSG,
           /* previous node */node_prev,
               /* next node */node_next,
+              /* item size */item_size,
              /* item count */count,
           /* data if items */(char *)source))
             return false; /* Internal allocation failed */
-    #undef EXCEPTION_MSG
 #ifndef CSLL_OPT
     }
 #endif
     return true; /* Successfully added new items or nothing */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(push_default4)(LINKED_LIST *linlist,
+                      size_t index,
+                      size_t item_size,
+                      void *source)
+{
+    return METHOD(push)(linlist, index, item_size, 1, source);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 size_t
-cutils_csll_SinglyLinkedList_void_ptr_pull(cutils_csll_SinglyLinkedList_void_ptr *linlist,
-                                           size_t index,
-                                           size_t count)
+METHOD(pull)(LINKED_LIST *linlist,
+             size_t index,
+             size_t count)
 {
     size_t length;
 #ifndef CSLL_OPT
     /* Not initialised */
     if (!linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "pull")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
     }
     /* Nothing to remove */
@@ -619,18 +698,18 @@ cutils_csll_SinglyLinkedList_void_ptr_pull(cutils_csll_SinglyLinkedList_void_ptr
     /* Empty list */
     else if (!(length = linlist->length))
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "pull")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully removed nothing */
     }
     /* Out of range */
     else if (index >= length)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "pull", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully removed nothing */
     }
 #else
@@ -699,6 +778,15 @@ cutils_csll_SinglyLinkedList_void_ptr_pull(cutils_csll_SinglyLinkedList_void_ptr
     }
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+size_t
+METHOD(pull_default2)(LINKED_LIST *linlist,
+                      size_t index)
+{
+    return METHOD(pull)(linlist, index, 1);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 /* TODO: pop() has only three extra statements compared to pull()
@@ -709,19 +797,20 @@ cutils_csll_SinglyLinkedList_void_ptr_pull(cutils_csll_SinglyLinkedList_void_ptr
          also sub() has the same lines except no popping and freeing
          (and their error message "names" differes of course) */
 size_t
-cutils_csll_SinglyLinkedList_void_ptr_pop(cutils_csll_SinglyLinkedList_void_ptr *linlist,
-                                          size_t index,
-                                          size_t count,
-                                          void *destination)
+METHOD(pop)(LINKED_LIST *linlist,
+            size_t index,
+            size_t item_size,
+            size_t count,
+            void *destination)
 {
     size_t length;
 #ifndef CSLL_OPT
     /* Not initialised */
     if (!linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "pop")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
     }
     /* Nothing to remove */
@@ -732,27 +821,27 @@ cutils_csll_SinglyLinkedList_void_ptr_pop(cutils_csll_SinglyLinkedList_void_ptr 
     /* Invalid destination */
     else if (!destination)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "pop", "4th", destination)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully popped nothing */
     }
     /* Empty list */
     else if (!(length = linlist->length))
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "pop")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully removed nothing */
     }
     /* Out of range */
     else if (index >= length)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "pop", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully removed nothing */
     }
 #else
@@ -770,8 +859,7 @@ cutils_csll_SinglyLinkedList_void_ptr_pop(cutils_csll_SinglyLinkedList_void_ptr 
             *node_curr,
             *node_next,
             *temp = linlist->head;
-    size_t size = linlist->size,
-           counter = 0;
+    size_t counter = 0;
     char *_destination = (char *)destination;
 
     /* If index is 0 */
@@ -796,7 +884,8 @@ cutils_csll_SinglyLinkedList_void_ptr_pop(cutils_csll_SinglyLinkedList_void_ptr 
         if (counter)
         {
             /* Free node and its data from memory */
-            memcpy(_destination + (count - counter)*size, node_curr->data, size);
+            memcpy(_destination + (count - counter)*item_size,
+                   node_curr->data, item_size);
             free(node_curr);
             /* If end of the sub-sequence */
             if (!--counter)
@@ -824,22 +913,34 @@ cutils_csll_SinglyLinkedList_void_ptr_pop(cutils_csll_SinglyLinkedList_void_ptr 
     }
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+size_t
+METHOD(pop_default4)(LINKED_LIST *linlist,
+                     size_t index,
+                     size_t item_size,
+                     void *destination)
+{
+    return METHOD(pop)(linlist, index, item_size, 1, destination);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 size_t
-cutils_csll_SinglyLinkedList_void_ptr_sub(cutils_csll_SinglyLinkedList_void_ptr *linlist,
-                                          size_t index,
-                                          size_t count,
-                                          void *destination)
+METHOD(sub)(LINKED_LIST *linlist,
+            size_t index,
+            size_t item_size,
+            size_t count,
+            void *destination)
 {
     size_t length;
 #ifndef CSLL_OPT
     /* Not initialised */
     if (!linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "sub")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
     }
     /* Nothing to remove */
@@ -850,27 +951,27 @@ cutils_csll_SinglyLinkedList_void_ptr_sub(cutils_csll_SinglyLinkedList_void_ptr 
     /* Invalid destination */
     else if (!destination)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "sub", "4th", destination)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully popped nothing */
     }
     /* Empty list */
     else if (!(length = linlist->length))
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "sub")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully removed nothing */
     }
     /* Out of range */
     else if (index >= length)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "sub", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully removed nothing */
     }
 #else
@@ -888,8 +989,7 @@ cutils_csll_SinglyLinkedList_void_ptr_sub(cutils_csll_SinglyLinkedList_void_ptr 
             *node_curr,
             *node_next,
             *temp = linlist->head;
-    size_t size = linlist->size,
-           counter = 0;
+    size_t counter = 0;
     char *_destination = (char *)destination;
 
     /* If index is 0 */
@@ -914,7 +1014,8 @@ cutils_csll_SinglyLinkedList_void_ptr_sub(cutils_csll_SinglyLinkedList_void_ptr 
         if (counter)
         {
             /* Free node and its data from memory */
-            memcpy(_destination + (count - counter)*size, node_curr->data, size);
+            memcpy(_destination + (count - counter)*item_size,
+                   node_curr->data, item_size);
             /* If end of the sub-sequence */
             if (!--counter)
                 return count;
@@ -936,19 +1037,30 @@ cutils_csll_SinglyLinkedList_void_ptr_sub(cutils_csll_SinglyLinkedList_void_ptr 
     }
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+size_t
+METHOD(sub_default4)(LINKED_LIST *linlist,
+                     size_t index,
+                     size_t item_size,
+                     void *destination)
+{
+    return METHOD(sub)(linlist, index, item_size, 1, destination);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 void
-cutils_csll_SinglyLinkedList_void_ptr_truncate(cutils_csll_SinglyLinkedList_void_ptr *linlist,
-                                               size_t index)
+METHOD(truncate)(LINKED_LIST *linlist,
+                 size_t index)
 {
 #ifndef CSLL_OPT
     /* Not initialised */
     if (!linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "truncate")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Cannot operate on nothing */
     }
     else
@@ -957,10 +1069,10 @@ cutils_csll_SinglyLinkedList_void_ptr_truncate(cutils_csll_SinglyLinkedList_void
        Index out of range */
     if (index >= linlist->length)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "truncate", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Out of range */
     }
     /* Create/get/set essential values */
@@ -996,21 +1108,40 @@ cutils_csll_SinglyLinkedList_void_ptr_truncate(cutils_csll_SinglyLinkedList_void
     }
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+void
+METHOD(truncate_default1)(LINKED_LIST *linlist)
+{
+    METHOD(truncate)(linlist, 0);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
+/* TODO: this is considered to be a very dangerous function, because right now
+         the function can't check the current SLLNode's size. It's not a problem,
+         when the size is lesser than or equal to the new item, but it will lead
+         to SEGFAULT when it is greater. One solution can be to store the
+         item_size in each SLLNode, however, that is a very large extra memory
+         overhead. Also, if the content of the list is homogeneous, it is a very
+         redundant solution too. Another possible option is, to offer a
+         pre-defined SLLBoundedNode, which knows its own size, and which can be
+         added as the 'data' of a regular SLLNode. In that case only a very thin
+         wrapper will be needed, to get access to the original item data */
 bool
-cutils_csll_SinglyLinkedList_void_ptr_set(cutils_csll_SinglyLinkedList_void_ptr *linlist,
-                                          size_t index,
-                                          size_t count,
-                                          void *source)
+METHOD(set)(LINKED_LIST *linlist,
+            size_t index,
+            size_t item_size,
+            size_t count,
+            void *source)
 {
 #ifndef CSLL_OPT
     /* Not initialised */
     if (!linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "set")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     /* Nothing to set */
@@ -1021,19 +1152,19 @@ cutils_csll_SinglyLinkedList_void_ptr_set(cutils_csll_SinglyLinkedList_void_ptr 
     /* Invalid source */
     else if (!source)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "set", "4th", destination)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return true; /* Successfully set nothing */
     }
     /* Out of range */
     else if (index >= linlist->length)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "set", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Out of range */
     }
 #else
@@ -1044,8 +1175,7 @@ cutils_csll_SinglyLinkedList_void_ptr_set(cutils_csll_SinglyLinkedList_void_ptr 
     /* Create/get/cast essential values */
     SLLNode *node = linlist->head;
     char *data = (char *)source;
-    size_t counter = 0,
-           item_size = linlist->size;
+    size_t counter = 0;
 
     /* CORE FUNCTIONALITY
        Iterate through list and set values */
@@ -1070,26 +1200,37 @@ cutils_csll_SinglyLinkedList_void_ptr_set(cutils_csll_SinglyLinkedList_void_ptr 
     return false;
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(set_default4)(LINKED_LIST *linlist,
+                     size_t index,
+                     size_t item_size,
+                     void *source)
+{
+    return METHOD(set)(linlist, index, item_size, 1, source);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 void *
-cutils_csll_SinglyLinkedList_void_ptr_get(cutils_csll_SinglyLinkedList_void_ptr *linlist,
-                                          size_t index)
+METHOD(get)(LINKED_LIST *linlist,
+            size_t index)
 {
 #ifndef CSLL_OPT
     if (!linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "get")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return NULL; /* Cannot operate on nothing */
     }
     else if (index >= linlist->length)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "get", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return NULL;
     }
 #endif /* CSLL_OPT */
@@ -1107,35 +1248,48 @@ cutils_csll_SinglyLinkedList_void_ptr_get(cutils_csll_SinglyLinkedList_void_ptr 
         node = node->next;
     }
 #ifndef CSLL_OPT
+    #undef  EXCEPTION_MSG
     #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "get")
     cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-    #undef EXCEPTION_MSG
 #endif /* CSLL_OPT */
     return NULL;
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 bool
-cutils_csll_SinglyLinkedList_void_ptr_find(cutils_csll_SinglyLinkedList_void_ptr *linlist,
-                                           bool (*compare)(const void*, const void*, size_t),
-                                           const void *item,
-                                           size_t *index)
+METHOD(compare)(const void *item1,
+                const void *item2,
+                size_t item_size)
+{
+    return !memcmp(item1, item2, item_size);
+}
+
+
+
+/*----------------------------------------------------------------------------*/
+bool
+METHOD(find)(LINKED_LIST *linlist,
+             bool (*compare)(const void*, const void*, size_t),
+             size_t item_size,
+             const void *item,
+             size_t *index)
 {
 #ifndef CSLL_OPT
     if (!linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "find")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     else if (!index)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "find", "4th", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Invalid data */
     }
     else
@@ -1144,7 +1298,6 @@ cutils_csll_SinglyLinkedList_void_ptr_find(cutils_csll_SinglyLinkedList_void_ptr
     {
         /* Create/get/set essential values */
         SLLNode *node = linlist->head;
-        size_t item_size = linlist->size;
         /* CORE FUNCTIONALITY
            Iterate through list and find matching items */
         for (size_t i=0; node; i++)
@@ -1161,37 +1314,49 @@ cutils_csll_SinglyLinkedList_void_ptr_find(cutils_csll_SinglyLinkedList_void_ptr
         return false; /* Did not find any appearances of item */
     }
 #ifndef CSLL_OPT
+    #undef  EXCEPTION_MSG
     #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "find")
     cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-    #undef EXCEPTION_MSG
 #endif /* CSLL_OPT */
     return false;
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(find_default4)(LINKED_LIST *linlist,
+                      size_t item_size,
+                      const void *item,
+                      size_t *index)
+{
+    return METHOD(find)(linlist, METHOD(compare), item_size, item, index);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 /* NOTE: maybe rename const void *item --> const void *target ?
-         if it will be done, de the same in DynamicArray methods as well */
+         if it will be done, do the same in DynamicArray methods as well */
 size_t
-cutils_csll_SinglyLinkedList_void_ptr_findall(cutils_csll_SinglyLinkedList_void_ptr *linlist,
-                                              bool (*compare)(const void*, const void*, size_t),
-                                              const void *item,
-                                              size_t *indices)
+METHOD(findall)(LINKED_LIST *linlist,
+                bool (*compare)(const void*, const void*, size_t),
+                size_t item_size,
+                const void *item,
+                size_t *indices)
 {
 #ifndef CSLL_OPT
     if (!linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "find")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
     }
     else if (!indices)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "find", "4th", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Invalid data */
     }
     else
@@ -1200,8 +1365,7 @@ cutils_csll_SinglyLinkedList_void_ptr_findall(cutils_csll_SinglyLinkedList_void_
     {
         /* Create/get/set essential values */
         SLLNode *node = linlist->head;
-        size_t count = 0,
-               item_size = linlist->size;
+        size_t count = 0;
         /* CORE FUNCTIONALITY
            Iterate through list and find matching items */
         for (size_t i=0; node; i++)
@@ -1215,119 +1379,183 @@ cutils_csll_SinglyLinkedList_void_ptr_findall(cutils_csll_SinglyLinkedList_void_
         return count; /* Number of items found */
     }
 #ifndef CSLL_OPT
+    #undef  EXCEPTION_MSG
     #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "find")
     cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-    #undef EXCEPTION_MSG
 #endif /* CSLL_OPT */
     return 0;
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+size_t
+METHOD(findall_default4)(LINKED_LIST *linlist,
+                         size_t item_size,
+                         const void *item,
+                         size_t *index)
+{
+    return METHOD(findall)(linlist, METHOD(compare), item_size, item, index);
+}
+
+
+
 /*----------------------------------------------------------------------------*/
-cutils_csll_SinglyLinkedList_void_ptr_iterator *
-cutils_csll_SinglyLinkedList_void_ptr_iter(cutils_csll_SinglyLinkedList_void_ptr *linlist)
+SUPPORT(iterator) *
+METHOD(iter)(LINKED_LIST *linlist)
 {
 #ifndef CSLL_OPT
     if (!linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "iter")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return NULL; /* Cannot operate on nothing */
     }
 #endif
-    cutils_csll_SinglyLinkedList_void_ptr_iterator *node =
-        malloc(sizeof(cutils_csll_SinglyLinkedList_void_ptr_iterator));
-    if (!node)
+    SLLIterator *iterator = malloc(sizeof(SLLIterator));
+    if (!iterator)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_ALLOC_FAIL(TYPE_REPR, "iter")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return NULL; /* Internal allocation failed */
     }
     /* Set iterator */
-    node->next = linlist->head;
+    iterator->list = linlist;
+    iterator->prev = iterator->curr = NULL;
+    iterator->next = linlist->head;
     /* Return iterator */
-    return node;
+    return iterator;
 }
+
+
+
+/*----------------------------------------------------------------------------*/
+void
+SUPPORT_METHOD(iterator, del)(SUPPORT(iterator) *iterator)
+{
+    free(iterator);
+}
+
 
 
 /*----------------------------------------------------------------------------*/
 bool
-cutils_csll_SinglyLinkedList_void_ptr_next(cutils_csll_SinglyLinkedList_void_ptr_iterator *node,
-                                           void *data)
+SUPPORT_METHOD(iterator, next)(SUPPORT(iterator) *iterator,
+                               void *data)
 {
-#undef  SUBTYPE_REPR
-#define SUBTYPE_REPR TYPE_REPR "_iterator"
 #ifndef CSLL_OPT
-    if (!node)
+    if (!iterator)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(SUBTYPE_REPR, "next")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     else if (!data)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
-            EXCEPTION_MESSAGE_ARGUMENT_NULL(SUBTYPE_REPR, "next", "2nd", index)
+            EXCEPTION_MESSAGE_ARGUMENT_NULL(SUBTYPE_REPR, "next", "2nd", data)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Invalid data */
     }
     else
 #endif
     /* If not last item */
-    if (node->next)
+    if (iterator->next)
     {
-        *(void **)data = node->next->data;
-        node->next = node->next->next;
+        *(void **)data = iterator->next->data;
+        iterator->prev = iterator->curr;
+        iterator->curr = iterator->next;
+        iterator->next = iterator->next->next;
         return true;
     }
     /* If last item */
     else
     {
-        free(node);
+        free(iterator);
         return false;
     }
 }
 
 
+
+/*----------------------------------------------------------------------------*/
+/* NOTE: If the list is modified directly or through another iterator, while
+         there is an iterator already created, it will lead to undefined
+         behaviour, as the 'next' pointer will most likely point to a deleted
+         node. An example:
+
+             SinglyLinkedList_type_iterator *i1 = iter(list);
+             SinglyLinkedList_type_iterator *i2 = iter(list);
+             next(i1);
+             pull(i1);
+             next(i2);
+
+         If possible, solve this. One option is to create a virtual-pointer
+         array inside the list object, and the nodes are going to point to the
+         entries of the this array, instead of directly pointing to each other.
+         However this is a working solution, this will make the linked-list
+         super heavy, probably unnecessarily heavy. */
+void
+SUPPORT_METHOD(iterator, pull)(SUPPORT(iterator) *iterator)
+{
+#ifndef CSLL_OPT
+    if (!iterator)
+    {
+        #undef  EXCEPTION_MSG
+        #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(SUBTYPE_REPR, "pull")
+        cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
+        return; /* Cannot operate on nothing */
+    }
+#endif
+    /* Pop out current node */
+    __csll_node_pop(iterator->list, iterator->prev, iterator->next);
+    iterator->list->length--;
+    /* Destroy current node */
+    free(iterator->curr);
+    /* Update iterator pointer */
+    iterator->curr = iterator->prev;
+}
+
+
+
 /*----------------------------------------------------------------------------*/
 void
-cutils_csll_SinglyLinkedList_void_ptr_map(cutils_csll_SinglyLinkedList_void_ptr *linlist,
-                                          size_t index,
-                                          size_t count,
-                                          void (*function)())
+METHOD(map)(LINKED_LIST *linlist,
+            size_t index,
+            size_t count,
+            void (*function)())
 {
 #ifndef CSLL_OPT
     if (!linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "map")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Cannot operate on nothing */
     }
     else if (!linlist->length)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "map")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Successfully did nothing */
     }
     else if (index >= linlist->length)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "map", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return;
     }
     else if (!function)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "map", "4th", function)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Cannot call NULL on items */
     }
     else
@@ -1359,37 +1587,44 @@ cutils_csll_SinglyLinkedList_void_ptr_map(cutils_csll_SinglyLinkedList_void_ptr 
     }
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+void
+METHOD(map_default3)(LINKED_LIST *linlist,
+                     size_t count,
+                     void (*function)())
+{
+    METHOD(map)(linlist, 0, count, function);
+}
+
 
 
 /*----------------------------------------------------------------------------*/
 bool
-cutils_csll_SinglyLinkedList_void_ptr_format(const void *data,
-                                             char **buffer,
-                                             size_t *buffer_size)
+METHOD(format)(const void *data,
+               char **buffer,
+               size_t *buffer_size)
 {
     /* buffer_size could be used to realloc buffer if
        it is too small to contain the the formatted item */
-    if (!*(char *)data)
-        snprintf(*buffer, *buffer_size, REPRESENTATION_OF_NULL_POINTERS);
-    else
-        snprintf(*buffer, *buffer_size, REPRESENTATION_OF_REAL_POINTERS, data);
+    snprintf(*buffer, *buffer_size, REPRESENTATION_OF_REAL_POINTERS, data);
     return *buffer;
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 void
-cutils_csll_SinglyLinkedList_void_ptr_print(cutils_csll_SinglyLinkedList_void_ptr *linlist,
-                                            FILE *stream,
-                                            const char *sub_type,
-                                            bool(*format)())
+METHOD(print)(LINKED_LIST *linlist,
+              FILE *stream,
+              const char *sub_type,
+              bool(*format)())
 {
 #ifndef CSLL_OPT
     if (!linlist)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "print")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         fprintf(stream, REPRESENTATION_OF_NULL_POINTERS "\n");
         return; /* Cannot operate on nothing */
     }
@@ -1411,9 +1646,9 @@ cutils_csll_SinglyLinkedList_void_ptr_print(cutils_csll_SinglyLinkedList_void_pt
         char *buffer = malloc(buffer_size);
         if (!buffer)
         {
+            #undef  EXCEPTION_MSG
             #define EXCEPTION_MSG EXCEPTION_MESSAGE_ALLOC_FAIL(TYPE_REPR, "print")
             cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-            #undef EXCEPTION_MSG
             fprintf(stream, "...}\n");
             return;
         }
@@ -1428,10 +1663,10 @@ cutils_csll_SinglyLinkedList_void_ptr_print(cutils_csll_SinglyLinkedList_void_pt
             /* If formatting representation was successful */
             if (!format(node->data, buffer_ptr, &buffer_size))
             {
+                #undef  EXCEPTION_MSG
                 #define EXCEPTION_MSG \
                     EXCEPTION_MESSAGE_REALLOC_FAIL(TYPE_REPR, "print")
                 cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-                #undef EXCEPTION_MSG
                 fprintf(stream, "...");
                 break;
             }
@@ -1448,11 +1683,17 @@ cutils_csll_SinglyLinkedList_void_ptr_print(cutils_csll_SinglyLinkedList_void_pt
     fprintf(stream, "}\n");
 }
 
-/*----------------------------------------------------------------------------*/
-bool
-cutils_csll_SinglyLinkedList_void_ptr_compare(const void *item1,
-                                              const void *item2,
-                                              size_t item_size)
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+void
+METHOD(print_default2)(LINKED_LIST *linlist,
+                       bool(*format)())
 {
-    return !memcmp(item1, item2, item_size);
+    METHOD(print)(linlist, stdout, "void_ptr", format);
+}
+
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+void
+METHOD(print_default1)(LINKED_LIST *linlist)
+{
+    METHOD(print)(linlist, stdout, "void_ptr", METHOD(format));
 }

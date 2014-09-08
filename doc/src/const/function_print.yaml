@@ -65,7 +65,7 @@ examples:
       \\n
       /* $object$ of pointers to pointer to char */
       $object$_char_ptr *$shortvar$_cp;
-      if (new(&$shortvar$_cp, 2, ((char*[]){"Talk is cheap.\nShow me the code.\n"
+      if (new(&$shortvar$_cp, 2, ((char*[]){"Talk is cheap.\nShow me the code.\n",
               $shortvar_space$                    "\t--\tLinus Torvalds\a"})));
           print($shortvar$_cp);
       \\n

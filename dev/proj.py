@@ -5,9 +5,9 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.784 (20140825)                       ##
+##                       Version: 0.8.95.808 (20140828)                       ##
 ##                                                                            ##
-##                        File: internal/pre_commit.py                        ##
+##                             File: dev/proj.py                              ##
 ##                                                                            ##
 ##           Designed and written by Peter Varo. Copyright (c) 2014           ##
 ##             License agreement is provided in the LICENSE file              ##
@@ -59,4 +59,4 @@ collect('.', overwrite=OVERWRITE)
 header('.', overwrite=OVERWRITE)
 
 # Feedback
-print('pre-commit: success', end='\n'*2)
+print('cutils: project is up to date', end='\n'*2)

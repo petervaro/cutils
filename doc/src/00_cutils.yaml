@@ -4,7 +4,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.784 (20140825)                       ##
+##                       Version: 0.8.95.823 (20140828)                       ##
 ##                                                                            ##
 ##                        File: doc/src/00_cutils.yaml                        ##
 ##                                                                            ##
@@ -51,9 +51,13 @@ INFO:
   - - p
     - class: info
     - string: |
-              `cutils` is under heavy development, although it is regularly
-              tested under Windows, Mac OS and Linux as well. The status of the
-              project can be seen in the following progress-bars:
+              **W A R N I N G!** `cutils` is under heavy development, although
+              it is regularly tested under Windows, Mac OS and Linux as well.
+              But it is very likely that some of the features are not or poorly
+              documented (example: they have been updated, since the last time
+              the documentation had been written), so if possible, always check
+              the source along with the documentation. The status of the project
+              can be seen in the following progress-bars:
   - - br
   - - img
     - alt: progress bars

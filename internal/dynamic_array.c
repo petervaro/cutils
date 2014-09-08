@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.90.746 (20140821)                       **
+**                       Version: 0.8.96.110 (20140906)                       **
 **                                                                            **
 **                       File: internal/dynamic_array.c                       **
 **                                                                            **
@@ -93,8 +93,22 @@
 /* Exception messages */
 #undef  TYPE_REPR
 #define TYPE_REPR "DynamicArray"
-/* A variable to construct the exception message in */
-#undef  EXCEPTION_MSG
+
+/*----------------------------------------------------------------------------*/
+/* Shorthands for this source */
+#undef _concat_underscore
+#undef concat_underscore
+#undef DYNAMIC_ARRAY
+#undef METHOD
+#undef SUPPORT
+#undef SUPPORT_METHOD
+#define _concat_underscore(token1, token2) token1##_##token2
+#define concat_underscore(token1, token2) _concat_underscore(token1, token2)
+#define DYNAMIC_ARRAY cutils_cdar_DynamicArray_void_ptr
+#define METHOD(func)  concat_underscore(DYNAMIC_ARRAY, func)
+#define SUPPORT(type) concat_underscore(DYNAMIC_ARRAY, type)
+#define SUPPORT_METHOD(type, func) concat_underscore(DYNAMIC_ARRAY, type##_##func)
+
 
 
 /*----------------------------------------------------------------------------*/
@@ -106,12 +120,13 @@ typedef struct
     size_t size;       /* Size of an item */
     void *data;        /* Pointer to the actual data */
 
-} cutils_cdar_DynamicArray_void_ptr;
+} DYNAMIC_ARRAY;
+
 
 
 /*----------------------------------------------------------------------------*/
 static bool
-__cdar_resize(cutils_cdar_DynamicArray_void_ptr *dynarr,
+__cdar_resize(DYNAMIC_ARRAY *dynarr,
               size_t item_size,
               size_t item_count)
 {
@@ -131,23 +146,23 @@ __cdar_resize(cutils_cdar_DynamicArray_void_ptr *dynarr,
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_new(cutils_cdar_DynamicArray_void_ptr **dynarr,
-                                      size_t item_size,
-                                      size_t count,
-                                      void *source)
+METHOD(new)(DYNAMIC_ARRAY **dynarr,
+            size_t item_size,
+            size_t count,
+            void *source)
 {
     /* Calculate allocation size based on item count */
-    size_t alloc_size = count ? 2 * count : 1;
+    size_t alloc_size = count ? 2*count : 1;
 
     /* Allocate space for array data */
-    void *data = malloc(alloc_size * item_size);
+    void *data = malloc(alloc_size*item_size);
     if (!data) goto Error_Array_Allocation_Failed;
 
     /* Allocate space for struct */
-    cutils_cdar_DynamicArray_void_ptr *_dynarr =
-        malloc(sizeof(cutils_cdar_DynamicArray_void_ptr));
+    DYNAMIC_ARRAY *_dynarr = malloc(sizeof(DYNAMIC_ARRAY));
     if (!_dynarr) goto Error_Struct_Allocation_Failed;
 
     /* Fill struct with values */
@@ -168,58 +183,76 @@ cutils_cdar_DynamicArray_void_ptr_new(cutils_cdar_DynamicArray_void_ptr **dynarr
     /* If everything went fine, return the new DynamicArray */
     return true;
 
-    /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
     /* If some error occurred: */
     Error_Struct_Allocation_Failed:
         free(data);
-    /*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
     Error_Array_Allocation_Failed:
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_ALLOC_FAIL(TYPE_REPR, "new")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
-        #ifndef CDAR_OPT
-        /* Set pointer to array to NULL, so all other methods of
-           DynamicArray won't break the code, just raise exceptions */
         *dynarr = NULL;
-        #endif
         return false;
 }
+
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(new_default3)(DYNAMIC_ARRAY **dynarr,
+                     size_t item_size,
+                     size_t count)
+{
+    return METHOD(new)(dynarr, item_size, count, NULL);
+}
+
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(new_default2)(DYNAMIC_ARRAY **dynarr,
+                     size_t item_size)
+{
+    return METHOD(new)(dynarr, item_size, 0, NULL);
+}
+
 
 
 /*----------------------------------------------------------------------------*/
 void
-cutils_cdar_DynamicArray_void_ptr_del(cutils_cdar_DynamicArray_void_ptr *dynarr)
+METHOD(del)(DYNAMIC_ARRAY *dynarr)
 {
 #ifndef CDAR_OPT
     /* If array initialised, free raw data too */
     if (dynarr)
+    {
 #endif
         free(dynarr->data);
-    free(dynarr);
+        free(dynarr);
+#ifndef CDAR_OPT
+    }
+#endif
 }
+
 
 
 /*----------------------------------------------------------------------------*/
 void *
-cutils_cdar_DynamicArray_void_ptr_data(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                       size_t *size,
-                                       size_t *count)
+METHOD(data)(DYNAMIC_ARRAY *dynarr,
+             size_t *size,
+             size_t *count)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "data")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return NULL; /* Cannot operate on nothing */
     }
     /* Invalid size */
     if (!size)
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "data", "2nd", size)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
     else
 #endif /* CDAR_OPT */
 
@@ -229,10 +262,10 @@ cutils_cdar_DynamicArray_void_ptr_data(cutils_cdar_DynamicArray_void_ptr *dynarr
 #ifndef CDAR_OPT
     /* Invalid count */
     if (!count)
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "data", "3rd", count)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
     else
 #endif /* CDAR_OPT */
 
@@ -242,17 +275,18 @@ cutils_cdar_DynamicArray_void_ptr_data(cutils_cdar_DynamicArray_void_ptr *dynarr
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 void *
-cutils_cdar_DynamicArray_void_ptr_raw(cutils_cdar_DynamicArray_void_ptr *dynarr)
+METHOD(raw)(DYNAMIC_ARRAY *dynarr)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "raw")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return NULL; /* Cannot operate on nothing */
     }
 #endif /* CDAR_OPT */
@@ -262,17 +296,18 @@ cutils_cdar_DynamicArray_void_ptr_raw(cutils_cdar_DynamicArray_void_ptr *dynarr)
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 size_t
-cutils_cdar_DynamicArray_void_ptr_len(cutils_cdar_DynamicArray_void_ptr *dynarr)
+METHOD(len)(DYNAMIC_ARRAY *dynarr)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "len")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
     }
 #endif /* CDAR_OPT */
@@ -282,17 +317,18 @@ cutils_cdar_DynamicArray_void_ptr_len(cutils_cdar_DynamicArray_void_ptr *dynarr)
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 size_t
-cutils_cdar_DynamicArray_void_ptr_size(cutils_cdar_DynamicArray_void_ptr *dynarr)
+METHOD(size)(DYNAMIC_ARRAY *dynarr)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "size")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
     }
 #endif /* CDAR_OPT */
@@ -302,17 +338,18 @@ cutils_cdar_DynamicArray_void_ptr_size(cutils_cdar_DynamicArray_void_ptr *dynarr
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 void
-cutils_cdar_DynamicArray_void_ptr_clear(cutils_cdar_DynamicArray_void_ptr *dynarr)
+METHOD(clear)(DYNAMIC_ARRAY *dynarr)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "clear")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Cannot operate on nothing */
     }
 #endif /* CDAR_OPT */
@@ -322,18 +359,19 @@ cutils_cdar_DynamicArray_void_ptr_clear(cutils_cdar_DynamicArray_void_ptr *dynar
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_resize(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                         size_t count)
+METHOD(resize)(DYNAMIC_ARRAY *dynarr,
+               size_t count)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "resize")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     else
@@ -349,29 +387,30 @@ cutils_cdar_DynamicArray_void_ptr_resize(cutils_cdar_DynamicArray_void_ptr *dyna
     /* Make it bigger */
     if (!__cdar_resize(dynarr, dynarr->size, count))
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_REALLOC_FAIL(TYPE_REPR, "resize")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* No place to grow */
     }
     return true; /* Successfully grew */
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_swap(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                       size_t index1,
-                                       size_t index2,
-                                       size_t count)
+METHOD(swap)(DYNAMIC_ARRAY *dynarr,
+             size_t index1,
+             size_t index2,
+             size_t count)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "swap")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     else
@@ -384,28 +423,28 @@ cutils_cdar_DynamicArray_void_ptr_swap(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Empty array */
     else if (!dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "swap")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return true; /* Successfully did nothing */
     }
 #ifndef CDAR_OPT
     /* Out of range */
     else if (index1 >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "swap", "2nd", index1)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Not valid index */
     }
     /* Out of range */
     else if (index2 >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "swap", "3rd", index2)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Not valid index */
     }
 
@@ -420,19 +459,19 @@ cutils_cdar_DynamicArray_void_ptr_swap(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Limit count size, if overlapping */
     if (smaller + count >= greater)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_OVERLAP(TYPE_REPR, "swap")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         count = greater - smaller;
     }
 
     /* Limit count size, if out of range */
     if ((greater + count) > dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "swap", "4th", count)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         count = dynarr->used - greater;
         if (!count) return true; /* Successfully did nothing */
     }
@@ -455,27 +494,37 @@ cutils_cdar_DynamicArray_void_ptr_swap(cutils_cdar_DynamicArray_void_ptr *dynarr
     return true; /* Successfully swapped items */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(swap_default3)(DYNAMIC_ARRAY *dynarr,
+                      size_t index1,
+                      size_t index2)
+{
+    return METHOD(swap)(dynarr, index1, index2, 1);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_reverse(cutils_cdar_DynamicArray_void_ptr *dynarr)
+METHOD(reverse)(DYNAMIC_ARRAY *dynarr)
 {
     size_t length;
 #ifndef CDAR_OPT
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "reverse")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     else
 #endif /* CDAR_OPT */
     if (!(length = dynarr->used))
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "reverse")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return true; /* Successfully did nothing */
     }
 
@@ -500,29 +549,30 @@ cutils_cdar_DynamicArray_void_ptr_reverse(cutils_cdar_DynamicArray_void_ptr *dyn
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_append(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                         size_t count,
-                                         void *source)
+METHOD(append)(DYNAMIC_ARRAY *dynarr,
+               size_t count,
+               void *source)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "append")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     /* Invalid source */
     else if (!source)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "append", "3rd", source)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return true; /* Successfully added nothing */
     }
     else
@@ -535,10 +585,10 @@ cutils_cdar_DynamicArray_void_ptr_append(cutils_cdar_DynamicArray_void_ptr *dyna
         size_t item_size = dynarr->size;
         if (!__cdar_resize(dynarr, item_size, count))
         {
+            #undef  EXCEPTION_MSG
             #define EXCEPTION_MSG \
                 EXCEPTION_MESSAGE_REALLOC_FAIL(TYPE_REPR, "append")
             cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-            #undef EXCEPTION_MSG
             return false; /* No place to append */
         }
         /* Extend array with data */
@@ -551,21 +601,30 @@ cutils_cdar_DynamicArray_void_ptr_append(cutils_cdar_DynamicArray_void_ptr *dyna
     return true; /* Successfully added 0 or more items */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(append_default2)(DYNAMIC_ARRAY *dynarr,
+                        void *source)
+{
+    return METHOD(append)(dynarr, 1, source);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_push(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                       size_t index,
-                                       size_t count,
-                                       void *source)
+METHOD(push)(DYNAMIC_ARRAY *dynarr,
+             size_t index,
+             size_t count,
+             void *source)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "push")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     /* Nothing to insert */
@@ -576,10 +635,10 @@ cutils_cdar_DynamicArray_void_ptr_push(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Invalid source */
     else if (!source)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "push", "4th", source)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return true; /* Successfully did nothing */
     }
 #else
@@ -592,9 +651,9 @@ cutils_cdar_DynamicArray_void_ptr_push(cutils_cdar_DynamicArray_void_ptr *dynarr
     size_t item_size = dynarr->size;
     if (!__cdar_resize(dynarr, item_size, count))
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_REALLOC_FAIL(TYPE_REPR, "push")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* No place to insert */
     }
     char *data = (char *)dynarr->data;
@@ -625,20 +684,30 @@ cutils_cdar_DynamicArray_void_ptr_push(cutils_cdar_DynamicArray_void_ptr *dynarr
     return true; /* Successfully inserted */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(push_default3)(DYNAMIC_ARRAY *dynarr,
+                      size_t index,
+                      void *source)
+{
+    return METHOD(push)(dynarr, index, 1, source);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 size_t
-cutils_cdar_DynamicArray_void_ptr_pull(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                       size_t index,
-                                       size_t count)
+METHOD(pull)(DYNAMIC_ARRAY *dynarr,
+             size_t index,
+             size_t count)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "pull")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
     }
     /* Nothing to remove */
@@ -649,18 +718,18 @@ cutils_cdar_DynamicArray_void_ptr_pull(cutils_cdar_DynamicArray_void_ptr *dynarr
     /* Empty array */
     else if (!dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "pull")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully removed nothing */
     }
     /* Out of range */
     else if (index >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "pull", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully removed nothing */
     }
 #else
@@ -691,21 +760,30 @@ cutils_cdar_DynamicArray_void_ptr_pull(cutils_cdar_DynamicArray_void_ptr *dynarr
     return count; /* Successfully removed */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+size_t
+METHOD(pull_default2)(DYNAMIC_ARRAY *dynarr,
+                      size_t index)
+{
+    return METHOD(pull)(dynarr, index, 1);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 size_t
-cutils_cdar_DynamicArray_void_ptr_pop(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                      size_t index,
-                                      size_t count,
-                                      void *destination)
+METHOD(pop)(DYNAMIC_ARRAY *dynarr,
+            size_t index,
+            size_t count,
+            void *destination)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "pop")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0;
     }
     /* Nothing to pop */
@@ -716,27 +794,27 @@ cutils_cdar_DynamicArray_void_ptr_pop(cutils_cdar_DynamicArray_void_ptr *dynarr,
     /* Invalid destination */
     else if (!destination)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "pop", "4th", destination)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully popped nothing */
     }
     /* Empty array */
     else if (!dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "pop")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully popped nothing */
     }
     /* Out of range */
     else if (index >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "pop", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully popped nothing */
     }
 #else
@@ -767,21 +845,31 @@ cutils_cdar_DynamicArray_void_ptr_pop(cutils_cdar_DynamicArray_void_ptr *dynarr,
     return count; /* Successfully popped */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+size_t
+METHOD(pop_default3)(DYNAMIC_ARRAY *dynarr,
+                     size_t index,
+                     void *destination)
+{
+    return METHOD(pop)(dynarr, index, 1, destination);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 size_t
-cutils_cdar_DynamicArray_void_ptr_sub(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                      size_t index,
-                                      size_t count,
-                                      void *destination)
+METHOD(sub)(DYNAMIC_ARRAY *dynarr,
+            size_t index,
+            size_t count,
+            void *destination)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "sub")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
     }
     /* Nothing to sub */
@@ -792,28 +880,28 @@ cutils_cdar_DynamicArray_void_ptr_sub(cutils_cdar_DynamicArray_void_ptr *dynarr,
     /* Invalid destination */
     else if (!destination)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "sub", "4th", destination)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully subbed nothing */
     }
     /* Empty array */
     else if (!dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "sub")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully subbed nothing */
     }
     /* Out of range */
     else if (index >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "sub", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Successfully subbed nothing */
     }
 #else
@@ -834,18 +922,29 @@ cutils_cdar_DynamicArray_void_ptr_sub(cutils_cdar_DynamicArray_void_ptr *dynarr,
     return count; /* Successfully subbed */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+size_t
+METHOD(sub_default3)(DYNAMIC_ARRAY *dynarr,
+                     size_t index,
+                     void *destination)
+{
+    return METHOD(sub)(dynarr, index, 1, destination);
+}
+
+
+
 /*----------------------------------------------------------------------------*/
 void
-cutils_cdar_DynamicArray_void_ptr_truncate(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                           size_t index)
+METHOD(truncate)(DYNAMIC_ARRAY *dynarr,
+                 size_t index)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "truncate")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Cannot operate on nothing */
     }
     else
@@ -853,10 +952,10 @@ cutils_cdar_DynamicArray_void_ptr_truncate(cutils_cdar_DynamicArray_void_ptr *dy
     /* Out of range */
     if (index >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "truncate", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Out of range */
     }
 
@@ -864,21 +963,29 @@ cutils_cdar_DynamicArray_void_ptr_truncate(cutils_cdar_DynamicArray_void_ptr *dy
     dynarr->used = index;
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+void
+METHOD(truncate_default1)(DYNAMIC_ARRAY *dynarr)
+{
+    METHOD(truncate)(dynarr, 0);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_set(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                      size_t index,
-                                      size_t count,
-                                      void *source)
+METHOD(set)(DYNAMIC_ARRAY *dynarr,
+            size_t index,
+            size_t count,
+            void *source)
 {
 #ifndef CDAR_OPT
     /* Not initialised */
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "set")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     /* Nothing to set */
@@ -889,19 +996,19 @@ cutils_cdar_DynamicArray_void_ptr_set(cutils_cdar_DynamicArray_void_ptr *dynarr,
     /* Invalid source */
     else if (!source)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "set", "4th", destination)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return true; /* Successfully set nothing */
     }
     /* Out of range */
     else if (index >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "set", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Out of range */
     }
 #else
@@ -921,33 +1028,43 @@ cutils_cdar_DynamicArray_void_ptr_set(cutils_cdar_DynamicArray_void_ptr *dynarr,
     return true; /* Successfully set */
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(set_default3)(DYNAMIC_ARRAY *dynarr,
+                     size_t index,
+                     void *source)
+{
+    return METHOD(set)(dynarr, index, 1, source);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 void *
-cutils_cdar_DynamicArray_void_ptr_get(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                      size_t index)
+METHOD(get)(DYNAMIC_ARRAY *dynarr,
+            size_t index)
 {
 #ifndef CDAR_OPT
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "get")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return NULL; /* Cannot operate on nothing */
     }
     else if (!dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "get")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return NULL;
     }
     else if (index >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "get", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return NULL;
     }
 #endif /* CDAR_OPT */
@@ -957,28 +1074,40 @@ cutils_cdar_DynamicArray_void_ptr_get(cutils_cdar_DynamicArray_void_ptr *dynarr,
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_find(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                       bool (*compare)(const void*, const void*, size_t),
-                                       const void *item,
-                                       size_t *index)
+METHOD(compare)(const void *item1,
+                const void *item2,
+                size_t item_size)
+{
+    return !memcmp(item1, item2, item_size);
+}
+
+
+
+/*----------------------------------------------------------------------------*/
+bool
+METHOD(find)(DYNAMIC_ARRAY *dynarr,
+             bool (*compare)(const void*, const void*, size_t),
+             const void *item,
+             size_t *index)
 {
 #ifndef CDAR_OPT
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "find")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Cannot operate on nothing */
     }
     else if (!index)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "find", "4th", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return false; /* Invalid data */
     }
     else
@@ -1002,35 +1131,45 @@ cutils_cdar_DynamicArray_void_ptr_find(cutils_cdar_DynamicArray_void_ptr *dynarr
         }
         return false; /* Successfully not found */
     }
+    #undef  EXCEPTION_MSG
     #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "find")
     cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-    #undef EXCEPTION_MSG
     return false; /* Successfully not found */
 }
+
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+bool
+METHOD(find_default3)(DYNAMIC_ARRAY *dynarr,
+                      const void *item,
+                      size_t *index)
+{
+    return METHOD(find)(dynarr, METHOD(compare), item, index);
+}
+
 
 
 /*----------------------------------------------------------------------------*/
 size_t
-cutils_cdar_DynamicArray_void_ptr_findall(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                          bool (*compare)(const void*, const void*, size_t),
-                                          const void *item,
-                                          size_t *indices)
+METHOD(findall)(DYNAMIC_ARRAY *dynarr,
+                bool (*compare)(const void*, const void*, size_t),
+                const void *item,
+                size_t *indices)
 {
 #ifndef CDAR_OPT
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "findall")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0; /* Cannot operate on nothing */
     }
     else if (!indices)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "findall", "3rd", indices)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return 0;
     }
     else
@@ -1049,32 +1188,43 @@ cutils_cdar_DynamicArray_void_ptr_findall(cutils_cdar_DynamicArray_void_ptr *dyn
                 indices[count++] = i;
         return count;
     }
+    #undef  EXCEPTION_MSG
     #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "findall")
     cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-    #undef EXCEPTION_MSG
     return 0;
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+size_t
+METHOD(findall_default3)(DYNAMIC_ARRAY *dynarr,
+                         const void *item,
+                         size_t *index)
+{
+    return METHOD(findall)(dynarr, METHOD(compare), item, index);
+}
+
+
+
 /*----------------------------------------------------------------------------*/
 void
-cutils_cdar_DynamicArray_void_ptr_sort(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                       int (*compare)(const void*, const void*))
+METHOD(sort)(DYNAMIC_ARRAY *dynarr,
+             int (*compare)(const void*, const void*))
 {
 #ifndef CDAR_OPT
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "sort")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Cannot operate on nothing */
     }
     else
 #endif /* CDAR_OPT */
     if (!dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "sort")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return;
     }
 
@@ -1083,34 +1233,35 @@ cutils_cdar_DynamicArray_void_ptr_sort(cutils_cdar_DynamicArray_void_ptr *dynarr
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 void
-cutils_cdar_DynamicArray_void_ptr_sortsub(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                          size_t index,
-                                          size_t count,
-                                          int (*compare)(const void*, const void*))
+METHOD(sortsub)(DYNAMIC_ARRAY *dynarr,
+                size_t index,
+                size_t count,
+                int (*compare)(const void*, const void*))
 {
 #ifndef CDAR_OPT
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "sortsub")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Cannot operate on nothing */
     }
     else if (!dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "sortsub")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return;
     }
     else if (index >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "sortsub", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return;
     }
 #else
@@ -1126,42 +1277,44 @@ cutils_cdar_DynamicArray_void_ptr_sortsub(cutils_cdar_DynamicArray_void_ptr *dyn
 }
 
 
+
 /*----------------------------------------------------------------------------*/
+/* TODO: map() should return the modified object */
 void
-cutils_cdar_DynamicArray_void_ptr_map(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                      size_t index,
-                                      size_t count,
-                                      void (*function)())
+METHOD(map)(DYNAMIC_ARRAY *dynarr,
+            size_t index,
+            size_t count,
+            void (*function)())
 {
 #ifndef CDAR_OPT
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "map")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Cannot operate on nothing */
     }
     else if (!dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_EMPTY(TYPE_REPR, "map")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Successfully did nothing */
     }
     else if (index >= dynarr->used)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_OUTOF(TYPE_REPR, "map", "2nd", index)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return;
     }
     else if (!function)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG \
             EXCEPTION_MESSAGE_ARGUMENT_NULL(TYPE_REPR, "map", "4th", function)
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         return; /* Cannot call NULL on items */
     }
 #endif
@@ -1177,37 +1330,54 @@ cutils_cdar_DynamicArray_void_ptr_map(cutils_cdar_DynamicArray_void_ptr *dynarr,
         function(i, data + i*size);
 }
 
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+void
+METHOD(map_default3)(DYNAMIC_ARRAY *dynarr,
+                     size_t count,
+                     void (*function)())
+{
+    METHOD(map)(dynarr, 0, count, function);
+}
+
+
 
 /*----------------------------------------------------------------------------*/
 bool
-cutils_cdar_DynamicArray_void_ptr_format(const void *item,
-                                         char **buffer,
-                                         size_t *buffer_size)
+METHOD(format)(const void *item,
+               char **buffer,
+               size_t *buffer_size)
 {
+    /* TODO: 'void*' could mean (and should mean) any item not just
+             pointers, therefore casting it to a pointer and then
+             dereferencing it won't work. the question is now:
+             is there any way to determine if the given item is a
+             pointer, and it is a pointer to NULL? otherwise the
+             following doesn't make any sense:
+
+             if (!*(char*)item)
+                 *buffer = REPRESENTATION_OF_NULL_POINTERS; */
+
     /* buffer_size could be used to realloc buffer if
        it is too small to contain the formatted item */
-    if (!*(char **)item)
-        *buffer = REPRESENTATION_OF_NULL_POINTERS;
-    else
-        snprintf(*buffer, *buffer_size, REPRESENTATION_OF_REAL_POINTERS, item);
+    snprintf(*buffer, *buffer_size, REPRESENTATION_OF_REAL_POINTERS, item);
     return true;
 }
 
 
+
 /*----------------------------------------------------------------------------*/
 void
-cutils_cdar_DynamicArray_void_ptr_print(cutils_cdar_DynamicArray_void_ptr *dynarr,
-                                        FILE *stream,
-                                        const char *sub_type,
-                                        bool(*format)())
-                                        // char *(*format)(const void*, char**, size_t*))
+METHOD(print)(DYNAMIC_ARRAY *dynarr,
+              FILE *stream,
+              const char *sub_type,
+              bool(*format)()) /* char *(*format)(const void*, char**, size_t*)) */
 {
 #ifndef CDAR_OPT
     if (!dynarr)
     {
+        #undef  EXCEPTION_MSG
         #define EXCEPTION_MSG EXCEPTION_MESSAGE_NULL_POINTER(TYPE_REPR, "print")
         cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-        #undef EXCEPTION_MSG
         fprintf(stream, REPRESENTATION_OF_NULL_POINTERS "\n");
         return; /* Cannot operate on nothing */
     }
@@ -1229,9 +1399,9 @@ cutils_cdar_DynamicArray_void_ptr_print(cutils_cdar_DynamicArray_void_ptr *dynar
         char *buffer = malloc(buffer_size);
         if (!buffer)
         {
+            #undef  EXCEPTION_MSG
             #define EXCEPTION_MSG EXCEPTION_MESSAGE_ALLOC_FAIL(TYPE_REPR, "print")
             cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-            #undef EXCEPTION_MSG
             fprintf(stream, "...}\n");
             return;
         }
@@ -1247,10 +1417,10 @@ cutils_cdar_DynamicArray_void_ptr_print(cutils_cdar_DynamicArray_void_ptr *dynar
             /* If formatting representation was successful */
             if (!format(data + size*i, buffer_ptr, &buffer_size))
             {
+                #undef  EXCEPTION_MSG
                 #define EXCEPTION_MSG \
                     EXCEPTION_MESSAGE_REALLOC_FAIL(TYPE_REPR, "print")
                 cutils_cexc_raise(EXCEPTION_MSG, sizeof EXCEPTION_MSG);
-                #undef EXCEPTION_MSG
                 fprintf(stream, "...");
                 break;
             }
@@ -1263,11 +1433,17 @@ cutils_cdar_DynamicArray_void_ptr_print(cutils_cdar_DynamicArray_void_ptr *dynar
     fprintf(stream, "}\n");
 }
 
-/*----------------------------------------------------------------------------*/
-bool
-cutils_cdar_DynamicArray_void_ptr_compare(const void *item1,
-                                          const void *item2,
-                                          size_t item_size)
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+void
+METHOD(print_default2)(DYNAMIC_ARRAY *dynarr,
+                       bool(*format)())
 {
-    return !memcmp(item1, item2, item_size);
+    METHOD(print)(dynarr, stdout, "void_ptr", format);
+}
+
+/*- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+void
+METHOD(print_default1)(DYNAMIC_ARRAY *dynarr)
+{
+    METHOD(print)(dynarr, stdout, "void_ptr", METHOD(format));
 }

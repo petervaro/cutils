@@ -35,6 +35,10 @@ exceptions:
 examples:
   - - '*Rotate* all characters by 13 in the $type$'
     - |
+      #include <ctype.h>  /* toupper() */
+      #include <cutils/call.h>
+      \\n
+      \\n
       static void
       rot13(size_t index, char *letter)
       {
@@ -56,6 +60,7 @@ examples:
           map($shortvar$, rot13);
           print($shortvar$);
           \\n
+          del($shortvar$);
           return 0;
       }
 
