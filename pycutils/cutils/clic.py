@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.784 (20140825)                       ##
+##                       Version: 0.8.96.271 (20141024)                       ##
 ##                                                                            ##
 ##                       File: pycutils/cutils/clic.py                        ##
 ##                                                                            ##
@@ -58,10 +58,12 @@ EXCEPTION_SELF = 'clic.py', 'comment.py', 'check.py', 'table.py'
 EXTENSIONS = ('.h', '.c', '.fs', '.vs', '.py', '.yaml',
               'make', 'makefile', 'MAKE', 'MAKEFILE',
               'todo', 'TODO', 'readme', 'README')
-# Extend it with compiled types, such as '.a', '.o', etc. and '.pyc', '.pyo'
-EXCEPTIONS = ('.ccom_cache', '.ccom_todo',
-              '.cdoc_cache', '.cdoc_toc',
-              '.clic_cache')
+EXCEPTIONS = {'names': ['.ccom_cache', '.ccom_todo',  '.cdoc_cache',
+                        '.cdoc_toc',   '.clic_cache', '.gitignore',
+                        '.DS_Store'],
+              'folders': ['.git'],
+              'extensions': ['.a', '.o', '.so', '.dylib', '.dll',
+                             '.pyc', '.pyo']}
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 _FORMAT = {'CENTER': '^', 'LEFT':'<', 'RIGHT': '>'}
@@ -167,18 +169,46 @@ def header(infolder,
     # Get special values
     values['DATE'] = datetime.now().strftime('%Y.%m.%d')
 
+    # Exception containers
+    except_dirs  = []  # relative path to dir from root
+    except_files = []  # relative path to file from root
+    except_names = []  # filename (with extension) anywhere
+    except_exts  = []  # extension anywhere
+
+    # If 'exceptions' is dictionary like object
+    try:
+        _empty = ()
+        # Exceptions relative to root
+        for key, container in zip(('folders', 'files'),
+                                  (except_dirs, except_files)):
+            container.extend(os_path_join(infolder, p) for p in exceptions.get(key, _empty))
+        # Exceptions anywhere
+        for key, container in zip(('names', 'extensions'),
+                                  (except_names, except_exts)):
+            container.extend(exceptions.get(key, _empty))
+    # If 'exceptions' is an iterable object
+    except AttributeError:
+        except_names = exceptions
+
     # Walk through all files and folders in the passed folder
     # FIXME: what if none of the files changed only INFO has been updated?
+    # Scan through all files and folders
     with check_Checker(infolder, file='.clic_cache') as checker:
-        for root, dirs, files in os_walk(infolder):
-            for file in files:
-                name, extension = os_path_splitext(file)
-                if not extension:
-                    extension = name
-                if (file not in exceptions and
+        for root, dirs, filenames in os_walk(infolder):
+            # If skip this folder and all subfolders
+            if root in except_dirs:
+                dirs.clear()
+                continue
+            # Check all files in folder
+            for filename in filenames:
+                filepath = os_path_join(root, filename)[2:]
+                # If skip this exact file
+                if filepath in except_files:
+                    continue
+                name, extension = os_path_splitext(filename)
+                if (filename not in except_names and
                     extension in extensions and
-                    extension not in exceptions):
-                    filepath = os_path_join(root, file)
+                    extension not in except_exts):
                     # If file has been changed since last check
                     if checker.ischanged(filepath) and not overwrite:
                         values['SIZE'] = _size(os_path_getsize(filepath))

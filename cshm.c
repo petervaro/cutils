@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.96.222 (20140908)                       **
+**                       Version: 0.8.96.274 (20141024)                       **
 **                                                                            **
 **                                File: cshm.c                                **
 **                                                                            **

@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.90.767 (20140822)                       ##
+##                       Version: 0.8.96.268 (20141023)                       ##
 ##                                                                            ##
 ##                               File: setup.py                               ##
 ##                                                                            ##
@@ -30,8 +30,7 @@
 
 import sys
 from os.path import join
-from stat import S_IEXEC
-from os import stat, chmod, symlink
+from os import stat, chmod, symlink, remove
 from distutils.core import setup
 from distutils.sysconfig import get_python_lib
 
@@ -57,7 +56,7 @@ with open('VERSION') as version:
           description='Modern and Lightweight C Utilities',
           author='Peter Varo',
           author_email='petervaro@sketchandprototype.com',
-          license='MIT',
+          license='GPLv3',
           platforms='Any',
           url='http://www.cutils.org',
           package_dir={'': 'pycutils'},
@@ -70,11 +69,14 @@ try:
         src = join(PKG_PATH, 'cutils', file + '.py')
         # If symlink already exists
         try:
-            symlink(src, dst)
-            print(src, '=>', dst)
-        except FileExistsError:
-            print(dst, 'already exists')
-        chmod(dst, stat(dst).st_mode | S_IEXEC)
+            remove(dst)
+        except FileNotFoundError:
+            pass
+        # Create symlink
+        symlink(src, dst)
+        # Change ownership (make it executable for everyone)
+        chmod(dst, stat(dst).st_mode | 0o111)
+        print(src, '=>', dst)
 
     # Because 'cenv' was the last one, the 'dst' is related to it
     with open(dst, 'r+') as cenv:

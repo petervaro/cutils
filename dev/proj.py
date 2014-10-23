@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.95.808 (20140828)                       ##
+##                       Version: 0.8.96.244 (20140911)                       ##
 ##                                                                            ##
 ##                             File: dev/proj.py                              ##
 ##                                                                            ##

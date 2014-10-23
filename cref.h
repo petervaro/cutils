@@ -4,7 +4,7 @@
 **                                   ======                                   **
 **                                                                            **
 **                     Modern and Lightweight C Utilities                     **
-**                       Version: 0.8.95.968 (20140904)                       **
+**                       Version: 0.8.96.247 (20141023)                       **
 **                                                                            **
 **                                File: cref.h                                **
 **                                                                            **
@@ -383,10 +383,10 @@ fopen(const char *fname,
       const char *mode);
 // Reads data from the given stream into the array pointed to by ptr
 size_t
-fread(void *ptr,
-      size_t size,
-      size_t nmemb,
-      FILE *stream);
+fread(void *ptr,        /* output buffer */
+      size_t size,      /* size of items */
+      size_t nmemb,     /* number of items */
+      FILE *stream);    /* input stream */
 // Associates a new filename with the given open stream and
 // same time closing the old file in stream
 FILE *
@@ -409,10 +409,10 @@ long int
 ftell(FILE *stream);
 // Writes data from the array pointed to by ptr to the given stream
 size_t
-fwrite(const void *ptr,
-       size_t size,
-       size_t nmemb,
-       FILE *stream);
+fwrite(const void *ptr, /* input data */
+       size_t size,     /* size of items */
+       size_t nmemb,    /* number of items */
+       FILE *stream);   /* output stream */
 // Deletes the given filename so that it is no longer accessible
 int
 remove(const char *fname);

@@ -129,8 +129,9 @@ syntax = {
             'name' : 'keyword.other.assertion.c.11',
             'match': r'\b(((_S|s)tatic_)?assert)\b'
         },
+        # TODO: static-assertion keyword?
         {
-            'name' : 'keyword.other.generic_macro.c.11',
+            'name' : 'keyword.other.generic.c.11',
             'match': r'\b_Generic\b'
         },
         {
@@ -149,24 +150,22 @@ syntax = {
             'name' : 'keyword.control.conditional_statements.c.11',
             'match': r'\b(if|else)\b'
         },
+#-- OPERATORS -----------------------------------------------------------------#
         {
-            'name' : 'keyword.operator.conditional_statements.c.11',
+            'name' : 'keyword.operator.ternary.c.11',
             'match': r'\?|:'
         },
         {
-            'name' : 'keyword.operator.bool.logical.c.11',
-            'match': r'&&|\|\||!|\^'
+            'name' : 'keyword.operator.assignment.augmented.c.11',
+            'match': r'\+\+|--|(\+|-|\*|/|%|&|\^|\||<<|>>)='
         },
-
-
-#-- OPERATORS -----------------------------------------------------------------#
         {
             'name' : 'keyword.operator.comparison.c.11',
-            'match': r'<=|>=|==|<|>|!='
+            'match': r'(<|>)=?|(=|!)='
         },
         {
-            'name' : 'keyword.operator.assignment.augmented.c.11',
-            'match': r'\+\+|--|\+=|-=|\*=|/=|%=|&=|\^=|\|=|<<=|>>='
+            'name' : 'keyword.operator.bool.logical.c.11',
+            'match': r'&&|\|\||!'
         },
         {
             'name' : 'keyword.operator.arithmetic.c.11',
@@ -408,7 +407,7 @@ syntax = {
             [
                 {
                     'name' : 'entity.other.macro.keyowrds.c.11',
-                    'match': r'^\s*#((include\s+(<(.+)>|"(.+)"))|'
+                    'match': r'^\s*((#\s*include\s+(<(.+)>|"(.+)"))|'
                              r'line|error|pragma|'
                              r'(un|ifn?)def|else|endif)',
                     'captures':
@@ -419,7 +418,7 @@ syntax = {
                 },
                 {
                     'name' : 'meta.other.macro.define.c.11',
-                    'begin': r'^\s*(#define)\s+(?=[a-zA-Z_]\w*)',
+                    'begin': r'^\s*(#\s*define)\s+(?=[a-zA-Z_]\w*)',
                     'beginCaptures':
                     {
                         1: {'name': 'entity.other.macro.define.c.11'}
@@ -441,7 +440,7 @@ syntax = {
                 },
                 {
                     'name' : 'meta.other.macro.conditional.c.11',
-                    'begin': r'^\s*(#(el)?if)',
+                    'begin': r'^\s*(#\s*(el)?if)',
                     'beginCaptures':
                     {
                         1: {'name': 'entity.other.macro.conditional.c.11'}

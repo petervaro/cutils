@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.95.809 (20140828)                       ##
+##                       Version: 0.8.96.247 (20141023)                       ##
 ##                                                                            ##
 ##                       File: pycutils/cutils/cenv.py                        ##
 ##                                                                            ##
@@ -110,13 +110,13 @@ C = """\
 ** INFO */
 
 /* Include standard headers */
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdio.h>   /* ptintf() */
+#include <stdlib.h>  /* EXIT_SUCCESS */
 {INCLUDE_CUTILS}
 int main(void)
 {{
     printf("\\n*** NEW ENVIRONMENT ***\\n\\n");
-    return 0;
+    return EXIT_SUCCESS;
 }}
 """
 
