@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.96.281 (20141027)                       ##
+##                       Version: 0.8.96.303 (20141027)                       ##
 ##                                                                            ##
 ##                       File: pycutils/cutils/ccom.py                        ##
 ##                                                                            ##
@@ -51,9 +51,9 @@ from pickle import (dump as pickle_dump,
 from cutils.internal.table import Table as table_Table
 from cutils.internal.check import Checker as check_Checker
 from cutils.internal.comment import (LINE as comment_LINE,
-                               BLOCK as comment_BLOCK,
-                               escape as comment_escape,
-                               block_comments as comment_block_comments)
+                                     BLOCK as comment_BLOCK,
+                                     escape as comment_escape,
+                                     block_comments as comment_block_comments)
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 # Special tags to look for
@@ -62,7 +62,6 @@ MARKS = OrderedDict([(r'!'*3, 'alert'), (r'?'*3, 'question')])
 # White-list
 INCLUDE = {'names': ['make', 'Make', 'MAKE',
                      'makefile', 'Makefile', 'MakeFile', 'MAKEFILE',
-                     'todo', 'to-do', 'Todo', 'To-do', 'ToDo', 'To-Do', 'TODO', 'TO-DO',
                      'readme', 'Readme', 'README'],
            'extensions': ['.h', '.c', '.fs', '.vs', '.py',
                           '.cfg', '.conf', '.config',
@@ -268,8 +267,7 @@ def collect(infolder,
                 # this is not and overwrite-call
                 if (filename not in except_names and
                     extension not in except_exts and
-                    (extension in permit_exts or
-                     filename  in permit_names) and
+                    (extension in permit_exts or filename in permit_names) and
                     checker.ischanged(filepath) and
                     not overwrite):
                     with open(filepath, encoding='utf-8') as file:
