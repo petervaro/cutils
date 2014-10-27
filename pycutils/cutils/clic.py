@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.96.271 (20141024)                       ##
+##                       Version: 0.8.96.275 (20141027)                       ##
 ##                                                                            ##
 ##                       File: pycutils/cutils/clic.py                        ##
 ##                                                                            ##
@@ -51,19 +51,21 @@ from cutils.internal.comment import (LINE as comment_LINE,
                                block_comments as comment_block_comments)
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
-# TODO: Add special exception variable; maybe simply: 'cutils' as a dir?
-EXCEPTION_SELF = 'clic.py', 'comment.py', 'check.py', 'table.py'
-
-# File extensions
-EXTENSIONS = ('.h', '.c', '.fs', '.vs', '.py', '.yaml',
-              'make', 'makefile', 'MAKE', 'MAKEFILE',
-              'todo', 'TODO', 'readme', 'README')
-EXCEPTIONS = {'names': ['.ccom_cache', '.ccom_todo',  '.cdoc_cache',
-                        '.cdoc_toc',   '.clic_cache', '.gitignore',
-                        '.DS_Store'],
-              'folders': ['.git'],
-              'extensions': ['.a', '.o', '.so', '.dylib', '.dll',
-                             '.pyc', '.pyo']}
+# White-list
+INCLUDE = {'names': ['make', 'Make', 'MAKE',
+                     'makefile', 'Makefile', 'MakeFile', 'MAKEFILE',
+                     'todo', 'to-do', 'Todo', 'To-do', 'ToDo', 'To-Do', 'TODO', 'TO-DO',
+                     'readme', 'Readme', 'README'],
+           'extensions': ['.h', '.c', '.fs', '.vs', '.py',
+                          '.cfg', '.conf', '.config',
+                          '.ini', '.json', '.yaml']}
+# Black-list
+EXCLUDE = {'names': ['.ccom_cache', '.ccom_todo',  '.cdoc_cache',
+                     '.cdoc_toc',   '.clic_cache', '.gitignore',
+                     '.DS_Store'],
+           'folders': ['.git'],
+           'extensions': ['.a', '.o', '.so', '.dylib', '.dll',
+                          '.pyc', '.pyo']}
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 _FORMAT = {'CENTER': '^', 'LEFT':'<', 'RIGHT': '>'}
@@ -131,8 +133,8 @@ def _comment(header, filepath, pattern, align, width):
 def header(infolder,
            line=comment_LINE,
            block=comment_BLOCK,
-           extensions=EXTENSIONS,
-           exceptions=EXCEPTIONS,
+           include=INCLUDE,
+           exclude=EXCLUDE,
            overwrite=False):
     # Compile regular expression pattern to match in scanned files
     pattern = re_compile(_COMMENT.format(r'|'.join(map(comment_escape, line)),
@@ -169,26 +171,41 @@ def header(infolder,
     # Get special values
     values['DATE'] = datetime.now().strftime('%Y.%m.%d')
 
-    # Exception containers
+    # Exclude containers
     except_dirs  = []  # relative path to dir from root
     except_files = []  # relative path to file from root
     except_names = []  # filename (with extension) anywhere
     except_exts  = []  # extension anywhere
 
-    # If 'exceptions' is dictionary like object
+    # If 'exclude' is dictionary like object
     try:
         _empty = ()
-        # Exceptions relative to root
+        # Excludes relative to root
         for key, container in zip(('folders', 'files'),
                                   (except_dirs, except_files)):
-            container.extend(os_path_join(infolder, p) for p in exceptions.get(key, _empty))
-        # Exceptions anywhere
+            container.extend(os_path_join(infolder, p) for p in exclude.get(key, _empty))
+        # Excludes anywhere
         for key, container in zip(('names', 'extensions'),
                                   (except_names, except_exts)):
-            container.extend(exceptions.get(key, _empty))
-    # If 'exceptions' is an iterable object
+            container.extend(exclude.get(key, _empty))
+    # If 'exclude' is an iterable object
     except AttributeError:
-        except_names = exceptions
+        except_names = exclude
+
+    # Include containers
+    permit_names = []  # filename (with extension) anywhere
+    permit_exts  = []  # extension anywhere
+
+    # If 'include' is dictionary like object
+    try:
+        _empty = ()
+        # Includes anywhere
+        for key, container in zip(('names', 'extensions'),
+                                  (permit_names, permit_exts)):
+            container.extend(include.get(key, _empty))
+    # If 'include' is an iterable object
+    except AttributeError:
+        permit_names = include
 
     # Walk through all files and folders in the passed folder
     # FIXME: what if none of the files changed only INFO has been updated?
@@ -206,21 +223,25 @@ def header(infolder,
                 if filepath in except_files:
                     continue
                 name, extension = os_path_splitext(filename)
+                # If file or extension is not banned and it is on the
+                # white-list and it changed since last time checked and
+                # this is not and overwrite-call
                 if (filename not in except_names and
-                    extension in extensions and
-                    extension not in except_exts):
-                    # If file has been changed since last check
-                    if checker.ischanged(filepath) and not overwrite:
-                        values['SIZE'] = _size(os_path_getsize(filepath))
-                        # FIXME: make it more generic than ./ -- what if ../../?
-                        values['FILE'] = filepath[2:] if filepath.startswith('./') else filepath
-                        values['FILE_NAME'] = file
-                        values['FILE_BASE'] = name
-                        if _comment(header.format(**values), filepath, pattern, align, width):
-                            # Update checker after the file has been modified
-                            checker.update()
-                            # Report
-                            print('CLIC: processed {!r}'.format(filepath))
+                    extension not in except_exts and
+                    (extension in permit_exts or
+                     filename  in permit_names) and
+                    checker.ischanged(filepath) and
+                    not overwrite):
+                    values['SIZE'] = _size(os_path_getsize(filepath))
+                    # FIXME: make it more generic than ./ -- what if ../../?
+                    values['FILE'] = filepath[2:] if filepath.startswith('./') else filepath
+                    values['FILE_NAME'] = file
+                    values['FILE_BASE'] = name
+                    if _comment(header.format(**values), filepath, pattern, align, width):
+                        # Update checker after the file has been modified
+                        checker.update()
+                        # Report
+                        print('CLIC: processed {!r}'.format(filepath))
 
 #------------------------------------------------------------------------------#
 if __name__ == '__main__':

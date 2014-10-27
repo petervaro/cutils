@@ -5,7 +5,7 @@
 ##                                   ======                                   ##
 ##                                                                            ##
 ##                     Modern and Lightweight C Utilities                     ##
-##                       Version: 0.8.96.271 (20141024)                       ##
+##                       Version: 0.8.96.281 (20141027)                       ##
 ##                                                                            ##
 ##                       File: pycutils/cutils/ccom.py                        ##
 ##                                                                            ##
@@ -59,14 +59,21 @@ from cutils.internal.comment import (LINE as comment_LINE,
 # Special tags to look for
 WORDS = r'fixme', r'todo', r'bug', r'hack', r'note', r'xxx'
 MARKS = OrderedDict([(r'!'*3, 'alert'), (r'?'*3, 'question')])
-# Extension of files to look in
-EXTENSIONS = '.h', '.c', '.py', '.fs', '.vs', '.yaml'
-EXCEPTIONS = {'names': ['.ccom_cache', '.ccom_todo',  '.cdoc_cache',
-                        '.cdoc_toc',   '.clic_cache', '.gitignore',
-                        '.DS_Store'],
-              'folders': ['.git'],
-              'extensions': ['.a', '.o', '.so', '.dylib', '.dll',
-                             '.pyc', '.pyo']}
+# White-list
+INCLUDE = {'names': ['make', 'Make', 'MAKE',
+                     'makefile', 'Makefile', 'MakeFile', 'MAKEFILE',
+                     'todo', 'to-do', 'Todo', 'To-do', 'ToDo', 'To-Do', 'TODO', 'TO-DO',
+                     'readme', 'Readme', 'README'],
+           'extensions': ['.h', '.c', '.fs', '.vs', '.py',
+                          '.cfg', '.conf', '.config',
+                          '.ini', '.json', '.yaml']}
+# Black-list
+EXCLUDE = {'names': ['.ccom_cache', '.ccom_todo',  '.cdoc_cache',
+                     '.cdoc_toc',   '.clic_cache', '.gitignore',
+                     '.DS_Store'],
+           'folders': ['.git'],
+           'extensions': ['.a', '.o', '.so', '.dylib', '.dll',
+                          '.pyc', '.pyo']}
 
 #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
 _SHORT = ' '*2
@@ -165,8 +172,8 @@ def collect(infolder,
             block = comment_BLOCK,
             tags  = WORDS,
             marks = MARKS,
-            extensions=EXTENSIONS,
-            exceptions=EXCEPTIONS,
+            include=INCLUDE,
+            exclude=EXCLUDE,
             overwrite=False):
     # Process block comment marks
     blocks_open, blocks_close = comment_block_comments(block)
@@ -212,20 +219,35 @@ def collect(infolder,
     except_names = []  # filename (with extension) anywhere
     except_exts  = []  # extension anywhere
 
-    # If 'exceptions' is dictionary like object
+    # If 'exclude' is dictionary like object
     try:
         _empty = ()
         # Exceptions relative to root
         for key, container in zip(('folders', 'files'),
                                   (except_dirs, except_files)):
-            container.extend(os_path_join(infolder, p) for p in exceptions.get(key, _empty))
+            container.extend(os_path_join(infolder, p) for p in exclude.get(key, _empty))
         # Exceptions anywhere
         for key, container in zip(('names', 'extensions'),
                                   (except_names, except_exts)):
-            container.extend(exceptions.get(key, _empty))
-    # If 'exceptions' is an iterable object
+            container.extend(exclude.get(key, _empty))
+    # If 'exclude' is an iterable object
     except AttributeError:
-        except_names = exceptions
+        except_names = exclude
+
+    # Include containers
+    permit_names = []  # filename (with extension) anywhere
+    permit_exts  = []  # extension anywhere
+
+    # If 'include' is dictionary like object
+    try:
+        _empty = ()
+        # Includes anywhere
+        for key, container in zip(('names', 'extensions'),
+                                  (permit_names, permit_exts)):
+            container.extend(include.get(key, _empty))
+    # If 'include' is an iterable object
+    except AttributeError:
+        permit_names = include
 
     # Scan through all files and folders
     with check_Checker(infolder, file='.ccom_cache') as checker:
@@ -241,14 +263,18 @@ def collect(infolder,
                 if filepath in except_files:
                     continue
                 name, extension = os_path_splitext(filename)
+                # If file or extension is not banned and it is on the
+                # white-list and it changed since last time checked and
+                # this is not and overwrite-call
                 if (filename not in except_names and
-                    extension in extensions and
-                    extension not in except_exts):
-                    # If file has changed
-                    if checker.ischanged(filepath) and not overwrite:
-                        with open(filepath, encoding='utf-8') as file:
-                            _search(collected, pattern1, pattern2,
-                                    file.read(), filepath, marks)
+                    extension not in except_exts and
+                    (extension in permit_exts or
+                     filename  in permit_names) and
+                    checker.ischanged(filepath) and
+                    not overwrite):
+                    with open(filepath, encoding='utf-8') as file:
+                        _search(collected, pattern1, pattern2,
+                                file.read(), filepath, marks)
 
     # Save collection of all posts
     with open(COLLECTED, 'wb') as file:
