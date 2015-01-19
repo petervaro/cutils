@@ -32,6 +32,17 @@ For detailed information and documentation visit:
     http://www.cutils.org
 
 
+INSTALL
+=======
+
+1. Install LibYAML    (eg. pacman -S libyaml)
+2. Install pyyaml     (eg. pip install pyyaml)
+3. Install pyhashxx   (eg. pip install pyhashxx)
+4. Edit MAKEFILE => set libraries and python location
+5. make
+6. sudo make install
+
+
 CONTRIBUTOR'S NOTE
 ==================
 
