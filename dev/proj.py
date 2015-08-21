@@ -29,11 +29,16 @@
 ######################################################################## INFO ##
 
 # Import yaml modules
-from yaml import load as yaml_load
+try:
+    from yaml import load as yaml_load
+except ImportError:
+    print("PyYAML is required")
+    print("# pip install PyYAML")
+    raise
 try:
     from yaml import CLoader as yaml_Loader
 except ImportError:
-    from yaml import yaml_Loader
+    from yaml import Loader as yaml_Loader
 
 # Import cutils modules
 try:
@@ -78,3 +83,4 @@ try:
 # If cutils not yet installed
 except ImportError:
     pass
+
